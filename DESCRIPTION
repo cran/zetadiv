@@ -1,14 +1,26 @@
 Package: zetadiv
 Title: Functions to Compute Compositional Turnover Using Zeta Diversity
-Version: 0.1
-Author: Guillaume Latombe, Melodie A. McGeoch, Cang Hui
+Version: 1.0
+Date: 2016-12-05
+Author: Guillaume Latombe, Melodie A. McGeoch, David A. Nipperess, Cang Hui
 Maintainer: Guillaume Latombe <guillaume.latombe@monash.edu>
-Description: Functions to compute compositional turnover using zeta-diversity, the number of species shared by multiple assemblages. The package includes a Zeta.order() function to compute zeta-diversity for a specific number of assemblages, and a Zeta.decline() function to compute zeta-diversity for a range of numbers of assemblages. It also includes additional functions to explain how zeta-diversity varies with distance and with differences of environmental variables between assemblages, using linear regressions and generalized additive models.
-Depends: R (>= 3.0.0)
+Description: Functions to compute compositional turnover using zeta-diversity,
+    the number of species shared by multiple assemblages. The package includes
+    functions to compute zeta-diversity for a specific number of
+    assemblages and to compute zeta-diversity for a range of numbers of
+    assemblages. It also includes functions to explain how zeta-diversity
+    varies with distance and with differences in environmental variables
+    between assemblages, using generalised linear models, linear models
+    with negative constraints, generalised additive models,shape
+    constrained additive models, and I-splines.
+Depends: R (>= 3.0.0), scam
 License: GPL-3
-Imports: car, mgcv, vegan
+Imports: stats, graphics, grDevices, utils, car, mgcv, vegan, Imap,
+        nnls, glm2
 LazyData: true
-Packaged: 2015-06-04 06:29:34 UTC; lguillau
+Encoding: UTF-8
+RoxygenNote: 5.0.1
 NeedsCompilation: no
+Packaged: 2016-12-09 05:38:42 UTC; lguillau
 Repository: CRAN
-Date/Publication: 2015-06-04 12:01:48
+Date/Publication: 2016-12-09 08:58:59
