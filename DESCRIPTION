@@ -1,9 +1,9 @@
 Package: zetadiv
 Title: Functions to Compute Compositional Turnover Using Zeta Diversity
-Version: 1.0
-Date: 2016-12-05
+Version: 1.0.1
+Date: 2017-06-01
 Author: Guillaume Latombe, Melodie A. McGeoch, David A. Nipperess, Cang Hui
-Maintainer: Guillaume Latombe <guillaume.latombe@monash.edu>
+Maintainer: Guillaume Latombe <latombe.guillaume@gmail.com>
 Description: Functions to compute compositional turnover using zeta-diversity,
     the number of species shared by multiple assemblages. The package includes
     functions to compute zeta-diversity for a specific number of
@@ -21,6 +21,6 @@ LazyData: true
 Encoding: UTF-8
 RoxygenNote: 5.0.1
 NeedsCompilation: no
-Packaged: 2016-12-09 05:38:42 UTC; lguillau
+Packaged: 2017-06-05 23:38:49 UTC; lguillau
 Repository: CRAN
-Date/Publication: 2016-12-09 08:58:59
+Date/Publication: 2017-06-06 16:01:17 UTC

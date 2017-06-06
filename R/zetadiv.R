@@ -1,5 +1,5 @@
 .onAttach <- function(libname, pkgname) {
-  packageStartupMessage("This is zetadiv 1.0")
+  packageStartupMessage("This is zetadiv 1.0.1")
   packageStartupMessage("Package \"zetadiv\" was built under R.3.3.1")
 }
 
@@ -24,6 +24,7 @@
 #' @param closest Boolean value (TRUE or FALSE) indicating if the number of species in common should only be counted for the closest sites.
 #' @param FPO A vector with the coordinates of the fixed point origin from which the zeta diversity will be computed. In that case, \eqn{\zeta_1} is the number of species in the closest site to the FPO, \eqn{\zeta_2} is the number of species shared by the 2 closest sites, etc.
 #' @param closest.dir Boolean value (TRUE or FALSE) indicating if zeta diversity must be computed using a directed nearest neighbour scheme in the direction away from the FPO, starting from any site.
+#' @param empty.row Determines how to handle empty rows, i.e. sites with no species. Such sites can cause underestimations of zeta diversity, and computation errors for the normalized version of zeta due to divisions by 0. Options are "\code{empty}" to let the data untreated, "\code{remove}" to remove the empty rows, 0 to set the normalized zeta to 0 when zeta is divided by 0 during normalization (sites share no species, so are completely dissimilar), and 1 to set the normalized zeta to 1 when zeta is divided by 0 during normalization (i.e. sites are perfectly similar).
 #' @param plot  Boolean value (TRUE or FALSE) indicating if the outputs must be plotted.
 #' @param silent  Boolean value (TRUE or FALSE) indicating if messages must be printed.
 #' @details If the number of combinations of sites is lower than the value of the parameter \code{sam}, all the combinations are used and an exact solution is computed. In that case, using the number of site combinations as the denominator may be appropriate to compute the standard deviation, if all sites were sampled and the zeta values. This can be adjusted with parameters \code{sd.correct} and \code{sd.correct.adapt}.
@@ -48,7 +49,8 @@
 #' data.spec.bird <- bird.spec.coarse[,3:193]
 #' 
 #' dev.new(width = 12, height = 4)
-#' zeta.bird <- Zeta.decline.mc(data.spec.bird, xy.bird, orders = 1:5, sam = 100, closest = TRUE)
+#' zeta.bird <- Zeta.decline.mc(data.spec.bird, xy.bird, orders = 1:5, sam = 100,
+#'    closest = TRUE)
 #' zeta.bird
 #' 
 #' ##########
@@ -64,7 +66,7 @@
 #' 
 #' @export
 #'
-Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.correct = TRUE, sd.correct.adapt = FALSE, confint.level = 0.95, sd.plot = TRUE, rescale = FALSE, normalize = FALSE, closest = FALSE, FPO = NULL, closest.dir = FALSE, plot = TRUE, silent=TRUE){
+Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.correct = TRUE, sd.correct.adapt = FALSE, confint.level = 0.95, sd.plot = TRUE, rescale = FALSE, normalize = FALSE, closest = FALSE, FPO = NULL, closest.dir = FALSE, empty.row = "empty", plot = TRUE, silent=TRUE){
   
   if(class(data.spec) != "data.frame"){
     stop(paste("Error: ",deparse(substitute(data.spec)), " is a ", class(data.spec), ". It must be a data frame.",  sep = ""))
@@ -78,7 +80,11 @@ Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.
   if(closest == TRUE && nrow(data.spec) != nrow(xy)){
     stop("Error: data.spec and xy must have the same number of rows.")
   }
-    
+  
+  if(empty.row == "remove"){
+    data.spec <- data.spec[-which(rowSums(data.spec)==0),]
+  }
+  
   x <- dim(data.spec)[1]
   zeta.val <- numeric()
   zeta.val.sd <- numeric()
@@ -107,7 +113,14 @@ Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.
               samp <- sample(1:x, j, replace = FALSE)
               u[z] <- sum(apply(data.spec[samp, ], 2, prod))
               if (normalize == TRUE){
-                u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
+                if((ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))==0){
+                  if(empty.row == 0){
+                    u[z] <- 0
+                  }else if(empty.row == 1){
+                    u[z] <- 1
+                  }
+                }else
+                  u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
               }
             }
           }else{
@@ -119,7 +132,14 @@ Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.
             for(z in 1:dim(samp)[2]){
               u[z] <- sum(apply(data.spec[samp[, z], ], 2, prod))
               if (normalize == TRUE){
-                u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp[, z], ]), 2, prod)))
+                if((ncol(data.spec)-sum(apply((1-data.spec[samp[, z], ]), 2, prod)))==0){
+                  if(empty.row == 0){
+                    u[z] <- 0
+                  }else if(empty.row == 1){
+                    u[z] <- 1
+                  }
+                }else
+                  u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp[, z], ]), 2, prod)))
               }
             }
           }
@@ -171,8 +191,16 @@ Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.
               xy.dist <- (xy[,1]-xy[samp,1])^2+(xy[,2]-xy[samp,2])^2
               samp <- c(samp,order(xy.dist)[2:j])
               u[z] <- sum(apply(data.spec[samp, ], 2, prod))
-              if (normalize == TRUE){
-                u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
+              if (normalize == TRUE){ 
+                if ((ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod))) == 0){
+                  if(empty.row == 0){
+                    u[z] <- 0
+                  }else if(empty.row == 1){
+                    u[z] <- 1
+                  }
+                }
+                else
+                  u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
               }
             }
           }else{
@@ -184,7 +212,14 @@ Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.
               samp <- c(samp,order(xy.dist)[2:j])
               u[z] <- sum(apply(data.spec[samp, ], 2, prod))
               if (normalize == TRUE){
-                u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
+                if ((ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod))) == 0) {
+                  if(empty.row == 0){
+                    u[z] <- 0
+                  }else if(empty.row == 1){
+                    u[z] <- 1
+                  }
+                } else
+                  u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
               }
             }
           }
@@ -220,7 +255,14 @@ Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.
         samp <- order(xy.dist)[1:j]
         zeta.val[j] <- sum(apply(data.spec[samp, ], 2, prod))
         if (normalize == TRUE){
-          zeta.val[j] <- zeta.val[j] / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
+          if ((ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod))) == 0) {
+            if(empty.row == 0){
+              zeta.val[j] <- 0
+            }else if(empty.row == 1){
+              zeta.val[j] <- 1
+            }
+          }else
+            zeta.val[j] <- zeta.val[j] / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
         }
         zeta.val.sd[j] <- 0
       }
@@ -259,7 +301,14 @@ Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.
                 samp <- c(samp,order(xy.dist)[1:(j-1)])
                 u[z] <- sum(apply(data.spec[samp, ], 2, prod))
                 if (normalize == TRUE){
-                  u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
+                  if ((ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod))) == 0) {
+                    if(empty.row == 0){
+                      u[z] <- 0
+                    }else if(empty.row == 1){
+                      u[z] <- 1
+                    }
+                  } else 
+                    u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
                 }
               }else{
                 if(silent==FALSE){
@@ -287,8 +336,17 @@ Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.
               if(length(which(!is.na(xy.dist)))>=(j-1)){
                 samp <- c(samp,order(xy.dist)[1:(j-1)])
                 u[z] <- sum(apply(data.spec[samp, ], 2, prod))
-                if (normalize == TRUE){
-                  u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
+                if (normalize == TRUE){ 
+                  if ((ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))== 0) {
+                    if(empty.row == 0){
+                      u[z] <- 0
+                    }else if(empty.row == 1){
+                      u[z] <- 1
+                    }
+                  }
+                  else{
+                    u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
+                  }
                 }
               }else{
                 if(silent==FALSE){
@@ -346,7 +404,7 @@ Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.
   }
   
   return(zeta)
-
+  
 }
 
 
@@ -361,11 +419,12 @@ Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.
 #' @param sam  Number of samples for which the zeta diversity is computed.
 #' @param sd.correct Boolean value (TRUE or FALSE) indicating if the standard deviation must be computed with an unbiased estimator (using the number of site combinations - 1 as the denominator) or not (using the number of site combinations as the denominator).
 #' @param sd.correct.adapt Boolean value (TRUE or FALSE) indicating if the standard deviation must be computed with an unbiased estimator (using the number of site combinations - 1 as the denominator) if \code{sam} is higher than the number of possible combinations, or not (using the number of site combinations as the denominator) if \code{sam} is lower than the number of possible combinations. If \code{sd.correct.adapt == TRUE}, it takes precedence over \code{sd.correct}.
-#' @param normalize Boolean value (TRUE or FALSE) indicating if the zeta values for each sample should be divided by the total number of species for this specific sample.
 #' @param rescale Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by \eqn{\zeta_1}, to get a range of values between 0 and 1.
+#' @param normalize Boolean value (TRUE or FALSE) indicating if the zeta values for each sample should be divided by the total number of species for this specific sample.
 #' @param closest Boolean value (TRUE or FALSE) indicating if the number of species in common should only be counted for the closest sites.
 #' @param FPO A vector with the coordinates of the fixed point origin from which the zeta diversity will be computed. In that case, \eqn{\zeta_1} is the number of species in the closest site to the FPO, \eqn{\zeta_2} is the number of species shared by the 2 closest sites, etc.
 #' @param closest.dir Boolean value (TRUE or FALSE) indicating if zeta diversity must be computed using a directed nearest neighbour scheme in the direction away from the FPO, starting from any site.
+#' @param empty.row Determines how to handle empty rows, i.e. sites with no species. Such sites can cause underestimations of zeta diversity, and computation errors for the normalized version of zeta due to divisions by 0. Options are "\code{empty}" to let the data untreated, "\code{remove}" to remove the empty rows, 0 to set the normalized zeta to 0 when zeta is divided by 0 during normalization (sites share no species, so are completely dissimilar), and 1 to set the normalized zeta to 1 when zeta is divided by 0 during normalization (i.e. sites are perfectly similar).
 #' @param silent  Boolean value (TRUE or FALSE) indicating if messages must be printed.
 #' @details If the number of combinations of sites is lower than the value of the parameter \code{sam}, all the combinations are used and an exact solution is computed. In that case, using the number of site combinations as the denominator may be appropriate to compute the standard deviation, if all sites were sampled and the zeta values. This can be adjusted with parameters \code{sd.correct} and \code{sd.correct.adapt}.
 #' @details \code{Zeta.order.mc} is faster than \code{\link{Zeta.order.ex}} to compute the exact value of zeta diversity when the number of species is higher than \eqn{C^N_{i}}, where \emph{N} is the total number of sites and \emph{i} is the order of zeta.
@@ -391,11 +450,12 @@ Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.
 #' xy.marion <- Marion.species[,1:2]
 #' data.spec.marion <- Marion.species[,3:33]
 #' 
-#' zeta.marion <- Zeta.order.mc(data.spec.marion, xy.marion, order = 3, sam = 100, closest = TRUE)
+#' zeta.marion <- Zeta.order.mc(data.spec.marion, xy.marion, order = 3, sam = 100,
+#'    closest = TRUE)
 #' zeta.marion
 #' 
 #' @export
-Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct = TRUE, sd.correct.adapt = FALSE, rescale = FALSE, normalize = FALSE, closest = FALSE, FPO = NULL, closest.dir = FALSE, silent=TRUE){
+Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct = TRUE, sd.correct.adapt = FALSE, rescale = FALSE, normalize = FALSE, closest = FALSE, FPO = NULL, closest.dir = FALSE, empty.row = "empty", silent=TRUE){
   
   if(class(data.spec) != "data.frame"){
     stop("Error: ",paste(deparse(substitute(data.spec)), " is a ", class(data.spec), ". It must be a data frame.", sep = ""))
@@ -409,7 +469,11 @@ Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct 
   if((closest == TRUE || !is.null(FPO)) && nrow(data.spec) != nrow(xy)){
     stop("Error: data.spec and xy must have the same number of rows.")
   }
-      
+  
+  if(empty.row == "remove"){
+    data.spec <- data.spec[-which(rowSums(data.spec)==0),]
+  }
+  
   x <- dim(data.spec)[1]
   
   if (is.null(FPO)){
@@ -435,7 +499,14 @@ Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct 
             samp <- sample(1:x, order, replace = FALSE)
             u[z] <- sum(apply(data.spec[samp, ], 2, prod))
             if (normalize == TRUE){
-              u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
+              if((ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))==0){
+                if(empty.row == 0){
+                  u[z] <- 0
+                }else if(empty.row == 1){
+                  u[z] <- 1
+                }
+              }else
+                u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
             }
           }
         }else{
@@ -447,7 +518,14 @@ Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct 
           for(z in 1:dim(samp)[2]){
             u[z] <- sum(apply(data.spec[samp[, z], ], 2, prod))
             if (normalize == TRUE){
-              u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp[, z], ]), 2, prod)))
+              if((ncol(data.spec)-sum(apply((1-data.spec[samp[, z], ]), 2, prod)))==0){
+                if(empty.row == 0){
+                  u[z] <- 0
+                }else if(empty.row == 1){
+                  u[z] <- 1
+                }
+              }else
+                u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp[, z], ]), 2, prod)))
             }
           }
         }
@@ -461,7 +539,15 @@ Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct 
             samp <- c(samp,order(xy.dist)[2:order])
             u[z] <- sum(apply(data.spec[samp, ], 2, prod))
             if (normalize == TRUE){
-              u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
+              if ((ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod))) == 0){
+                if(empty.row == 0){
+                  u[z] <- 0
+                }else if(empty.row == 1){
+                  u[z] <- 1
+                }
+              }
+              else
+                u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
             }
           }
         }else{
@@ -473,7 +559,14 @@ Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct 
             samp <- c(samp,order(xy.dist)[2:order])
             u[z] <- sum(apply(data.spec[samp, ], 2, prod))
             if (normalize == TRUE){
-              u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
+              if ((ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod))) == 0) {
+                if(empty.row == 0){
+                  u[z] <- 0
+                }else if(empty.row == 1){
+                  u[z] <- 1
+                }
+              }else
+                u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
             }
           }
         }
@@ -507,11 +600,17 @@ Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct 
       samp <- order(xy.dist)[1:order]
       zeta.val <- sum(apply(data.spec[samp, ], 2, prod))
       if (normalize == TRUE){
-        zeta.val <- zeta.val / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
+        if ((ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod))) == 0) {
+          if(empty.row == 0){
+            zeta.val <- 0
+          }else if(empty.row == 1){
+            zeta.val <- 1
+          }
+        }else
+          zeta.val <- zeta.val / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
       }
       zeta.val.sd <- 0
-    }
-    else{
+    }else{
       if(order==1){
         zeta.val<-mean(rowSums(data.spec))
         if(sd.correct == TRUE & sd.correct.adapt == FALSE){
@@ -545,7 +644,14 @@ Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct 
               samp <- c(samp,order(xy.dist)[1:(order-1)])
               u[z] <- sum(apply(data.spec[samp, ], 2, prod))
               if (normalize == TRUE){
-                u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
+                if ((ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod))) == 0) {
+                  if(empty.row == 0){
+                    u[z] <- 0
+                  }else if(empty.row == 1){
+                    u[z] <- 1
+                  }
+                }else 
+                  u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
               }
             }else{
               if(silent==FALSE){
@@ -574,7 +680,15 @@ Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct 
               samp <- c(samp,order(xy.dist)[1:(order-1)])
               u[z] <- sum(apply(data.spec[samp, ], 2, prod))
               if (normalize == TRUE){
-                u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
+                if ((ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))== 0) {
+                  if(empty.row == 0){
+                    u[z] <- 0
+                  }else if(empty.row == 1){
+                    u[z] <- 1
+                  }
+                }
+                else
+                  u[z] <- u[z] / (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
               }
             }else{
               if(silent==FALSE){
@@ -586,7 +700,7 @@ Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct 
         }
       }
     }
-    
+      
     zeta.val <- mean(u,na.rm=TRUE)
     if(sd.correct.adapt == FALSE){
       if(sd.correct == TRUE){
@@ -602,17 +716,17 @@ Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct 
       }
     }
   }
-  
+    
   zeta.order <- list()
   zeta.order$zeta.order <- order
   zeta.order$zeta.val <- zeta.val
   zeta.order$zeta.val.sd <- zeta.val.sd
     
   return(zeta.order)
-
+    
 }
-
-
+  
+  
 
 
 
@@ -625,6 +739,7 @@ Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct 
 #' @param confint.level  Percentage for the confidence intervals of the coefficients from the regressions.
 #' @param sd.plot  Boolean value (TRUE or FALSE) indicating if the standard deviation of each zeta diversity value must be plotted.
 #' @param rescale Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by \eqn{\zeta_1}, to get a range of values between 0 and 1.
+#' @param empty.row Determines how to handle empty rows, i.e. sites with no species. Such sites can cause underestimations of zeta diversity, and computation errors for the normalized version of zeta due to divisions by 0. Options are  "\code{empty}" to let the data untreated or "\code{remove}" to remove the empty rows.
 #' @param plot  Boolean value (TRUE or FALSE) indicating if the outputs must be plotted.
 #' @details \code{Zeta.decline.ex} is much faster than \code{\link{Zeta.decline.mc}} to compute the exact value of zeta diversity when the number of species is lower than \eqn{C^N_{i}}, where \emph{N} is the total number of sites and \emph{i} is the order of zeta.
 #' @details \code{sd.correct} should be set to \code{TRUE} if the assemblages represent a subsample of the whole system. It can be set to \code{FALSE} if the sampling is exhaustive, for example in case of a continuous regular grid covering the whole study area.
@@ -661,10 +776,14 @@ Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct 
 #' 
 #' @export
 #'
-Zeta.decline.ex <- function(data.spec, orders = 1:10, sd.correct = TRUE, confint.level = 0.95, sd.plot = TRUE, rescale = FALSE, plot = TRUE){
+Zeta.decline.ex <- function(data.spec, orders = 1:10, sd.correct = TRUE, confint.level = 0.95, sd.plot = TRUE, rescale = FALSE, empty.row = "empty", plot = TRUE){
   
   if(max(orders)>dim(data.spec)[1]){
     stop("Error: wrong value for \"orders\": the maximum value must be equal or lower than the number of sites.")
+  }
+  
+  if(empty.row == "remove"){
+    data.spec <- data.spec[-which(rowSums(data.spec)==0),]
   }
   
   data.spec <- as.matrix(data.spec)
@@ -696,7 +815,7 @@ Zeta.decline.ex <- function(data.spec, orders = 1:10, sd.correct = TRUE, confint
     zeta.val.sd <- zeta.val.sd / z1
   }
   
-    
+  
   ##create a single list for output
   zeta <- list()
   zeta$zeta.order <- orders
@@ -725,7 +844,7 @@ Zeta.decline.ex <- function(data.spec, orders = 1:10, sd.correct = TRUE, confint
   }
   
   return(zeta)
-
+  
 }
 
 
@@ -738,6 +857,7 @@ Zeta.decline.ex <- function(data.spec, orders = 1:10, sd.correct = TRUE, confint
 #' @param order  Specific number of assemblages or sites at which zeta diversity is computed.
 #' @param sd.correct Boolean value (TRUE or FALSE) indicating if the standard deviation must be computed with an unbiased estimator (using the number of site combinations - 1 as the denominator) or not (using the number of site combinations as the denominator).
 #' @param rescale Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by \eqn{\zeta_1}, to get a range of values between 0 and 1.
+#' @param empty.row Determines how to handle empty rows, i.e. sites with no species. Such sites can cause underestimations of zeta diversity, and computation errors for the normalized version of zeta due to divisions by 0. Options are  "empty" to let the data untreated or "remove" to remove the empty rows.
 #' @details \code{Zeta.order.ex} is much faster than \code{\link{Zeta.order.mc}} to compute the exact value of zeta diversity when the number of species is lower than \eqn{C^N_{i}}, where \emph{N} is the total number of sites and \emph{i} is the order of zeta.
 #' @details \code{sd.correct} should be set to \code{TRUE} if the assemblages represent a subsample of the whole system. It can be set to \code{FALSE} if the sampling is exhaustive, for example in case of a continuous regular grid covering the whole study area.
 #' @return \code{zeta.order.ex}  returns a list containing the following components:
@@ -763,7 +883,11 @@ Zeta.decline.ex <- function(data.spec, orders = 1:10, sd.correct = TRUE, confint
 #' zeta.marion
 #' 
 #' @export
-Zeta.order.ex <- function(data.spec, order = 1, sd.correct = TRUE, rescale = FALSE){
+Zeta.order.ex <- function(data.spec, order = 1, sd.correct = TRUE, rescale = FALSE, empty.row="empty"){
+  
+  if(empty.row == "remove"){
+    data.spec <- data.spec[-which(rowSums(data.spec)==0),]
+  }
   
   if(order>dim(data.spec)[1]){
     stop("Error: wrong value for \"order\": it must be equal or lower than the number of sites.")
@@ -791,9 +915,9 @@ Zeta.order.ex <- function(data.spec, order = 1, sd.correct = TRUE, rescale = FAL
   zeta.order$zeta.order <- order
   zeta.order$zeta.val <- zeta.val
   zeta.order$zeta.val.sd <- zeta.val.sd
-    
+  
   return(zeta.order)
-
+  
 }
 
 
@@ -1411,7 +1535,8 @@ Zeta.msgdm <- function(data.spec, data.env, xy = NULL, order = 1, sam = 1000, re
 #' treatment <- gl(3,3)
 #' print(d.AD <- data.frame(treatment, outcome, counts))
 #' glm.D93 <- glm.cons(counts ~ outcome + treatment, family = poisson())
-#' glm.D93.ngl <- glm.cons(counts ~ outcome + treatment, family = poisson(),method="glm.fit.cons")
+#' glm.D93.ngl <- glm.cons(counts ~ outcome + treatment, family = poisson(),
+#'    method="glm.fit.cons")
 #' summary(glm.D93)
 #' summary(glm.D93.ngl)
 #' @export
@@ -1524,7 +1649,8 @@ glm.cons <- function (formula, family = stats::gaussian(), data, weights, subset
 #' treatment <- gl(3,3)
 #' print(d.AD <- data.frame(treatment, outcome, counts))
 #' glm.D93 <- glm.cons(counts ~ outcome + treatment, family = poisson())
-#' glm.D93.ngl <- glm.cons(counts ~ outcome + treatment, family = poisson(),method="glm.fit.cons")
+#' glm.D93.ngl <- glm.cons(counts ~ outcome + treatment, family = poisson(),
+#'    method="glm.fit.cons")
 #' summary(glm.D93)
 #' summary(glm.D93.ngl)
 #' @export
@@ -1859,8 +1985,8 @@ Ispline <- function(dat, order.ispline = 2, kn.ispline = 1, rescale = 0){
 #'
 #'
 #'
-#' zeta.ngls <- Zeta.msgdm(data.spec.bird, data.env.bird, sam = 100, order = 3, reg.type = "ngls",
-#'    normalize=TRUE)
+#' zeta.ngls <- Zeta.msgdm(data.spec.bird, data.env.bird, sam = 100, order = 3,
+#'    reg.type = "ngls", normalize=TRUE)
 #' newdata <- data.frame(matrix(NA,100,ncol(data.env.bird)))
 #' names(newdata) <- names(data.env.bird)
 #' for(z in 1:100){
@@ -1890,6 +2016,111 @@ Predict.msgdm <- function(model.msgdm, reg.type, newdata, type = "response"){
   }
   return(new.zeta)
 }
+  
+  
+#' Plotting splines from I-spline-based multi-site generalised dissimilarity modelling
+#'
+#' Plots the I-splines resulting from \code{Zeta.msgdm}.
+#' @param msgdm  Output of function \code{Zeta.msgdm} computed with \code{reg.type = ispline}.
+#' @param data.env  Site-by-variable data frame used for the computation of \code{msgdm}, with sites as rows and environmental variables as columns.
+#' @param distance Boolean, indicates is distance was used in the computation of \code{msgdm}.
+#' @param pch Shapes of the points to be used in the plotting. If nothing is provided, \code{pch} is a sequence of integers from 1 to the number of variables used for the computation of \code{msgdm}.
+#' @param lty Line types to be used in the plotting. If nothing is provided, \code{pch} is a sequence of integers from 1 to the number of variables used for the computation of \code{msgdm}.
+#' @param legend  Boolean, indicates if the legend must be drawn.
+#' @return A plot of the I-splines computed by \code{Zeta.msgdm} with \code{reg.type = ispline}. All splines are drawned on the same plot, and their ranges are rescaled between 0 and 1 for comparison. 
+#' @seealso \code{\link{Zeta.msgdm}}, \code{\link{Ispline}}
+#' @examples
+#' 
+#' utils::data(Marion.species)
+#' xy.marion <- Marion.species[1:2]
+#' data.spec.marion <- Marion.species[3:33]
+#' 
+#' utils::data(Marion.env)
+#' data.env.marion <- Marion.env[3]
+#' 
+#' zeta.ispline <- Zeta.msgdm(data.spec.marion, data.env.marion, xy.marion, sam = 100,
+#'     order = 3, normalize = TRUE, reg.type = "ispline")
+#' zeta.ispline
+#' dev.new()
+#' Plot.ispline(zeta.ispline, data.env.marion, distance = TRUE)
+#' 
+#' @export
+Plot.ispline <- function (msgdm, data.env, distance = FALSE, pch = NULL, lty = NULL, legend = TRUE){
+  
+  if(is.null(distance)){
+    XX <- as.data.frame(matrix(rep(seq(0,1,0.01),ncol(data.env)),101,ncol(data.env)))
+    names(XX) <- names(data.env)
+  }else{
+    XX <- as.data.frame(matrix(rep(seq(0,1,0.01),ncol(data.env)+1),101,ncol(data.env)+1))
+    names(XX) <- c(names(data.env),"Distance")
+  }
+  
+  env.ispline <- Ispline(data.env,rescale=1)
+  
+  if(is.null(pch)){
+    pch <- 1:ncol(XX)
+  }
+  if(is.null(lty)){
+    lty <- 1:ncol(XX)
+  }
+  
+  if(distance == TRUE){
+    d.ind <- c(sample(1:length(msgdm$val),nrow(data.env)-2),which.max(msgdm$distance),which.min(msgdm$distance))
+    d <- msgdm$distance[d.ind]
+    d.spline <- msgdm$predictors[d.ind,(ncol(msgdm$predictors)-2):ncol(msgdm$predictors)]
+    X.ispline <- cbind(env.ispline,d.spline)
+    Isplines.pred <- matrix(NA,ncol(data.env)+1,nrow(data.env))
+    for(i in 1:(ncol(data.env)+1)){
+      Isplines.pred[i,] <- rowSums(matrix(-stats::coef(msgdm$model)[(2+(i-1)*3):(i*3+1)],nrow(data.env),3,byrow=TRUE)* X.ispline[,(1+(i-1)*3):(i*3)])
+    }
+  }else{
+    X.ispline <- env.ispline
+    Isplines.pred <- matrix(NA,ncol(data.env),nrow(data.env))
+    for(i in 1:ncol(data.env)){
+      Isplines.pred[i,] <- rowSums(matrix(-stats::coef(msgdm$model)[(2+(i-1)*3):(i*3+1)],nrow(data.env),3,byrow=TRUE)* X.ispline[,(1+(i-1)*3):(i*3)])
+    }
+  }
+  
+  
+  env.resc <- data.env
+  for(i in 1:ncol(data.env)){
+    env.resc[,i] <- (data.env[i]-min(data.env[i]))/(max(data.env[i])-min(data.env[i]))
+  }
+  
+  graphics::plot(sort(env.resc[,1]),Isplines.pred[1,order(env.resc[,1])], type="l",ylim=c(0,max(Isplines.pred)),main="",xlab="Rescaled range",ylab="I-splines",cex.lab=1.5,cex.main=1.5,cex.axis=1.5)
+  ind.points <- numeric()
+  for(i in 1:ncol(data.env)){
+    ind.points[i] <- which.min(abs(stats::quantile(env.resc[,1],seq(0,1,0.1))[i]-sort(env.resc[,1])))
+  }
+  graphics::points(sort(env.resc[,1])[ind.points],Isplines.pred[1,order(env.resc[,1])][ind.points],pch=pch[1])
+  if(ncol(data.env) > 1){
+    for(i in 2:ncol(data.env)){
+      graphics::lines(sort(env.resc[,i]),Isplines.pred[i,order(env.resc[,i])],lty=lty[i])
+      ind.points <- numeric()
+      for(j in 1:11){
+        ind.points[j] <- which.min(abs(stats::quantile(env.resc[,i],seq(0,1,0.1))[j]-sort(env.resc[,i])))
+      }
+      graphics::points(sort(env.resc[,i])[ind.points],Isplines.pred[i,order(env.resc[,i])][ind.points],pch=pch[i])
+    }
+  }
+  if(distance == TRUE){
+    i <- ncol(data.env)+1
+    graphics::lines(sort(d/max(d)),Isplines.pred[i,order(d)],lty=lty[i])
+    ind.points <- numeric()
+    for(j in 1:11){
+      ind.points[j] <- which.min(abs(stats::quantile(d/max(d),seq(0,1,0.1))[j]-sort(d/max(d))))
+    }
+    graphics::points(sort(d/max(d))[ind.points],Isplines.pred[i,order(d)][ind.points],pch=pch[i])
+  }
+  
+  if(legend == TRUE){
+    legend("topleft",lty=lty,pch=pch,names(XX),cex=1)
+  }
+  
+  
+}  
+
+  
 
 
 #' Zeta distance decay for a specific number of assemblages or sites
@@ -2993,7 +3224,8 @@ Plot.zeta.scale.min.dist <- function(zeta.scale.irreg, size.init = 1, add = FALS
 #' utils::data(bird.env.coarse)
 #' data.env.bird <- bird.env.coarse[,3:9]
 #' 
-#' zeta.varpart.bird <- Zeta.varpart(xy.bird, data.spec.bird, data.env.bird, order = 3, sam = 100)
+#' zeta.varpart.bird <- Zeta.varpart(xy.bird, data.spec.bird, data.env.bird,
+#'    order = 3, sam = 100)
 #' zeta.varpart.bird
 #' dev.new()
 #' pie.neg(zeta.varpart.bird[4:7,1], density = c(4, 0, 8, -1), 
@@ -3009,8 +3241,8 @@ Plot.zeta.scale.min.dist <- function(zeta.scale.irreg, size.init = 1, add = FALS
 #' utils::data(Marion.env)
 #' data.env.marion <- Marion.env[3:4]
 #' 
-#' zeta.varpart.marion <- Zeta.varpart(xy.marion, data.spec.marion, data.env.marion, order = 3, 
-#'      sam = 100, normalize = TRUE)
+#' zeta.varpart.marion <- Zeta.varpart(xy.marion, data.spec.marion, data.env.marion,
+#'      order = 3, sam = 100, normalize = TRUE)
 #' zeta.varpart.marion
 #' dev.new()
 #' pie.neg(zeta.varpart.marion[4:7,1], density = c(4, 0, 8, -1), 
@@ -3281,7 +3513,7 @@ Zeta.varpart <- function(xy, data.spec, data.env, order = 2, sam = 1000, distanc
     xnam <- names(data.tot)
     fm <- stats::as.formula(paste("zeta.val ~ s(", paste(xnam, collapse = paste(", k = ",kn,", bs = '", bs ,"') + s(",sep=""),sep=""),", k = ",kn, ",bs='", bs, "')",sep=""))
     abc <- max(summary(Scam.zeta(fm, data = data.tot, family = family))$r.sq,0)
-    ab <- max(summary(Scam.zeta(zeta.val ~ s(distance, k=kn, bs=bs), family = family))$r.sq,0)
+    ab <- max(summary(Scam.zeta(zeta.val ~ s(distance, k=kn, bs=bs), data=as.data.frame(distance), family = family))$r.sq,0)
     xnam <- names(data.var)
     fm <- stats::as.formula(paste("zeta.val ~ s(", paste(xnam, collapse = paste(", k = ",kn,", bs = '", bs ,"') + s(",sep=""),sep=""),", k = ",kn, ",bs='", bs, "')",sep=""))
     bc <- max(summary(Scam.zeta(fm, data = data.var, family = family))$r.sq,0)

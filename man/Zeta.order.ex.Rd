@@ -4,7 +4,8 @@
 \alias{Zeta.order.ex}
 \title{Expectation of zeta diversity for a specific number of assemblages or sites}
 \usage{
-Zeta.order.ex(data.spec, order = 1, sd.correct = TRUE, rescale = FALSE)
+Zeta.order.ex(data.spec, order = 1, sd.correct = TRUE, rescale = FALSE,
+  empty.row = "empty")
 }
 \arguments{
 \item{data.spec}{Site-by-species presence-absence data frame, with sites as rows and species as columns.}
@@ -14,6 +15,8 @@ Zeta.order.ex(data.spec, order = 1, sd.correct = TRUE, rescale = FALSE)
 \item{sd.correct}{Boolean value (TRUE or FALSE) indicating if the standard deviation must be computed with an unbiased estimator (using the number of site combinations - 1 as the denominator) or not (using the number of site combinations as the denominator).}
 
 \item{rescale}{Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by \eqn{\zeta_1}, to get a range of values between 0 and 1.}
+
+\item{empty.row}{Determines how to handle empty rows, i.e. sites with no species. Such sites can cause underestimations of zeta diversity, and computation errors for the normalized version of zeta due to divisions by 0. Options are  "empty" to let the data untreated or "remove" to remove the empty rows.}
 }
 \value{
 \code{zeta.order.ex}  returns a list containing the following components:

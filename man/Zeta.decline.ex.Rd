@@ -5,7 +5,8 @@
 \title{Expectation of zeta diversity decline}
 \usage{
 Zeta.decline.ex(data.spec, orders = 1:10, sd.correct = TRUE,
-  confint.level = 0.95, sd.plot = TRUE, rescale = FALSE, plot = TRUE)
+  confint.level = 0.95, sd.plot = TRUE, rescale = FALSE,
+  empty.row = "empty", plot = TRUE)
 }
 \arguments{
 \item{data.spec}{Site-by-species presence-absence data frame, with sites as rows and species as columns.}
@@ -19,6 +20,8 @@ Zeta.decline.ex(data.spec, orders = 1:10, sd.correct = TRUE,
 \item{sd.plot}{Boolean value (TRUE or FALSE) indicating if the standard deviation of each zeta diversity value must be plotted.}
 
 \item{rescale}{Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by \eqn{\zeta_1}, to get a range of values between 0 and 1.}
+
+\item{empty.row}{Determines how to handle empty rows, i.e. sites with no species. Such sites can cause underestimations of zeta diversity, and computation errors for the normalized version of zeta due to divisions by 0. Options are  "\code{empty}" to let the data untreated or "\code{remove}" to remove the empty rows.}
 
 \item{plot}{Boolean value (TRUE or FALSE) indicating if the outputs must be plotted.}
 }

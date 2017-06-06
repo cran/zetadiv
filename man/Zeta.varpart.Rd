@@ -74,7 +74,8 @@ data.spec.bird <- bird.spec.coarse[,3:193]
 utils::data(bird.env.coarse)
 data.env.bird <- bird.env.coarse[,3:9]
 
-zeta.varpart.bird <- Zeta.varpart(xy.bird, data.spec.bird, data.env.bird, order = 3, sam = 100)
+zeta.varpart.bird <- Zeta.varpart(xy.bird, data.spec.bird, data.env.bird,
+   order = 3, sam = 100)
 zeta.varpart.bird
 dev.new()
 pie.neg(zeta.varpart.bird[4:7,1], density = c(4, 0, 8, -1), 
@@ -90,8 +91,8 @@ data.spec.marion <- Marion.species[,3:33]
 utils::data(Marion.env)
 data.env.marion <- Marion.env[3:4]
 
-zeta.varpart.marion <- Zeta.varpart(xy.marion, data.spec.marion, data.env.marion, order = 3, 
-     sam = 100, normalize = TRUE)
+zeta.varpart.marion <- Zeta.varpart(xy.marion, data.spec.marion, data.env.marion,
+     order = 3, sam = 100, normalize = TRUE)
 zeta.varpart.marion
 dev.new()
 pie.neg(zeta.varpart.marion[4:7,1], density = c(4, 0, 8, -1), 
