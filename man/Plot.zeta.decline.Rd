@@ -46,4 +46,3 @@ Hui C. & McGeoch M.A. (2014). Zeta diversity as a concept and metric that unifie
 \seealso{
 \code{\link{Zeta.decline.mc}}, \code{\link{Zeta.order.mc}}, \code{\link{Zeta.decline.ex}}, \code{\link{Zeta.order.ex}}
 }
-

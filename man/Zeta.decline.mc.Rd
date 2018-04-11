@@ -27,9 +27,9 @@ Zeta.decline.mc(data.spec, xy = NULL, orders = 1:10, sam = 1000,
 
 \item{sd.plot}{Boolean value (TRUE or FALSE) indicating if the standard deviation of each zeta diversity value must be plotted.}
 
-\item{rescale}{Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by \eqn{\zeta_1}, to get a range of values between 0 and 1. Has no effect if \code{normalize} = \code{TRUE}.}
+\item{rescale}{Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by \eqn{\zeta_1}, to get a range of values between 0 and 1. Has no effect if \code{normalize} != \code{FALSE}.}
 
-\item{normalize}{Boolean value (TRUE or FALSE) indicating if the zeta values for each sample should be divided by the total number of species for this specific sample.}
+\item{normalize}{Indicates if the zeta values for each sample should be divided by the total number of species for this specific sample (\code{normalize = "Jaccard"}), by the average number of species per site for this specific sample (\code{normalize = "Sorensen"}), or by the minimum number of species in the sites of this specific sample \cr (\code{normalize = "Simpson"}). Default value is \code{FALSE}, indicating that no normalization is performed.}
 
 \item{closest}{Boolean value (TRUE or FALSE) indicating if the number of species in common should only be counted for the closest sites.}
 
@@ -74,7 +74,7 @@ If the number of combinations of sites is lower than the value of the parameter 
 
 The exponential and the power law fit are performed using linear regressions on log-transformed data (only the zeta values are log-transformed for the exponential fit, and both the orders and the zeta values are log-transformed for the power law fit).
 
-\code{Zeta.decline.mc} enables accomodating richness heterogeneity by setting \code{normalize=TRUE}. This cannot be performed by \code{\link{Zeta.decline.ex}}.
+\code{Zeta.decline.mc} enables accomodating richness heterogeneity by setting \code{normalize = "Jaccard"}, \code{normalize = "Sorensen"} or \code{normalize = "Simpson"}. This cannot be performed by \cr \code{\link{Zeta.decline.ex}}.
 }
 \examples{
 utils::data(bird.spec.coarse)
@@ -94,7 +94,7 @@ data.spec.marion <- Marion.species[,3:33]
 
 dev.new(width = 12, height = 4)
 zeta.marion <- Zeta.decline.mc(data.spec.marion, orders = 1:5, sam = 100,
-     normalize = TRUE)
+     normalize = "Jaccard")
 zeta.marion
 
 }
@@ -104,4 +104,3 @@ Hui C. & McGeoch M.A. (2014). Zeta diversity as a concept and metric that unifie
 \seealso{
 \code{\link{Zeta.decline.ex}}, \code{\link{Zeta.order.ex}}, \code{\link{Zeta.order.mc}}, \code{\link{Plot.zeta.decline}}
 }
-

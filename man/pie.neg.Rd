@@ -55,4 +55,3 @@ Legendre, P. &  Legendre, L.F. (2012). \emph{Numerical ecology}, 3rd English edi
 \seealso{
 \code{\link[graphics]{pie}}, \code{\link{Zeta.varpart}}
 }
-

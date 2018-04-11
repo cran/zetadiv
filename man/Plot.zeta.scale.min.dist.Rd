@@ -29,8 +29,8 @@ utils::data(Marion.species)
 xy.marion <- Marion.species[,1:2]
 data.spec.marion <- Marion.species[,3:33]
 
-zeta.scale.irreg.species <- Zeta.scale.min.dist(xy.marion, data.spec.marion, m = 1:3, 
-    order = 3, reorder = 3, sam = 50, normalize = TRUE,plot=FALSE)
+zeta.scale.irreg.species <- Zeta.scale.min.dist(xy.marion, data.spec.marion, m = 1:3,
+    order = 3, reorder = 3, sam = 50, normalize = "Jaccard",plot=FALSE)
 dev.new()
 Plot.zeta.scale.min.dist(zeta.scale.irreg.species)
 }
@@ -46,4 +46,3 @@ Scheiner S.M., Chiarucci A., Fox G.A., Helmus M.R., McGlinn D.J. & Willig M.R. (
 
 \code{\link{Plot.zeta.scale.regular}}
 }
-

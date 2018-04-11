@@ -4,8 +4,9 @@
 \alias{Plot.ispline}
 \title{Plotting splines from I-spline-based multi-site generalised dissimilarity modelling}
 \usage{
-Plot.ispline(msgdm, data.env, distance = FALSE, pch = NULL, lty = NULL,
-  legend = TRUE)
+Plot.ispline(msgdm, data.env, distance = FALSE, my.order = NULL,
+  biotic = FALSE, order.ispline = 2, kn.ispline = 1, pch = NULL,
+  lty = NULL, legend = TRUE, lwd = 1, cex = 1)
 }
 \arguments{
 \item{msgdm}{Output of function \code{Zeta.msgdm} computed with \code{reg.type = ispline}.}
@@ -14,11 +15,23 @@ Plot.ispline(msgdm, data.env, distance = FALSE, pch = NULL, lty = NULL,
 
 \item{distance}{Boolean, indicates is distance was used in the computation of \code{msgdm}.}
 
+\item{my.order}{Zeta order, necessary to draw the line for categorical variables.}
+
+\item{biotic}{Boolean, indicates is zeta diversity from another community was used in the computation of \code{msgdm}.}
+
+\item{order.ispline}{Order of the I-spline.}
+
+\item{kn.ispline}{Number of knots in the I-spline.}
+
 \item{pch}{Shapes of the points to be used in the plotting. If nothing is provided, \code{pch} is a sequence of integers from 1 to the number of variables used for the computation of \code{msgdm}.}
 
 \item{lty}{Line types to be used in the plotting. If nothing is provided, \code{pch} is a sequence of integers from 1 to the number of variables used for the computation of \code{msgdm}.}
 
 \item{legend}{Boolean, indicates if the legend must be drawn.}
+
+\item{lwd}{Line width.}
+
+\item{cex}{Point size.}
 }
 \value{
 A plot of the I-splines computed by \code{Zeta.msgdm} with \code{reg.type = ispline}. All splines are drawned on the same plot, and their ranges are rescaled between 0 and 1 for comparison.
@@ -36,7 +49,7 @@ utils::data(Marion.env)
 data.env.marion <- Marion.env[3]
 
 zeta.ispline <- Zeta.msgdm(data.spec.marion, data.env.marion, xy.marion, sam = 100,
-    order = 3, normalize = TRUE, reg.type = "ispline")
+    order = 3, normalize = "Jaccard", reg.type = "ispline")
 zeta.ispline
 dev.new()
 Plot.ispline(zeta.ispline, data.env.marion, distance = TRUE)
@@ -45,4 +58,3 @@ Plot.ispline(zeta.ispline, data.env.marion, distance = TRUE)
 \seealso{
 \code{\link{Zeta.msgdm}}, \code{\link{Ispline}}
 }
-

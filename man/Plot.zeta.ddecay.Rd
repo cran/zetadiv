@@ -32,7 +32,7 @@ xy.marion <- Marion.species[,1:2]
 data.spec.marion <- Marion.species[,3:33]
 
 zeta.ddecay.marion <- Zeta.ddecay(xy.marion, data.spec.marion, sam = 100, order = 3,
-    confint.level = 0.95, trsf = "log", normalize = TRUE,plot=FALSE)
+    confint.level = 0.95, trsf = "log", normalize = "Jaccard",plot=FALSE)
 dev.new()
 Plot.zeta.ddecay(zeta.ddecay.marion)
 
@@ -45,4 +45,3 @@ Hui C. & McGeoch M.A. (2014). Zeta diversity as a concept and metric that unifie
 
 \code{\link{Zeta.ddecays}}
 }
-

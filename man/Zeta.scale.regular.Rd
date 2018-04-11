@@ -21,9 +21,9 @@ Zeta.scale.regular(xy, data.spec, n, order = 1, sam = 1000,
 
 \item{method}{Name of a function (as a string) indicating how to combine the coordinates. It can be a basic R-function such as "\code{mean}" or "\code{max}", but also a custom function.}
 
-\item{rescale}{Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by \eqn{\zeta_1}, to get a range of values between 0 and 1. Has no effect if \code{normalize} = \code{TRUE}.}
+\item{rescale}{Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by \eqn{\zeta_1}, to get a range of values between 0 and 1. Has no effect if \code{normalize} != \code{FALSE}.}
 
-\item{normalize}{Boolean value (TRUE or FALSE) indicating if the zeta values for each sample should be divided by the total number of species for this specific sample.}
+\item{normalize}{Indicates if the zeta values for each sample should be divided by the total number of species for this specific sample (\code{normalize = "Jaccard"}), by the average number of species per site for this specific sample (\code{normalize = "Sorensen"}), or by the minimum number of species in the sites of this specific sample \cr (\code{normalize = "Simpson"}). Default value is \code{FALSE}, indicating that no normalization is performed.}
 
 \item{plot}{Boolean value (TRUE or FALSE) indicating if the outputs must be plotted.}
 
@@ -54,7 +54,7 @@ data.spec.bird <- bird.spec.fine[1:400,3:192]
 dev.new()
 ##sam = 25 is used here for fast execution, but a higher value is advised
 zeta.scale.reg <- Zeta.scale.regular(xy.bird, data.spec.bird, n = 1:3, order = 3,
-    sam = 25, normalize = TRUE)
+    sam = 25, normalize = "Jaccard")
 }
 \references{
 Hui C. & McGeoch M.A. (2014). Zeta diversity as a concept and metric that unifies incidence-based biodiversity patterns. \emph{The American Naturalist}, 184, 684-694.
@@ -66,4 +66,3 @@ Scheiner S.M., Chiarucci A., Fox G.A., Helmus M.R., McGlinn D.J. & Willig M.R. (
 
 \code{\link{Zeta.scale.min.dist}}, \code{\link{rescale.regular}}, \code{\link{rescale.min.dist}}
 }
-

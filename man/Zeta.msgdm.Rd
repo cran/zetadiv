@@ -4,13 +4,14 @@
 \alias{Zeta.msgdm}
 \title{Multi-site generalised dissimilarity modelling for a set of environmental variables and distances}
 \usage{
-Zeta.msgdm(data.spec, data.env, xy = NULL, order = 1, sam = 1000,
-  reg.type = "glm", family = stats::gaussian(),
+Zeta.msgdm(data.spec, data.env, xy = NULL, data.spec.pred = NULL,
+  order = 1, sam = 1000, reg.type = "glm", family = stats::gaussian(),
   method.glm = "glm.fit.cons", cons = -1, cons.inter = 1,
   confint.level = 0.95, bs = "mpd", kn = -1, order.ispline = 2,
   kn.ispline = 1, distance.type = "Euclidean", dist.custom = NULL,
   rescale = FALSE, rescale.pred = TRUE, method = "mean",
-  normalize = FALSE, silent = FALSE)
+  normalize = FALSE, silent = FALSE, empty.row = 0, control = list(),
+  glm.init = FALSE)
 }
 \arguments{
 \item{data.spec}{Site-by-species presence-absence data frame, with sites as rows and species as columns.}
@@ -18,6 +19,8 @@ Zeta.msgdm(data.spec, data.env, xy = NULL, order = 1, sam = 1000,
 \item{data.env}{Site-by-variable data frame, with sites as rows and environmental variables as columns.}
 
 \item{xy}{Site coordinates, to account for distances between sites.}
+
+\item{data.spec.pred}{Site-by-species presence-absence data frame, with sites as rows and species as columns, for which zeta diversity will be computed and used as a predictor of the zeta diversity of \code{data.spec}.}
 
 \item{order}{Specific number of assemblages or sites at which zeta diversity is computed.}
 
@@ -27,7 +30,7 @@ Zeta.msgdm(data.spec, data.env, xy = NULL, order = 1, sam = 1000,
 
 \item{family}{A description of the error distribution and link function to be used in the \code{glm}, \code{gam} and \code{scam} models (see \code{\link[stats]{family}} for details of family functions).}
 
-\item{method.glm}{Method used in fitting the generalised linear model. The default method "glm.fit.cons" is an adaptation of method \code{glm.fit2} from package \code{glm2} using a constrained least squares regression (default is negative coefficients) in the reweighted least squares. Another option is "glm.fit2", which calls \code{glm.fit2}; see help documentation for glm.fit2 in package \code{glm2}.}
+\item{method.glm}{Method used in fitting the generalised linear model. The default method \cr "glm.fit.cons" is an adaptation of method \code{glm.fit2} from package \code{glm2} using a constrained least squares regression (default is negative coefficients) in the reweighted least squares. Another option is "glm.fit2", which calls \code{glm.fit2}; see help documentation for glm.fit2 in package \code{glm2}.}
 
 \item{cons}{type of constraint in the glm if \code{method.glm = "glm.fit.cons"}. Default is -1 for negative coefficients on the predictors. The other option is 1 for positive coefficients on the predictors.}
 
@@ -47,15 +50,21 @@ Zeta.msgdm(data.spec, data.env, xy = NULL, order = 1, sam = 1000,
 
 \item{dist.custom}{Distance matrix provided by the user when \code{distance.type} = \code{"custom"}.}
 
-\item{rescale}{Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by \eqn{\zeta_1}, to get a range of values between 0 and 1. Has no effect if \code{normalize} = \code{TRUE}.}
+\item{rescale}{Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by the total number of species in the dataset, to get a range of values between 0 and 1. Has no effect if \code{normalize} != \code{FALSE}.}
 
 \item{rescale.pred}{Boolean value (TRUE or FALSE) indicating if the spatial distances and differences in environmental variables should be rescaled between 0 and 1.}
 
 \item{method}{Name of a function (as a string) indicating how to combine the pairwise differences and distances for more than 3 sites. It can be a basic R-function such as "\code{mean}" or "\code{max}", but also a custom function.}
 
-\item{normalize}{Boolean value (TRUE or FALSE) indicating if the zeta values for each sample should be divided by the total number of species for this specific sample.}
+\item{normalize}{Indicates if the zeta values for each sample should be divided by the total number of species for this specific sample (\code{normalize = "Jaccard"}), by the average number of species per site for this specific sample (\code{normalize = "Sorensen"}), or by the minimum number of species in the sites of this specific sample \cr (\code{normalize = "Simpson"}). Default value is \code{FALSE}, indicating that no normalization is performed.}
 
 \item{silent}{Boolean value (TRUE or FALSE) indicating if warnings must be printed.}
+
+\item{empty.row}{Determines how to handle empty rows, i.e. sites with no species. Such sites can cause underestimations of zeta diversity, and computation errors for the normalized version of zeta due to divisions by 0. Options are "\code{empty}" to let the data untreated, "\code{remove}" to remove the empty rows, 0 to set the normalized zeta to 0 when zeta is divided by 0 during normalization (sites share no species, so are completely dissimilar), and 1 to set the normalized zeta to 1 when zeta is divided by 0 during normalization (i.e. sites are perfectly similar).}
+
+\item{control}{As for \code{\link{glm}}.}
+
+\item{glm.init}{Boolean value, indicating if the initial parameters for fitting the glm with constraint on the coefficients signs for \code{reg.type == "ispline"} should be initialised based on the correlation coefficients betwen the zeta values and the environmental difference or distance. \code{glm.init = TRUE} helps preventing the error message: \code{error: cannot find valid starting values:} \cr \code{please specify some}.}
 }
 \value{
 \code{Zeta.msgdm} returns a list whose component vary depending on the regression technique. The list can contain the following components:
@@ -116,14 +125,14 @@ data.spec.marion <- Marion.species[3:33]
 utils::data(Marion.env)
 data.env.marion <- Marion.env[3]
 
-zeta.gam <- Zeta.msgdm(data.spec.marion, data.env.marion, sam = 100, order = 3, 
+zeta.gam <- Zeta.msgdm(data.spec.marion, data.env.marion, sam = 100, order = 3,
     reg.type = "gam")
 zeta.gam
 dev.new()
 graphics::plot(zeta.gam$model)
 
 zeta.ispline <- Zeta.msgdm(data.spec.marion, data.env.marion, xy.marion, sam = 100,
-    order = 3, normalize = TRUE, reg.type = "ispline")
+    order = 3, normalize = "Jaccard", reg.type = "ispline")
 zeta.ispline
 
 }
@@ -137,4 +146,3 @@ Ferrier, S., Manion, G., Elith, J., & Richardson, K. (2007). Using generalized d
 
 \code{\link{Ispline}}
 }
-

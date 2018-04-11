@@ -31,4 +31,3 @@ Nyakatya, M.J. & McGeoch, M.A. (2008). Temperature variation across Marion Islan
 McGeoch, M.A., Le Roux, P.C., Hugo, E.A. & Nyakatya, M.J. (2008). Spatial variation in the terrestrial biotic system. The Prince Edward Islands: Land-Sea Interactions in a Changing World (ed. by S.L. Chown and P.W. Froneman), pp. 245-276. African SunMedia, Stellenbosch.
 }
 \keyword{data}
-

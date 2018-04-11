@@ -57,4 +57,3 @@ Marschner, I.C. (2011) glm2: Fitting generalized linear models with convergence 
 \seealso{
 \code{\link{glm.fit}}, \code{\link{glm.fit2}}
 }
-

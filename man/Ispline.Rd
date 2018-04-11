@@ -36,4 +36,3 @@ Ferrier, S., Manion, G., Elith, J., & Richardson, K. (2007). Using generalized d
 \seealso{
 \code{\link{Zeta.msgdm}}
 }
-

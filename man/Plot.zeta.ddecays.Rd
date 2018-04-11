@@ -21,7 +21,7 @@ xy.bird <- bird.spec.coarse[,1:2]
 data.spec.bird <- bird.spec.coarse[,3:193]
 
 dev.new()
-zeta.ddecays.bird <- Zeta.ddecays(xy.bird, data.spec.bird, sam = 100, orders = 2:5, 
+zeta.ddecays.bird <- Zeta.ddecays(xy.bird, data.spec.bird, sam = 100, orders = 2:5,
     plot = FALSE, confint.level = 0.95)
 Plot.zeta.ddecays(zeta.ddecays.bird)
 
@@ -32,7 +32,7 @@ xy.marion <- Marion.species[,1:2]
 data.spec.marion <- Marion.species[,3:33]
 
 dev.new()
-zeta.ddecays.marion <- Zeta.ddecays(xy.marion, data.spec.marion, sam = 100, 
+zeta.ddecays.marion <- Zeta.ddecays(xy.marion, data.spec.marion, sam = 100,
    orders = 2:5, plot = FALSE, confint.level = 0.95)
 Plot.zeta.ddecays(zeta.ddecays.marion)
 
@@ -45,4 +45,3 @@ Hui C. & McGeoch M.A. (2014). Zeta diversity as a concept and metric that unifie
 
 \code{\link{Zeta.ddecay}}, \code{\link{Plot.zeta.ddecay}}
 }
-

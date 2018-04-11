@@ -52,4 +52,3 @@ Scheiner S.M., Chiarucci A., Fox G.A., Helmus M.R., McGlinn D.J. & Willig M.R. (
 
 \code{\link{Zeta.scale.min.dist}}, \code{\link{Zeta.scale.regular}}, \code{\link{rescale.regular}}
 }
-

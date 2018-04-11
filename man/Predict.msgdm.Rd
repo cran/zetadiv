@@ -45,7 +45,7 @@ new.zeta.glm <- Predict.msgdm(model.msgdm = zeta.glm$model, reg.type = "glm",
 
 
 zeta.ngls <- Zeta.msgdm(data.spec.bird, data.env.bird, sam = 100, order = 3,
-   reg.type = "ngls", normalize=TRUE)
+   reg.type = "ngls", normalize = "Jaccard")
 newdata <- data.frame(matrix(NA,100,ncol(data.env.bird)))
 names(newdata) <- names(data.env.bird)
 for(z in 1:100){
@@ -67,4 +67,3 @@ Ferrier, S., Manion, G., Elith, J., & Richardson, K. (2007). Using generalized d
 \seealso{
 \code{\link{Zeta.msgdm}}
 }
-

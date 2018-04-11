@@ -26,9 +26,9 @@ Zeta.scale.min.dist(xy, data.spec, m, order = 1, reorder = 100,
 
 \item{method}{Name of a function (as a string) indicating how to combine the coordinates. It can be a basic R-function such as "\code{mean}" or "\code{max}", but also a custom function.}
 
-\item{rescale}{Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by \eqn{\zeta_1}, to get a range of values between 0 and 1. Has no effect if \code{normalize} = \code{TRUE}.}
+\item{rescale}{Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by \eqn{\zeta_1}, to get a range of values between 0 and 1. Has no effect if \code{normalize} != \code{FALSE}.}
 
-\item{normalize}{Boolean value (TRUE or FALSE) indicating if the zeta values for each sample should be divided by the total number of species for this specific sample.}
+\item{normalize}{Indicates if the zeta values for each sample should be divided by the total number of species for this specific sample (\code{normalize = "Jaccard"}), by the average number of species per site for this specific sample (\code{normalize = "Sorensen"}), or by the minimum number of species in the sites of this specific sample \cr (\code{normalize = "Simpson"}). Default value is \code{FALSE}, indicating that no normalization is performed.}
 
 \item{plot}{Boolean value (TRUE or FALSE) indicating if the outputs must be plotted.}
 
@@ -63,8 +63,8 @@ xy.marion <- Marion.species[,1:2]
 data.spec.marion <- Marion.species[,3:33]
 
 dev.new()
-zeta.scale.irreg.species <- Zeta.scale.min.dist(xy.marion, data.spec.marion, m = 1:3, 
-    order = 3, reorder = 3, sam = 50, normalize = TRUE)
+zeta.scale.irreg.species <- Zeta.scale.min.dist(xy.marion, data.spec.marion, m = 1:3,
+    order = 3, reorder = 3, sam = 50, normalize = "Jaccard")
 
 }
 \references{
@@ -77,4 +77,3 @@ Scheiner S.M., Chiarucci A., Fox G.A., Helmus M.R., McGlinn D.J. & Willig M.R. (
 
 \code{\link{Zeta.scale.regular}}, \code{\link{rescale.regular}}
 }
-

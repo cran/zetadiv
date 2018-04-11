@@ -26,7 +26,7 @@ Zeta.sam.sensitivity(data.spec, xy = NULL, order = 1, sam.seq, reps = 20,
 
 \item{rescale}{Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by \eqn{\zeta_1}, to get a range of values between 0 and 1.}
 
-\item{normalize}{Boolean value (TRUE or FALSE) indicating if the zeta values for each sample should be divided by the average number of species for this specific sample.}
+\item{normalize}{Indicates if the zeta values for each sample should be divided by the total number of species for this specific sample (\code{normalize = "Jaccard"}), by the average number of species per site for this specific sample (\code{normalize = "Sorensen"}), or by the minimum number of species in the sites of this specific sample \cr (\code{normalize = "Simpson"}). Default value is \code{FALSE}, indicating that no normalization is performed.}
 
 \item{closest}{Boolean value (TRUE or FALSE) indicating if the number of species in common should only be counted for the closest sites.}
 
@@ -51,7 +51,7 @@ Note that the execution of \code{Zeta.sam.sensitivity} can be quite lengthy, bec
 }
 \examples{
 \donttest{
-#Note that the sensitivity analyses in the following two examples are quite long to run, 
+#Note that the sensitivity analyses in the following two examples are quite long to run,
 #typically around 10 minutes for the first example and 1-2 minutes for the second.
 
 utils::data(bird.spec.coarse)
@@ -82,4 +82,3 @@ Hui C. & McGeoch M.A. (2014). Zeta diversity as a concept and metric that unifie
 \seealso{
 \code{\link{Zeta.decline.mc}}, \code{\link{Zeta.order.mc}}, \code{\link{Zeta.decline.ex}}, \code{\link{Zeta.order.ex}}
 }
-

@@ -4,35 +4,20 @@
 \alias{Zeta.varpart}
 \title{Variation partitioning for zeta diversity}
 \usage{
-Zeta.varpart(xy, data.spec, data.env, order = 2, sam = 1000,
-  distance.type = "Euclidean", dist.custom = NULL, method = "mean",
-  reg.type = "glm", family = stats::gaussian(),
-  method.glm = "glm.fit.cons", cons = -1, cons.inter = 1, kn = -1,
-  bs = "mpd", order.ispline = 2, kn.ispline = 1, rescale = FALSE,
-  rescale.pred = TRUE, normalize = FALSE)
+Zeta.varpart(msgdm.mod, num.part = 2, reg.type = "glm",
+  family = stats::gaussian(), method.glm = "glm.fit.cons", cons = -1,
+  cons.inter = 1, kn = -1, bs = "mpd")
 }
 \arguments{
-\item{xy}{Site coordinates.}
+\item{msgdm.mod}{An object return by function \code{\link{Zeta.msgdm}}.}
 
-\item{data.spec}{Site-by-species presence-absence data frame, with sites as rows and species as columns.}
-
-\item{data.env}{Site-by-variable data frame, with sites as rows and environmental variables as columns.}
-
-\item{order}{Specific number of assemblages or sites at which zeta diversity is computed.}
-
-\item{sam}{Number of samples for which the zeta diversity is computed.}
-
-\item{distance.type}{Method to compute distance. Default is "\code{Euclidean}", for Euclidean distance. The other options are (i) "\code{ortho}" for orthodromic distance, if xy correspond to longitudes and latitudes (orthodromic distance is computed using the \code{gdist} function from package \code{Imap}); and (ii) "\code{custom}", in which case the user must provide a distance matrix for \code{dist.custom}.}
-
-\item{dist.custom}{Distance matrix provided by the user when \code{distance.type} = \code{"custom"}.}
-
-\item{method}{Name of a function (as a string) indicating how to combine the pairwise differences and distances for more than 3 sites. It can be a basic R-function such as "\code{mean}" or "\code{max}", but also a custom function.}
+\item{num.part}{Number of partitions of zeta diversity. Can be 2 or 3.}
 
 \item{reg.type}{Type of regression for the multi-site generalised dissimilarity modelling. Options are "glm" for generalised linear models, "ngls" for negative linear models, "gam" for generalised additive models, "scam" for shape constrained additive models, and "ispline" for I-spline models, as recommended in generalised dissimilarity modelling by Ferrier \emph{et al}. (2007).}
 
 \item{family}{A description of the error distribution and link function to be used in the \code{glm}, \code{gam} and \code{scam} models (see \code{\link[stats]{family}} for details of family functions).}
 
-\item{method.glm}{Method used in fitting the generalised linear model. The default method "glm.fit.cons" is an adaptation of method \code{glm.fit2} from package \code{glm2} using a negative least squares regression in the reweighted least squares. Another option is "glm.fit2", which corresponds to method \code{glm.fit2}; see help documentation for \code{glm.fit2} in package \code{glm}.}
+\item{method.glm}{Method used in fitting the generalised linear model. The default method \cr "glm.fit.cons" is an adaptation of method \code{glm.fit2} from package \code{glm2} using a negative least squares regression in the reweighted least squares. Another option is "glm.fit2", which corresponds to method \code{glm.fit2}; see help documentation for \code{glm.fit2} in package \code{glm}.}
 
 \item{cons}{type of constraint in the glm if \code{method.glm = "glm.fit.cons"}. Default is -1 for negative coefficients on the predictors. The other option is 1 for positive coefficients on the predictors.}
 
@@ -41,16 +26,6 @@ Zeta.varpart(xy, data.spec, data.env, order = 2, sam = 1000,
 \item{kn}{Number of knots in the GAM and SCAM. Default is -1 for determining kn automatically using Generalized Cross-validation.}
 
 \item{bs}{A two-letter character string indicating the (penalized) smoothing basis to use in the scam model. Default is "\code{mpd}" for monotonic decreasing splines. see \code{\link[mgcv]{smooth.terms}} for an overview of what is available.}
-
-\item{order.ispline}{Order of the I-spline.}
-
-\item{kn.ispline}{Number of knots in the I-spline.}
-
-\item{rescale}{Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by \eqn{\zeta_1}, to get a range of values between 0 and 1. Has no effect if \code{normalize} = \code{TRUE}.}
-
-\item{rescale.pred}{Boolean value (TRUE or FALSE) indicating if the spatial distances and differences in environmental variables should be rescaled between 0 and 1.}
-
-\item{normalize}{Boolean value (TRUE or FALSE) indicating if the zeta values for each sample should be divided by the total number of species for this specific sample.}
 }
 \value{
 \code{Zeta.varpart} returns a data frame with one column containing the variation explained by each component \code{a} (the variation explained by distance alone), \code{b} (the variation explained by either distance or the environment), \code{c} (the variation explained by the environment alone) and \code{d} (the unexplained variation).
@@ -74,12 +49,12 @@ data.spec.bird <- bird.spec.coarse[,3:193]
 utils::data(bird.env.coarse)
 data.env.bird <- bird.env.coarse[,3:9]
 
-zeta.varpart.bird <- Zeta.varpart(xy.bird, data.spec.bird, data.env.bird,
-   order = 3, sam = 100)
+zeta.bird <- Zeta.msgdm(data.spec.bird, data.env.bird, xy.bird, sam = 100, order = 3)
+zeta.varpart.bird <- Zeta.varpart(zeta.bird, method.glm = "glm.fit2")
 zeta.varpart.bird
 dev.new()
-pie.neg(zeta.varpart.bird[4:7,1], density = c(4, 0, 8, -1), 
-    angle = c(90, 0, 0, 0), 
+pie.neg(zeta.varpart.bird[4:7,1], density = c(4, 0, 8, -1),
+    angle = c(90, 0, 0, 0),
     labels = c("distance", "undistinguishable", "environment", "unexplained"),
     radius = 0.9)
 
@@ -91,12 +66,13 @@ data.spec.marion <- Marion.species[,3:33]
 utils::data(Marion.env)
 data.env.marion <- Marion.env[3:4]
 
-zeta.varpart.marion <- Zeta.varpart(xy.marion, data.spec.marion, data.env.marion,
-     order = 3, sam = 100, normalize = TRUE)
+zeta.marion <- Zeta.msgdm(data.spec.marion, data.env.marion, xy.marion, sam = 100,
+    order = 3, normalize = "Jaccard")
+zeta.varpart.marion <- Zeta.varpart(zeta.marion, method.glm = "glm.fit2")
 zeta.varpart.marion
 dev.new()
-pie.neg(zeta.varpart.marion[4:7,1], density = c(4, 0, 8, -1), 
-    angle = c(90, 0, 0, 0), 
+pie.neg(zeta.varpart.marion[4:7,1], density = c(4, 0, 8, -1),
+    angle = c(90, 0, 0, 0),
     labels = c("distance", "undistinguishable", "environment", "unexplained"),
     radius = 0.9)
 
@@ -111,4 +87,3 @@ Legendre, P. &  Legendre, L.F. (2012). \emph{Numerical ecology}, 3rd English edi
 \seealso{
 \code{\link{Zeta.decline.mc}}, \code{\link{Zeta.order.mc}}, \code{\link{Zeta.decline.ex}}, \code{\link{Zeta.order.ex}}, \code{\link{Zeta.msgdm}}, \code{\link{pie.neg}}
 }
-

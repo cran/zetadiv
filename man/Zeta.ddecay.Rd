@@ -9,7 +9,8 @@ Zeta.ddecay(xy, data.spec, order = 2, sam = 1000,
   reg.type = "glm", family = stats::gaussian(),
   method.glm = "glm.fit.cons", cons = -1, cons.inter = 1,
   confint.level = 0.95, kn = -1, bs = "mpd", trsf = "NULL",
-  cutoff = NULL, rescale = FALSE, normalize = FALSE, plot = TRUE)
+  cutoff = NULL, rescale = FALSE, normalize = FALSE,
+  empty.row = "remove", plot = TRUE)
 }
 \arguments{
 \item{xy}{Site-by-coordinate data frame, with sites as rows and coordinates as columns.}
@@ -30,7 +31,7 @@ Zeta.ddecay(xy, data.spec, order = 2, sam = 1000,
 
 \item{family}{A description of the error distribution and link function to be used in the \code{glm}, \code{gam} and \code{scam} models (see \code{\link[stats]{family}} for details of family functions).}
 
-\item{method.glm}{Method used in fitting the generalised linear model. The default method "glm.fit.cons" is an adaptation of method \code{glm.fit2} from package \code{glm2} using a negative least squares regression in the reweighted least squares. Another option is "glm.fit2", which calls \code{glm.fit2}.; see help documentation for \code{glm.fit2} in package \code{glm}.}
+\item{method.glm}{Method used in fitting the generalised linear model. The default method \cr "glm.fit.cons" is an adaptation of method \code{glm.fit2} from package \code{glm2} using a negative least squares regression in the reweighted least squares. Another option is "glm.fit2", which calls \code{glm.fit2}.; see help documentation for \code{glm.fit2} in package \code{glm}.}
 
 \item{cons}{type of constraint in the glm if \code{method.glm = "glm.fit.cons"}. Default is -1 for negative coefficients on the predictors. The other option is 1 for positive coefficients on the predictors.}
 
@@ -46,9 +47,11 @@ Zeta.ddecay(xy, data.spec, order = 2, sam = 1000,
 
 \item{cutoff}{If specified, maximum distance value for which the linear regression must be performed.}
 
-\item{rescale}{Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by \eqn{\zeta_1}, to get a range of values between 0 and 1. Has no effect if \code{normalize} = \code{TRUE}.}
+\item{rescale}{Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by \eqn{\zeta_1}, to get a range of values between 0 and 1. Has no effect if \code{normalize} != \code{FALSE}.}
 
-\item{normalize}{Boolean value (TRUE or FALSE) indicating if the zeta values for each sample should be divided by the total number of species for this specific sample.}
+\item{normalize}{Indicates if the zeta values for each sample should be divided by the total number of species for this specific sample (\code{normalize = "Jaccard"}), by the average number of species per site for this specific sample (\code{normalize = "Sorensen"}), or by the minimum number of species in the sites of this specific sample \cr (\code{normalize = "Simpson"}). Default value is \code{FALSE}, indicating that no normalization is performed.}
+
+\item{empty.row}{Determines how to handle empty rows, i.e. sites with no species. Such sites can cause underestimations of zeta diversity, and computation errors for the normalized version of zeta due to divisions by 0. Options are "\code{empty}" to let the data untreated, "\code{remove}" to remove the empty rows, 0 to set the normalized zeta to 0 when zeta is divided by 0 during normalization (sites share no species, so are completely dissimilar), and 1 to set the normalized zeta to 1 when zeta is divided by 0 during normalization (i.e. sites are perfectly similar).}
 
 \item{plot}{Boolean value (TRUE or FALSE) indicating if the outputs must be plotted.}
 }
@@ -87,7 +90,7 @@ data.spec.marion <- Marion.species[,3:33]
 
 dev.new()
 zeta.ddecay.marion <- Zeta.ddecay(xy.marion, data.spec.marion, sam = 100, order = 3,
-    method.glm = "glm.fit2", confint.level = 0.95, trsf = "log", normalize = TRUE)
+    method.glm = "glm.fit2", confint.level = 0.95, trsf = "log", normalize = "Jaccard")
 
 }
 \references{
@@ -98,4 +101,3 @@ Hui C. & McGeoch M.A. (2014). Zeta diversity as a concept and metric that unifie
 
 \code{\link{Plot.zeta.ddecay}}
 }
-

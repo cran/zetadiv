@@ -42,4 +42,3 @@ Scheiner S.M., Chiarucci A., Fox G.A., Helmus M.R., McGlinn D.J. & Willig M.R. (
 \seealso{
 \code{\link{Zeta.decline.mc}}, \code{\link{Zeta.order.mc}}, \code{\link{Zeta.decline.ex}}, \code{\link{Zeta.order.ex}}, \code{\link{Zeta.scale.regular}}, \code{\link{Zeta.scale.min.dist}}, \code{\link{rescale.min.dist}}
 }
-

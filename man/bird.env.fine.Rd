@@ -17,8 +17,8 @@ The data set contains the following variables:
 \itemize{
 \item{x}: x-position in meters in UTM 53 South projection
 \item{y}: y-position in meters in UTM 53 South projection
-\item{Natural}: Proportion of area of conservation and natural environments 
-\item{Irrigated}: Proportion of area of production from irrigated agriculture and plantations 
+\item{Natural}: Proportion of area of conservation and natural environments
+\item{Irrigated}: Proportion of area of production from irrigated agriculture and plantations
 \item{Water}: Proportion of area of water features
 \item{Elevation}: Elevation
 \item{ApP}: Area per person
@@ -42,4 +42,3 @@ http://www.worldclim.org/
 Hijmans, R.J., Cameron, S.E., Parra, J.L., Jones, P.G. & Jarvis, A. (2005) Very high resolution interpolated climate surfaces for global land areas. International journal of climatology, 25, 1965-1978.
 }
 \keyword{data}
-

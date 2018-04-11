@@ -24,7 +24,7 @@ Zeta.order.mc(data.spec, xy = NULL, order = 1, sam = 1000,
 
 \item{rescale}{Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by \eqn{\zeta_1}, to get a range of values between 0 and 1.}
 
-\item{normalize}{Boolean value (TRUE or FALSE) indicating if the zeta values for each sample should be divided by the total number of species for this specific sample.}
+\item{normalize}{Indicates if the zeta values for each sample should be divided by the total number of species for this specific sample (\code{normalize = "Jaccard"}), by the average number of species per site for this specific sample (\code{normalize = "Sorensen"}), or by the minimum number of species in the sites of this specific sample \cr (\code{normalize = "Simpson"}). Default value is \code{FALSE}, indicating that no normalization is performed.}
 
 \item{closest}{Boolean value (TRUE or FALSE) indicating if the number of species in common should only be counted for the closest sites.}
 
@@ -53,7 +53,7 @@ If the number of combinations of sites is lower than the value of the parameter 
 
 \code{Zeta.order.mc} is faster than \code{\link{Zeta.order.ex}} to compute the exact value of zeta diversity when the number of species is higher than \eqn{C^N_{i}}, where \emph{N} is the total number of sites and \emph{i} is the order of zeta.
 
-\code{Zeta.order.mc} enables accomodating richness heterogeneity by setting \code{normalize=TRUE}. This cannot be performed by \code{\link{Zeta.order.ex}}.
+\code{Zeta.order.mc} enables accomodating richness heterogeneity by setting \code{normalize = "Jaccard"}, \code{normalize = "Sorensen"} or \code{normalize = "Simpson"}. This cannot be performed by \cr \code{\link{Zeta.order.ex}}.
 }
 \examples{
 
@@ -81,4 +81,3 @@ Hui C. & McGeoch M.A. (2014). Zeta diversity as a concept and metric that unifie
 \seealso{
 \code{\link{Zeta.decline.mc}}
 }
-

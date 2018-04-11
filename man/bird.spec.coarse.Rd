@@ -28,4 +28,3 @@ Data owner: BirdLife Australia
 Barrett, G., Silcocks, A., Barry, S., Cunningham, R. & Poulter, R. (2003) The new atlas of Australian birds. Royal Australasian Ornithologists Union, Melbourne, 1-824.
 }
 \keyword{data}
-

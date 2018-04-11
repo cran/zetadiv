@@ -21,7 +21,7 @@ Zeta.decline.ex(data.spec, orders = 1:10, sd.correct = TRUE,
 
 \item{rescale}{Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by \eqn{\zeta_1}, to get a range of values between 0 and 1.}
 
-\item{empty.row}{Determines how to handle empty rows, i.e. sites with no species. Such sites can cause underestimations of zeta diversity, and computation errors for the normalized version of zeta due to divisions by 0. Options are  "\code{empty}" to let the data untreated or "\code{remove}" to remove the empty rows.}
+\item{empty.row}{Determines how to handle empty rows, i.e. sites with no species. Such sites can cause underestimations of zeta diversity. Options are  "\code{empty}" to let the data untreated or "\code{remove}" to remove the empty rows.}
 
 \item{plot}{Boolean value (TRUE or FALSE) indicating if the outputs must be plotted.}
 }
@@ -81,4 +81,3 @@ Hui C. & McGeoch M.A. (2014). Zeta diversity as a concept and metric that unifie
 \seealso{
 \code{\link{Zeta.decline.mc}}, \code{\link{Zeta.order.mc}}, \code{\link{Zeta.order.ex}}, \code{\link{Plot.zeta.decline}}
 }
-

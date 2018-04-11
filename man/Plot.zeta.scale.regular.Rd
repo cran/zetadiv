@@ -31,7 +31,7 @@ data.spec.bird <- bird.spec.fine[1:400,3:192]
 
 ##sam = 25 is used here for fast execution, but a higher value is advised
 zeta.scale.reg <- Zeta.scale.regular(xy.bird, data.spec.bird, n = 1:3, order = 3,
-    sam = 25, normalize = TRUE,plot=FALSE)
+    sam = 25, normalize = "Jaccard",plot=FALSE)
 dev.new()
 Plot.zeta.scale.regular(zeta.scale.reg)
 }
@@ -47,4 +47,3 @@ Scheiner S.M., Chiarucci A., Fox G.A., Helmus M.R., McGlinn D.J. & Willig M.R. (
 
 \code{\link{Plot.zeta.scale.min.dist}}
 }
-
