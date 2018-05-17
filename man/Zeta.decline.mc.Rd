@@ -6,14 +6,14 @@
 \usage{
 Zeta.decline.mc(data.spec, xy = NULL, orders = 1:10, sam = 1000,
   sd.correct = TRUE, sd.correct.adapt = FALSE, confint.level = 0.95,
-  sd.plot = TRUE, rescale = FALSE, normalize = FALSE, closest = FALSE,
-  FPO = NULL, closest.dir = FALSE, empty.row = "empty", plot = TRUE,
+  sd.plot = TRUE, rescale = FALSE, normalize = FALSE, NON = FALSE,
+  FPO = NULL, DIR = FALSE, empty.row = "empty", plot = TRUE,
   silent = TRUE)
 }
 \arguments{
 \item{data.spec}{Site-by-species presence-absence data frame, with sites as rows and species as columns.}
 
-\item{xy}{Site coordinates. This is only used if \code{closest} = TRUE.}
+\item{xy}{Site coordinates. This is only used if \code{NON} = TRUE or \code{DIR} = TRUE.}
 
 \item{orders}{Range of number of assemblages or sites for which zeta diversity is computed.}
 
@@ -31,11 +31,11 @@ Zeta.decline.mc(data.spec, xy = NULL, orders = 1:10, sam = 1000,
 
 \item{normalize}{Indicates if the zeta values for each sample should be divided by the total number of species for this specific sample (\code{normalize = "Jaccard"}), by the average number of species per site for this specific sample (\code{normalize = "Sorensen"}), or by the minimum number of species in the sites of this specific sample \cr (\code{normalize = "Simpson"}). Default value is \code{FALSE}, indicating that no normalization is performed.}
 
-\item{closest}{Boolean value (TRUE or FALSE) indicating if the number of species in common should only be counted for the closest sites.}
+\item{NON}{Boolean value (TRUE or FALSE) indicating if the number of species in common should only be counted for the nearest neighbours.}
 
-\item{FPO}{A vector with the coordinates of the fixed point origin from which the zeta diversity will be computed. In that case, \eqn{\zeta_1} is the number of species in the closest site to the FPO, \eqn{\zeta_2} is the number of species shared by the 2 closest sites, etc.}
+\item{FPO}{A vector with the coordinates of the fixed point origin from which the zeta diversity will be computed (overrides NON). In that case, \eqn{\zeta_1} is the number of species in the closest site to the FPO, \eqn{\zeta_2} is the number of species shared by the 2 closest sites, etc.}
 
-\item{closest.dir}{Boolean value (TRUE or FALSE) indicating if zeta diversity must be computed using a directed nearest neighbour scheme in the direction away from the FPO, starting from any site.}
+\item{DIR}{Boolean value (TRUE or FALSE) indicating if zeta diversity must be computed using a directed nearest neighbour scheme in the direction away from the FPO, starting from any site.}
 
 \item{empty.row}{Determines how to handle empty rows, i.e. sites with no species. Such sites can cause underestimations of zeta diversity, and computation errors for the normalized version of zeta due to divisions by 0. Options are "\code{empty}" to let the data untreated, "\code{remove}" to remove the empty rows, 0 to set the normalized zeta to 0 when zeta is divided by 0 during normalization (sites share no species, so are completely dissimilar), and 1 to set the normalized zeta to 1 when zeta is divided by 0 during normalization (i.e. sites are perfectly similar).}
 
@@ -83,7 +83,7 @@ data.spec.bird <- bird.spec.coarse[,3:193]
 
 dev.new(width = 12, height = 4)
 zeta.bird <- Zeta.decline.mc(data.spec.bird, xy.bird, orders = 1:5, sam = 100,
-   closest = TRUE)
+   NON = TRUE)
 zeta.bird
 
 ##########

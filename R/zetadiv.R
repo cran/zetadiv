@@ -1,5 +1,5 @@
 .onAttach <- function(libname, pkgname) {
-  packageStartupMessage("This is zetadiv 1.1.0")
+  packageStartupMessage("This is zetadiv 1.1.1")
   packageStartupMessage("Package \"zetadiv\" was built under R.3.4.2")
 }
 
@@ -12,7 +12,7 @@
 #'
 #' Computes zeta diversity, the number of species shared by multiple assemblages, for a range of orders (number of assemblages or sites), using combinations of sampled sites, and fits the decline to an exponential and a power law relationship.
 #' @param data.spec  Site-by-species presence-absence data frame, with sites as rows and species as columns.
-#' @param xy Site coordinates. This is only used if \code{closest} = TRUE.
+#' @param xy Site coordinates. This is only used if \code{NON} = TRUE or \code{DIR} = TRUE.
 #' @param orders  Range of number of assemblages or sites for which zeta diversity is computed.
 #' @param sam  Number of samples for which the zeta diversity is computed for each number of assemblages or sites.
 #' @param sd.correct Boolean value (TRUE or FALSE) indicating if the standard deviation must be computed with an unbiased estimator (using the number of site combinations - 1 as the denominator) or not (using the number of site combinations as the denominator).
@@ -21,9 +21,9 @@
 #' @param sd.plot  Boolean value (TRUE or FALSE) indicating if the standard deviation of each zeta diversity value must be plotted.
 #' @param rescale Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by \eqn{\zeta_1}, to get a range of values between 0 and 1. Has no effect if \code{normalize} != \code{FALSE}.
 #' @param normalize Indicates if the zeta values for each sample should be divided by the total number of species for this specific sample (\code{normalize = "Jaccard"}), by the average number of species per site for this specific sample (\code{normalize = "Sorensen"}), or by the minimum number of species in the sites of this specific sample \cr (\code{normalize = "Simpson"}). Default value is \code{FALSE}, indicating that no normalization is performed.
-#' @param closest Boolean value (TRUE or FALSE) indicating if the number of species in common should only be counted for the closest sites.
-#' @param FPO A vector with the coordinates of the fixed point origin from which the zeta diversity will be computed. In that case, \eqn{\zeta_1} is the number of species in the closest site to the FPO, \eqn{\zeta_2} is the number of species shared by the 2 closest sites, etc.
-#' @param closest.dir Boolean value (TRUE or FALSE) indicating if zeta diversity must be computed using a directed nearest neighbour scheme in the direction away from the FPO, starting from any site.
+#' @param NON Boolean value (TRUE or FALSE) indicating if the number of species in common should only be counted for the nearest neighbours.
+#' @param FPO A vector with the coordinates of the fixed point origin from which the zeta diversity will be computed (overrides NON). In that case, \eqn{\zeta_1} is the number of species in the closest site to the FPO, \eqn{\zeta_2} is the number of species shared by the 2 closest sites, etc.
+#' @param DIR Boolean value (TRUE or FALSE) indicating if zeta diversity must be computed using a directed nearest neighbour scheme in the direction away from the FPO, starting from any site.
 #' @param empty.row Determines how to handle empty rows, i.e. sites with no species. Such sites can cause underestimations of zeta diversity, and computation errors for the normalized version of zeta due to divisions by 0. Options are "\code{empty}" to let the data untreated, "\code{remove}" to remove the empty rows, 0 to set the normalized zeta to 0 when zeta is divided by 0 during normalization (sites share no species, so are completely dissimilar), and 1 to set the normalized zeta to 1 when zeta is divided by 0 during normalization (i.e. sites are perfectly similar).
 #' @param plot  Boolean value (TRUE or FALSE) indicating if the outputs must be plotted.
 #' @param silent  Boolean value (TRUE or FALSE) indicating if messages must be printed.
@@ -50,7 +50,7 @@
 #'
 #' dev.new(width = 12, height = 4)
 #' zeta.bird <- Zeta.decline.mc(data.spec.bird, xy.bird, orders = 1:5, sam = 100,
-#'    closest = TRUE)
+#'    NON = TRUE)
 #' zeta.bird
 #'
 #' ##########
@@ -66,7 +66,7 @@
 #'
 #' @export
 #'
-Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.correct = TRUE, sd.correct.adapt = FALSE, confint.level = 0.95, sd.plot = TRUE, rescale = FALSE, normalize = FALSE, closest = FALSE, FPO = NULL, closest.dir = FALSE, empty.row = "empty", plot = TRUE, silent=TRUE){
+Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.correct = TRUE, sd.correct.adapt = FALSE, confint.level = 0.95, sd.plot = TRUE, rescale = FALSE, normalize = FALSE, NON = FALSE, FPO = NULL, DIR = FALSE, empty.row = "empty", plot = TRUE, silent=TRUE){
 
   if(class(data.spec) != "data.frame"){
     stop(paste("Error: ",deparse(substitute(data.spec)), " is a ", class(data.spec), ". It must be a data frame.",  sep = ""))
@@ -74,10 +74,10 @@ Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.
   if(max(orders)>dim(data.spec)[1]){
     stop("Error: rrong value for \"orders\": the maximum value must be equal or lower than the number of sites.")
   }
-  if(closest == TRUE && is.null(xy)){
-    stop("Error: if closest = TRUE, xy must be non null.")
+  if(NON == TRUE && is.null(xy)){
+    stop("Error: if NON = TRUE, xy must be non null.")
   }
-  if(closest == TRUE && nrow(data.spec) != nrow(xy)){
+  if(NON == TRUE && nrow(data.spec) != nrow(xy)){
     stop("Error: data.spec and xy must have the same number of rows.")
   }
 
@@ -92,7 +92,7 @@ Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.
   zeta.val.sd <- numeric()
 
   if(is.null(FPO)){
-    if(closest == FALSE){
+    if(NON == FALSE){
       for(j in orders){
         if (j == 1){
           zeta.val[j]<-mean(rowSums(data.spec))
@@ -334,7 +334,7 @@ Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.
       }
     }
   }else{
-    if(closest.dir == FALSE){
+    if(DIR == FALSE){
       xy.dist <- (FPO[1]-xy[,1])^2+(FPO[2]-xy[,2])^2
       for(j in orders){
         samp <- order(xy.dist)[1:j]
@@ -560,16 +560,16 @@ Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.
 #'
 #' Computes zeta diversity, the number of species shared by multiple assemblages, for a specific order (number of assemblages or sites).
 #' @param data.spec  Site-by-species presence-absence data frame, with sites as rows and species as columns.
-#' @param xy Site coordinates. This is only used if \code{closest} = TRUE.
+#' @param xy Site coordinates. This is only used if \code{NON} = TRUE or \code{DIR} = TRUE.
 #' @param order  Specific number of assemblages or sites at which zeta diversity is computed.
 #' @param sam  Number of samples for which the zeta diversity is computed.
 #' @param sd.correct Boolean value (TRUE or FALSE) indicating if the standard deviation must be computed with an unbiased estimator (using the number of site combinations - 1 as the denominator) or not (using the number of site combinations as the denominator).
 #' @param sd.correct.adapt Boolean value (TRUE or FALSE) indicating if the standard deviation must be computed with an unbiased estimator (using the number of site combinations - 1 as the denominator) if \code{sam} is higher than the number of possible combinations, or not (using the number of site combinations as the denominator) if \code{sam} is lower than the number of possible combinations. If \code{sd.correct.adapt == TRUE}, it takes precedence over \code{sd.correct}.
 #' @param rescale Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by \eqn{\zeta_1}, to get a range of values between 0 and 1.
 #' @param normalize Indicates if the zeta values for each sample should be divided by the total number of species for this specific sample (\code{normalize = "Jaccard"}), by the average number of species per site for this specific sample (\code{normalize = "Sorensen"}), or by the minimum number of species in the sites of this specific sample \cr (\code{normalize = "Simpson"}). Default value is \code{FALSE}, indicating that no normalization is performed.
-#' @param closest Boolean value (TRUE or FALSE) indicating if the number of species in common should only be counted for the closest sites.
-#' @param FPO A vector with the coordinates of the fixed point origin from which the zeta diversity will be computed. In that case, \eqn{\zeta_1} is the number of species in the closest site to the FPO, \eqn{\zeta_2} is the number of species shared by the 2 closest sites, etc.
-#' @param closest.dir Boolean value (TRUE or FALSE) indicating if zeta diversity must be computed using a directed nearest neighbour scheme in the direction away from the FPO, starting from any site.
+#' @param NON Boolean value (TRUE or FALSE) indicating if the number of species in common should only be counted for the nearest neighbours.
+#' @param FPO A vector with the coordinates of the fixed point origin from which the zeta diversity will be computed (overrides NON). In that case, \eqn{\zeta_1} is the number of species in the closest site to the FPO, \eqn{\zeta_2} is the number of species shared by the 2 closest sites, etc.
+#' @param DIR Boolean value (TRUE or FALSE) indicating if zeta diversity must be computed using a directed nearest neighbour scheme in the direction away from the FPO, starting from any site.
 #' @param empty.row Determines how to handle empty rows, i.e. sites with no species. Such sites can cause underestimations of zeta diversity, and computation errors for the normalized version of zeta due to divisions by 0. Options are "\code{empty}" to let the data untreated, "\code{remove}" to remove the empty rows, 0 to set the normalized zeta to 0 when zeta is divided by 0 during normalization (sites share no species, so are completely dissimilar), and 1 to set the normalized zeta to 1 when zeta is divided by 0 during normalization (i.e. sites are perfectly similar).
 #' @param silent  Boolean value (TRUE or FALSE) indicating if messages must be printed.
 #' @details If the number of combinations of sites is lower than the value of the parameter \code{sam}, all the combinations are used and an exact solution is computed. In that case, using the number of site combinations as the denominator may be appropriate to compute the standard deviation, if all sites were sampled and the zeta values. This can be adjusted with parameters \code{sd.correct} and \code{sd.correct.adapt}.
@@ -597,11 +597,11 @@ Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.
 #' data.spec.marion <- Marion.species[,3:33]
 #'
 #' zeta.marion <- Zeta.order.mc(data.spec.marion, xy.marion, order = 3, sam = 100,
-#'    closest = TRUE)
+#'    NON = TRUE)
 #' zeta.marion
 #'
 #' @export
-Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct = TRUE, sd.correct.adapt = FALSE, rescale = FALSE, normalize = FALSE, closest = FALSE, FPO = NULL, closest.dir = FALSE, empty.row = "empty", silent=TRUE){
+Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct = TRUE, sd.correct.adapt = FALSE, rescale = FALSE, normalize = FALSE, NON = FALSE, FPO = NULL, DIR = FALSE, empty.row = "empty", silent=TRUE){
 
   if(class(data.spec) != "data.frame"){
     stop("Error: ",paste(deparse(substitute(data.spec)), " is a ", class(data.spec), ". It must be a data frame.", sep = ""))
@@ -609,10 +609,10 @@ Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct 
   if(order>dim(data.spec)[1]){
     stop("Error: wrong value for \"order\": it must be equal or lower than the number of sites.")
   }
-  if((closest == TRUE || !is.null(FPO)) & is.null(xy)){
-    stop("Error: if closest = TRUE or !is.null(FPO), xy must be non null.")
+  if((NON == TRUE || !is.null(FPO)) & is.null(xy)){
+    stop("Error: if NON = TRUE or !is.null(FPO), xy must be non null.")
   }
-  if((closest == TRUE || !is.null(FPO)) && nrow(data.spec) != nrow(xy)){
+  if((NON == TRUE || !is.null(FPO)) && nrow(data.spec) != nrow(xy)){
     stop("Error: data.spec and xy must have the same number of rows.")
   }
 
@@ -637,7 +637,7 @@ Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct 
         zeta.val.sd <- zeta.val.sd/mean(rowSums(data.spec))
       }
     }else{
-      if(closest == FALSE){
+      if(NON == FALSE){
         if(choose(x, order)>sam){
           if(silent==FALSE){
             print(paste("Monte Carlo sampling for order",order))
@@ -827,7 +827,7 @@ Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct 
 
     }
   }else{
-    if(closest.dir == FALSE){
+    if(DIR == FALSE){
       xy.dist <- (FPO[1]-xy[,1])^2+(FPO[2]-xy[,2])^2
       samp <- order(xy.dist)[1:order]
       zeta.val <- sum(apply(data.spec[samp, ], 2, prod))
@@ -1276,7 +1276,7 @@ Plot.zeta.decline <- function(zeta, sd.plot = TRUE, arrange.plots = TRUE){
 #'
 #' Computes zeta diversity for a given order (number of assemblages or sites) for a range of sample sizes, to assess the sensitivity to this parameter.
 #' @param data.spec  Site-by-species presence-absence data frame, with sites as rows and species as columns.
-#' @param xy Site coordinates. This is only used if \code{closest} = TRUE.
+#' @param xy Site coordinates. This is only used if \code{NON} = TRUE or \code{DIR} = TRUE.
 #' @param order  Specific number of assemblages or sites at which zeta diversity is computed.
 #' @param sam.seq Sequence of samples for which the zeta diversity is computed.
 #' @param reps  Number of replicates of zeta diversity computations for each sample size.
@@ -1284,9 +1284,9 @@ Plot.zeta.decline <- function(zeta, sd.plot = TRUE, arrange.plots = TRUE){
 #' @param sd.correct.adapt Boolean value (TRUE or FALSE) indicating if the standard deviation must be computed with an unbiased estimator (using the number of site combinations - 1 as the denominator) if \code{sam} is higher than the number of possible combinations, or not (using the number of site combinations as the denominator) if \code{sam} is lower than the number of possible combinations. If \code{sd.correct.adapt == TRUE}, it takes precedence over \code{sd.correct}.
 #' @param normalize Indicates if the zeta values for each sample should be divided by the total number of species for this specific sample (\code{normalize = "Jaccard"}), by the average number of species per site for this specific sample (\code{normalize = "Sorensen"}), or by the minimum number of species in the sites of this specific sample \cr (\code{normalize = "Simpson"}). Default value is \code{FALSE}, indicating that no normalization is performed.
 #' @param rescale Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by \eqn{\zeta_1}, to get a range of values between 0 and 1.
-#' @param closest Boolean value (TRUE or FALSE) indicating if the number of species in common should only be counted for the closest sites.
-#' @param FPO A vector with the coordinates of the fixed point origin from which the zeta diversity will be computed. In that case, \eqn{\zeta_1} is the number of species in the closest site to the FPO, \eqn{\zeta_2} is the number of species shared by the 2 closest sites, etc.
-#' @param closest.dir Boolean value (TRUE or FALSE) indicating if zeta diversity must be computed using a directed nearest neighbour scheme in the direction away from the FPO, starting from any site.
+#' @param NON Boolean value (TRUE or FALSE) indicating if the number of species in common should only be counted for the nearest neighbours.
+#' @param FPO A vector with the coordinates of the fixed point origin from which the zeta diversity will be computed (overrides NON). In that case, \eqn{\zeta_1} is the number of species in the closest site to the FPO, \eqn{\zeta_2} is the number of species shared by the 2 closest sites, etc.
+#' @param DIR Boolean value (TRUE or FALSE) indicating if zeta diversity must be computed using a directed nearest neighbour scheme in the direction away from the FPO, starting from any site.
 #' @param display  Boolean value (TRUE or FALSE) indicating if the current value of the sample size must be displayed. Acts as a counter.
 #' @param plot  Boolean value (TRUE or FALSE) indicating if the outputs must be plotted as a boxplot of the zeta diversity distributions for each sample size
 #' @param notch  Boolean value (TRUE or FALSE) indicating if the notches must be plotted in the boxplot.
@@ -1321,7 +1321,7 @@ Plot.zeta.decline <- function(zeta, sd.plot = TRUE, arrange.plots = TRUE){
 #' }
 #'
 #' @export
-Zeta.sam.sensitivity <- function(data.spec, xy = NULL, order = 1, sam.seq, reps = 20, sd.correct = TRUE, sd.correct.adapt = FALSE, rescale = FALSE, normalize = FALSE, closest = FALSE, FPO = NULL, closest.dir = FALSE, display = TRUE, plot = TRUE, notch = TRUE){
+Zeta.sam.sensitivity <- function(data.spec, xy = NULL, order = 1, sam.seq, reps = 20, sd.correct = TRUE, sd.correct.adapt = FALSE, rescale = FALSE, normalize = FALSE, NON = FALSE, FPO = NULL, DIR = FALSE, display = TRUE, plot = TRUE, notch = TRUE){
 
   if(class(data.spec) != "data.frame"){
     stop("Error: ",paste(deparse(substitute(data.spec)), " is a ", class(data.spec), ". It must be a data frame.", sep = ""))
@@ -1341,7 +1341,7 @@ Zeta.sam.sensitivity <- function(data.spec, xy = NULL, order = 1, sam.seq, reps 
     for(i in 1:reps){
       u <- rep(NA, sam)
       for(j in 1:order){
-        zeta <- Zeta.order.mc(data.spec = data.spec, xy = xy, order = order, sam = sam, sd.correct = sd.correct, sd.correct.adapt = sd.correct.adapt, rescale = rescale, normalize = normalize, closest = closest, FPO = FPO, closest.dir = closest.dir, silent=TRUE)
+        zeta <- Zeta.order.mc(data.spec = data.spec, xy = xy, order = order, sam = sam, sd.correct = sd.correct, sd.correct.adapt = sd.correct.adapt, rescale = rescale, normalize = normalize, NON = NON, FPO = FPO, DIR = DIR, silent=TRUE)
         zeta.val[i, i.sam] <- zeta$zeta.val
         zeta.val.sd[i, i.sam] <- zeta$zeta.val.sd
       }
@@ -2830,7 +2830,7 @@ Zeta.ddecay <- function(xy, data.spec, order = 2, sam = 1000, distance.type = "E
           }
         }else
           u[z] <- u[z] / toto
-      }else if (normalize == "BC"){
+      }else if (normalize == "Sorensen"){
         toto <- (mean(apply(data.spec[samp, ], 1, sum)))
         if(toto==0){
           if(empty.row == 0){
@@ -2840,7 +2840,7 @@ Zeta.ddecay <- function(xy, data.spec, order = 2, sam = 1000, distance.type = "E
           }
         }else
           u[z] <- u[z] / toto
-      }else if (normalize == "Sim"){
+      }else if (normalize == "Simpson"){
         toto <- (min(apply(data.spec[samp, ], 1, sum)))
         if(toto==0){
           if(empty.row == 0){
@@ -2887,7 +2887,7 @@ Zeta.ddecay <- function(xy, data.spec, order = 2, sam = 1000, distance.type = "E
           }
         }else
           u[z] <- u[z] / toto
-      }else if (normalize == "BC"){
+      }else if (normalize == "Sorensen"){
         toto <- (mean(apply(data.spec[samp[, z], ], 1, sum)))
         if(toto==0){
           if(empty.row == 0){
@@ -2897,7 +2897,7 @@ Zeta.ddecay <- function(xy, data.spec, order = 2, sam = 1000, distance.type = "E
           }
         }else
           u[z] <- u[z] / toto
-      }else if (normalize == "Sim"){
+      }else if (normalize == "Simpson"){
         toto <- (min(apply(data.spec[samp[, z], ], 1, sum)))
         if(toto==0){
           if(empty.row == 0){
@@ -3164,7 +3164,7 @@ Zeta.ddecays <- function(xy, data.spec, orders = 2:10, sam = 1000, family = stat
   zeta.ddecays$confint <- zeta.ddecays.confint
 
   if (plot == TRUE){
-    graphics::plot(orders, zeta.ddecays$coefs, pch = 16, ylim = c(min(0, range(zeta.ddecays$confint)[1]), max(0, range(zeta.ddecays$confint)[2])), xlab = "Number of sites", ylab = "Slope", main = "Distance decay of zeta diversity")
+    graphics::plot(orders, zeta.ddecays$coefs, pch = 16, ylim = c(min(0, range(zeta.ddecays$confint)[1]), max(0, range(zeta.ddecays$confint)[2])), xlab = "Order of zeta", ylab = "Slope", main = "Distance decay of zeta diversity")
     graphics::lines(orders, zeta.ddecays$coefs)
     suppressWarnings(graphics::arrows(x0 = c(orders), y0 = zeta.ddecays$coefs, x1 = c(orders), y1 = zeta.ddecays$confint[, 1], angle = 90, length = 0.2))
     suppressWarnings(graphics::arrows(x0 = c(orders), y0 = zeta.ddecays$coefs, x1 = c(orders), y1 = zeta.ddecays$confint[, 2], angle = 90, length = 0.2))
@@ -3208,7 +3208,7 @@ Zeta.ddecays <- function(xy, data.spec, orders = 2:10, sam = 1000, family = stat
 #' @export
 Plot.zeta.ddecays <- function(zeta.ddecays){
 
-  graphics::plot(zeta.ddecays$orders, zeta.ddecays$coefs, pch = 16, ylim = c(min(0, range(zeta.ddecays$confint)[1]), max(0, range(zeta.ddecays$confint)[2])), xlab = "Number of sites", ylab = "Slope", main = "Distance decay of zeta diversity")
+  graphics::plot(zeta.ddecays$orders, zeta.ddecays$coefs, pch = 16, ylim = c(min(0, range(zeta.ddecays$confint)[1]), max(0, range(zeta.ddecays$confint)[2])), xlab = "Order of zeta", ylab = "Slope", main = "Distance decay of zeta diversity")
   graphics::lines(zeta.ddecays$orders, zeta.ddecays$coefs)
   suppressWarnings(graphics::arrows(x0 = c(zeta.ddecays$orders), y0 = zeta.ddecays$coefs, x1 = c(zeta.ddecays$orders), y1 = zeta.ddecays$confint[, 1], angle = 90, length = 0.2))
   suppressWarnings(graphics::arrows(x0 = c(zeta.ddecays$orders), y0 = zeta.ddecays$coefs, x1 = c(zeta.ddecays$orders), y1 = zeta.ddecays$confint[, 2], angle = 90, length = 0.2))
@@ -4048,9 +4048,12 @@ Zeta.varpart <- function(msgdm.mod, num.part = 2, reg.type = "glm", family = sta
       a <- max(ab-b,0)
       c <- max(bc-b,0)
     }else if(reg.type == "ispline"){
-      abc <- max(vegan::RsquareAdj(glm.cons(zeta.val ~ ., data = data.tot, family = family, method = method.glm, cons = cons, cons.inter = cons.inter))$r.squared,0)
-      ab <- max(vegan::RsquareAdj(glm.cons(zeta.val ~ distance, family = family, method = method.glm, cons = cons, cons.inter = cons.inter))$r.squared,0)
-      bc <- max(vegan::RsquareAdj(glm.cons(zeta.val ~ ., data = data.var, family = family, method = method.glm, cons = cons, cons.inter = cons.inter))$r.squared,0)
+      toto <- glm.cons(zeta.val ~ ., data = data.tot, family = family, method = method.glm, cons = cons, cons.inter = cons.inter)
+      abc <- 1 - (toto$deviance/toto$null.deviance)*(nrow(data.tot)-1)/(nrow(data.tot)-ncol(data.tot)-1)
+      toto <- glm.cons(zeta.val ~ ., data = distance, family = family, method = method.glm, cons = cons, cons.inter = cons.inter)
+      ab <- 1 - (toto$deviance/toto$null.deviance)*(nrow(distance)-1)/(nrow(distance)-ncol(distance)-1)
+      toto <- glm.cons(zeta.val ~ ., data = data.var, family = family, method = method.glm, cons = cons, cons.inter = cons.inter)
+      bc <- 1 - (toto$deviance/toto$null.deviance)*(nrow(data.var)-1)/(nrow(data.var)-ncol(data.var)-1)
       b <- max(ab+bc-abc,0)
       a <- max(ab-b,0)
       c <- max(bc-b,0)
@@ -4299,14 +4302,18 @@ Zeta.varpart <- function(msgdm.mod, num.part = 2, reg.type = "glm", family = sta
       b <- max(B-d-e-g,0)
       c <- max(C-e-f-g,0)
     }else if(reg.type == "ispline"){
-      ABC <- max(vegan::RsquareAdj(glm.cons(zeta.val ~ ., data = data.tot, family = family, method = method.glm, cons = cons, cons.inter = cons.inter))$r.squared,0)
-      AB <- max(vegan::RsquareAdj(glm.cons(zeta.val ~ data.var.sp, family = family, method = method.glm, cons = cons, cons.inter = cons.inter))$r.squared,0)
-      AC <- max(vegan::RsquareAdj(glm.cons(zeta.val ~ data.var.dist, family = family, method = method.glm, cons = cons, cons.inter = cons.inter))$r.squared,0)
-      BC <- max(vegan::RsquareAdj(glm.cons(zeta.val ~ data.sp.dist, family = family, method = method.glm, cons = cons, cons.inter = cons.inter))$r.squared,0)
-      A <- max(vegan::RsquareAdj(glm.cons(zeta.val ~ ., data = data.var, family = family, method = method.glm, cons = cons, cons.inter = cons.inter))$r.squared,0)
-      B <- max(vegan::RsquareAdj(glm.cons(zeta.val ~ ., data = sp.pred, family = family, method = method.glm, cons = cons, cons.inter = cons.inter))$r.squared,0)
-      C <- max(vegan::RsquareAdj(glm.cons(zeta.val ~ ., data = distance, family = family, method = method.glm, cons = cons, cons.inter = cons.inter))$r.squared,0)
-
+      toto <- glm.cons(zeta.val ~ ., data = data.tot, family = family, method = method.glm, cons = cons, cons.inter = cons.inter)
+      ABC <- 1 - (toto$deviance/toto$null.deviance)*(nrow(data.tot)-1)/(nrow(data.tot)-ncol(data.tot)-1)
+      toto <- glm.cons(zeta.val ~ ., data = data.var.sp, family = family, method = method.glm, cons = cons, cons.inter = cons.inter)
+      AB <- 1 - (toto$deviance/toto$null.deviance)*(nrow(data.var.sp)-1)/(nrow(data.var.sp)-ncol(distance)-1)
+      toto <- glm.cons(zeta.val ~ ., data = data.var.dist, family = family, method = method.glm, cons = cons, cons.inter = cons.inter)
+      BC <- 1 - (toto$deviance/toto$null.deviance)*(nrow(data.var.dist)-1)/(nrow(data.var.dist)-ncol(data.var.dist)-1)
+      toto <- glm.cons(zeta.val ~ ., data = data.var, family = family, method = method.glm, cons = cons, cons.inter = cons.inter)
+      A <- 1 - (toto$deviance/toto$null.deviance)*(nrow(data.var)-1)/(nrow(data.var)-ncol(data.var)-1)
+      toto <- glm.cons(zeta.val ~ ., data = sp.pred, family = family, method = method.glm, cons = cons, cons.inter = cons.inter)
+      B <- 1 - (toto$deviance/toto$null.deviance)*(nrow(sp.pred)-1)/(nrow(sp.pred)-ncol(sp.pred)-1)
+      toto <- glm.cons(zeta.val ~ ., data = distance, family = family, method = method.glm, cons = cons, cons.inter = cons.inter)
+      C <- 1 - (toto$deviance/toto$null.deviance)*(nrow(distance)-1)/(nrow(distance)-ncol(distance)-1)
       g <- max(A+B+C-AB-AC-BC+ABC,0)
       d <- max(A+B-AB-g,0)
       e <- max(B+C-BC,0)

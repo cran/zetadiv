@@ -1,7 +1,7 @@
-1dabd568a415ae6a60977cc29852d90f *DESCRIPTION
-d4b41da70bd90db1cc6d78a0f6f6e750 *NAMESPACE
+0382ef1a60292c37af6c5bf10a621e04 *DESCRIPTION
+8ab4b344e1282e6315baf30f90868804 *NAMESPACE
 bc0f1f43e3263e7f891920d72adb5252 *R/unexported.functions.from.scam.1.2.R
-883410a418d7db962af84ddc11d0fb42 *R/zetadiv.R
+32e6d7f537c5b9daafd09c46a204633a *R/zetadiv.R
 f9ba9326a2b75ec4f07a56d060196aa2 *data/Marion.env.RData
 da429a9edab5bd7f7c03e2d413ba6022 *data/Marion.species.RData
 75f5b00258637d5e6fab7ba5c743b85c *data/bird.env.coarse.RData
@@ -21,11 +21,11 @@ e33389b3f724c73b07c342a73a7c8faf *man/Predict.msgdm.Rd
 860e488983dacb7fc7b23a3fd5c83c06 *man/Zeta.ddecay.Rd
 6a5373acce361da9ebd6d40cf10154da *man/Zeta.ddecays.Rd
 eb0aae403faae1566433137c1a842747 *man/Zeta.decline.ex.Rd
-5340473a5fd69f63773ebb1ca03ed1c8 *man/Zeta.decline.mc.Rd
+6491dc682cff1b8c26943ab122d86044 *man/Zeta.decline.mc.Rd
 941b65991aef51854ef624ab07e6e199 *man/Zeta.msgdm.Rd
 554d3f40c4cabb866cda05657915031d *man/Zeta.order.ex.Rd
-ad8c0de363a2e778aa47f675f446060c *man/Zeta.order.mc.Rd
-7a36f101e466dd5d9138faece683c93f *man/Zeta.sam.sensitivity.Rd
+c22ca073781c98cca261f1adf1b1e0ba *man/Zeta.order.mc.Rd
+5fd3e684407d791ead9e6489574a449c *man/Zeta.sam.sensitivity.Rd
 ff7e9182c70acf6bcaf93a0835615e5f *man/Zeta.scale.min.dist.Rd
 12b38cc3cb663e81a237f868e6686105 *man/Zeta.scale.regular.Rd
 fa0e6eab59cceca290dc004182a0bd3d *man/Zeta.varpart.Rd

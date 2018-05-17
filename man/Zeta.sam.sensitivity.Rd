@@ -6,13 +6,13 @@
 \usage{
 Zeta.sam.sensitivity(data.spec, xy = NULL, order = 1, sam.seq, reps = 20,
   sd.correct = TRUE, sd.correct.adapt = FALSE, rescale = FALSE,
-  normalize = FALSE, closest = FALSE, FPO = NULL, closest.dir = FALSE,
+  normalize = FALSE, NON = FALSE, FPO = NULL, DIR = FALSE,
   display = TRUE, plot = TRUE, notch = TRUE)
 }
 \arguments{
 \item{data.spec}{Site-by-species presence-absence data frame, with sites as rows and species as columns.}
 
-\item{xy}{Site coordinates. This is only used if \code{closest} = TRUE.}
+\item{xy}{Site coordinates. This is only used if \code{NON} = TRUE or \code{DIR} = TRUE.}
 
 \item{order}{Specific number of assemblages or sites at which zeta diversity is computed.}
 
@@ -28,11 +28,11 @@ Zeta.sam.sensitivity(data.spec, xy = NULL, order = 1, sam.seq, reps = 20,
 
 \item{normalize}{Indicates if the zeta values for each sample should be divided by the total number of species for this specific sample (\code{normalize = "Jaccard"}), by the average number of species per site for this specific sample (\code{normalize = "Sorensen"}), or by the minimum number of species in the sites of this specific sample \cr (\code{normalize = "Simpson"}). Default value is \code{FALSE}, indicating that no normalization is performed.}
 
-\item{closest}{Boolean value (TRUE or FALSE) indicating if the number of species in common should only be counted for the closest sites.}
+\item{NON}{Boolean value (TRUE or FALSE) indicating if the number of species in common should only be counted for the nearest neighbours.}
 
-\item{FPO}{A vector with the coordinates of the fixed point origin from which the zeta diversity will be computed. In that case, \eqn{\zeta_1} is the number of species in the closest site to the FPO, \eqn{\zeta_2} is the number of species shared by the 2 closest sites, etc.}
+\item{FPO}{A vector with the coordinates of the fixed point origin from which the zeta diversity will be computed (overrides NON). In that case, \eqn{\zeta_1} is the number of species in the closest site to the FPO, \eqn{\zeta_2} is the number of species shared by the 2 closest sites, etc.}
 
-\item{closest.dir}{Boolean value (TRUE or FALSE) indicating if zeta diversity must be computed using a directed nearest neighbour scheme in the direction away from the FPO, starting from any site.}
+\item{DIR}{Boolean value (TRUE or FALSE) indicating if zeta diversity must be computed using a directed nearest neighbour scheme in the direction away from the FPO, starting from any site.}
 
 \item{display}{Boolean value (TRUE or FALSE) indicating if the current value of the sample size must be displayed. Acts as a counter.}
 

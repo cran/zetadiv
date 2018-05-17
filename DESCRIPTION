@@ -1,7 +1,7 @@
 Package: zetadiv
 Title: Functions to Compute Compositional Turnover Using Zeta Diversity
-Version: 1.1.0
-Date: 2018-04-10
+Version: 1.1.1
+Date: 2018-05-15
 Author: Guillaume Latombe, Melodie A. McGeoch, David A. Nipperess, Cang Hui
 Maintainer: Guillaume Latombe <latombe.guillaume@gmail.com>
 Description: Functions to compute compositional turnover using zeta-diversity,
@@ -21,6 +21,6 @@ LazyData: true
 Encoding: UTF-8
 RoxygenNote: 6.0.1
 NeedsCompilation: no
-Packaged: 2018-04-11 11:08:54 UTC; 20829787
+Packaged: 2018-05-15 14:01:09 UTC; 20829787
 Repository: CRAN
-Date/Publication: 2018-04-11 14:22:04 UTC
+Date/Publication: 2018-05-17 08:46:08 UTC
