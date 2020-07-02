@@ -4,7 +4,9 @@
 \name{Marion.species}
 \alias{Marion.species}
 \title{Marion Island Species Presence-Absence Dataset}
-\format{A data frame with 12 rows (plots) and 33 columns (species).}
+\format{
+A data frame with 12 rows (plots) and 33 columns (species).
+}
 \usage{
 data(Marion.species)
 }

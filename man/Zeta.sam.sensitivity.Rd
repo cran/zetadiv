@@ -4,10 +4,23 @@
 \alias{Zeta.sam.sensitivity}
 \title{Sensitivity analysis for the sample size of zeta}
 \usage{
-Zeta.sam.sensitivity(data.spec, xy = NULL, order = 1, sam.seq, reps = 20,
-  sd.correct = TRUE, sd.correct.adapt = FALSE, rescale = FALSE,
-  normalize = FALSE, NON = FALSE, FPO = NULL, DIR = FALSE,
-  display = TRUE, plot = TRUE, notch = TRUE)
+Zeta.sam.sensitivity(
+  data.spec,
+  xy = NULL,
+  order = 1,
+  sam.seq,
+  reps = 20,
+  sd.correct = TRUE,
+  sd.correct.adapt = FALSE,
+  rescale = FALSE,
+  normalize = FALSE,
+  NON = FALSE,
+  FPO = NULL,
+  DIR = FALSE,
+  display = TRUE,
+  plot = TRUE,
+  notch = TRUE
+)
 }
 \arguments{
 \item{data.spec}{Site-by-species presence-absence data frame, with sites as rows and species as columns.}
@@ -71,7 +84,7 @@ data.spec.marion <- Marion.species[3:33]
 
 dev.new()
 zeta.sens.marion <- Zeta.sam.sensitivity(data.spec.marion, order = 3,
-    sam.seq = seq(250,1000,250), reps = 20, plot = TRUE, notch = TRUE)
+    sam.seq = seq(50,250,50), reps = 20, plot = TRUE, notch = TRUE)
 zeta.sens.marion
 }
 

@@ -4,7 +4,9 @@
 \name{bird.env.coarse}
 \alias{bird.env.coarse}
 \title{South-East Australia Environmental Dataset at Coarse Scale}
-\format{A data frame with 123 rows (sites) and 9 columns (xy coordinates and environmental variables).}
+\format{
+A data frame with 123 rows (sites) and 9 columns (xy coordinates and environmental variables).
+}
 \usage{
 data(bird.env.coarse)
 }

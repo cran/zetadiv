@@ -4,10 +4,27 @@
 \alias{glm.cons}
 \title{Fitting Generalized Linear Models with constraint on the coefficients signs}
 \usage{
-glm.cons(formula, family = stats::gaussian(), data, weights, subset,
-  na.action, start = NULL, etastart, mustart, offset, control = list(...),
-  model = TRUE, method = "glm.fit.cons", cons = -1, cons.inter = 1,
-  x = FALSE, y = TRUE, contrasts = NULL, ...)
+glm.cons(
+  formula,
+  family = stats::gaussian(),
+  data,
+  weights,
+  subset,
+  na.action,
+  start = NULL,
+  etastart,
+  mustart,
+  offset,
+  control = list(...),
+  model = TRUE,
+  method = "glm.fit.cons",
+  cons = -1,
+  cons.inter = 1,
+  x = FALSE,
+  y = TRUE,
+  contrasts = NULL,
+  ...
+)
 }
 \arguments{
 \item{formula}{as for \code{\link{glm}}}

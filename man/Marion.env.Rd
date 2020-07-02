@@ -4,7 +4,9 @@
 \name{Marion.env}
 \alias{Marion.env}
 \title{Marion Island Environmental Dataset}
-\format{A data frame with 12 rows (plots) and 4 columns (variables).}
+\format{
+A data frame with 12 rows (plots) and 4 columns (variables).
+}
 \usage{
 data(Marion.env)
 }

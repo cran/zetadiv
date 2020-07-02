@@ -4,9 +4,16 @@
 \alias{rescale.min.dist}
 \title{Rescaling of data based on the minimum distance between sites}
 \usage{
-rescale.min.dist(xy, data.spec, data.env = NULL, m,
-  distance.type = "Euclidean", dist.custom = NULL, method = "mean",
-  shuffle = FALSE)
+rescale.min.dist(
+  xy,
+  data.spec,
+  data.env = NULL,
+  m,
+  distance.type = "Euclidean",
+  dist.custom = NULL,
+  method = "mean",
+  shuffle = FALSE
+)
 }
 \arguments{
 \item{xy}{Site-by-coordinate data frame, with sites as rows and coordinates as columns.}

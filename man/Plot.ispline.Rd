@@ -2,45 +2,52 @@
 % Please edit documentation in R/zetadiv.R
 \name{Plot.ispline}
 \alias{Plot.ispline}
-\title{Plotting splines from I-spline-based multi-site generalised dissimilarity modelling}
+\title{Plots I-splines for Multi-Site Generalised Dissimilarity Modelling}
 \usage{
-Plot.ispline(msgdm, data.env, distance = FALSE, my.order = NULL,
-  biotic = FALSE, order.ispline = 2, kn.ispline = 1, pch = NULL,
-  lty = NULL, legend = TRUE, lwd = 1, cex = 1)
+Plot.ispline(
+  isplines = NULL,
+  msgdm,
+  data.env,
+  distance = FALSE,
+  biotic = 0,
+  pch = NULL,
+  lty = NULL,
+  legend = TRUE,
+  lwd = 1,
+  cex = 1,
+  num.quantiles = 11
+)
 }
 \arguments{
+\item{isplines}{Output of function \code{Return.ispline}.}
+
 \item{msgdm}{Output of function \code{Zeta.msgdm} computed with \code{reg.type = ispline}.}
 
 \item{data.env}{Site-by-variable data frame used for the computation of \code{msgdm}, with sites as rows and environmental variables as columns.}
 
 \item{distance}{Boolean, indicates is distance was used in the computation of \code{msgdm}.}
 
-\item{my.order}{Zeta order, necessary to draw the line for categorical variables.}
-
 \item{biotic}{Boolean, indicates is zeta diversity from another community was used in the computation of \code{msgdm}.}
-
-\item{order.ispline}{Order of the I-spline.}
-
-\item{kn.ispline}{Number of knots in the I-spline.}
 
 \item{pch}{Shapes of the points to be used in the plotting. If nothing is provided, \code{pch} is a sequence of integers from 1 to the number of variables used for the computation of \code{msgdm}.}
 
-\item{lty}{Line types to be used in the plotting. If nothing is provided, \code{pch} is a sequence of integers from 1 to the number of variables used for the computation of \code{msgdm}.}
+\item{lty}{Line types to be used in the plotting. If nothing is provided, \code{lty} is a sequence of integers from 1 to the number of variables used for the computation of \code{msgdm}.}
 
 \item{legend}{Boolean, indicates if the legend must be drawn.}
 
 \item{lwd}{Line width.}
 
 \item{cex}{Point size.}
+
+\item{num.quantiles}{Number of points to plot on the I-splines. Default is 11 to plot a point every 10 percents of the range of values.}
 }
 \value{
-A plot of the I-splines computed by \code{Zeta.msgdm} with \code{reg.type = ispline}. All splines are drawned on the same plot, and their ranges are rescaled between 0 and 1 for comparison.
+\code{Plot.ispline} returns a data frame with the same number of rows as dat and \code{ncol(dat)} * \code{(order.ispline} + \code{kn.ispline)} columns.
 }
 \description{
-Plots the I-splines resulting from \code{Zeta.msgdm}.
+Plots I-splines computed by \code{Return.ispline}, or calls \code{Return.ispline} if the outputs from \code{Zeta.msgdm} are provided before plotting.
 }
 \examples{
-
 utils::data(Marion.species)
 xy.marion <- Marion.species[1:2]
 data.spec.marion <- Marion.species[3:33]
@@ -51,10 +58,22 @@ data.env.marion <- Marion.env[3]
 zeta.ispline <- Zeta.msgdm(data.spec.marion, data.env.marion, xy.marion, sam = 100,
     order = 3, normalize = "Jaccard", reg.type = "ispline")
 zeta.ispline
+zeta.ispline.r <- Return.ispline(zeta.ispline, data.env.marion, distance = TRUE)
+zeta.ispline.r
+
 dev.new()
-Plot.ispline(zeta.ispline, data.env.marion, distance = TRUE)
+Plot.ispline(isplines = zeta.ispline.r, distance = TRUE)
+
+dev.new()
+Plot.ispline(msgdm = zeta.ispline, data.env = data.env.marion, distance = TRUE)
+
 
 }
+\references{
+Ramsay, J. O. (1988). Monotone regression splines in action. \emph{Statistical Science}, 425-441.
+
+Ferrier, S., Manion, G., Elith, J., & Richardson, K. (2007). Using generalized dissimilarity modelling to analyse and predict patterns of beta diversity in regional biodiversity assessment. \emph{Diversity and Distributions}, 13(3), 252-264.
+}
 \seealso{
-\code{\link{Zeta.msgdm}}, \code{\link{Ispline}}
+\code{\link{Zeta.msgdm}}
 }

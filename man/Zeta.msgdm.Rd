@@ -4,14 +4,34 @@
 \alias{Zeta.msgdm}
 \title{Multi-site generalised dissimilarity modelling for a set of environmental variables and distances}
 \usage{
-Zeta.msgdm(data.spec, data.env, xy = NULL, data.spec.pred = NULL,
-  order = 1, sam = 1000, reg.type = "glm", family = stats::gaussian(),
-  method.glm = "glm.fit.cons", cons = -1, cons.inter = 1,
-  confint.level = 0.95, bs = "mpd", kn = -1, order.ispline = 2,
-  kn.ispline = 1, distance.type = "Euclidean", dist.custom = NULL,
-  rescale = FALSE, rescale.pred = TRUE, method = "mean",
-  normalize = FALSE, silent = FALSE, empty.row = 0, control = list(),
-  glm.init = FALSE)
+Zeta.msgdm(
+  data.spec,
+  data.env,
+  xy = NULL,
+  data.spec.pred = NULL,
+  order = 1,
+  sam = 1000,
+  reg.type = "glm",
+  family = stats::gaussian(),
+  method.glm = "glm.fit.cons",
+  cons = -1,
+  cons.inter = 1,
+  confint.level = 0.95,
+  bs = "mpd",
+  kn = -1,
+  order.ispline = 2,
+  kn.ispline = 1,
+  distance.type = "Euclidean",
+  dist.custom = NULL,
+  rescale = FALSE,
+  rescale.pred = TRUE,
+  method = "mean",
+  normalize = FALSE,
+  silent = FALSE,
+  empty.row = 0,
+  control = list(),
+  glm.init = FALSE
+)
 }
 \arguments{
 \item{data.spec}{Site-by-species presence-absence data frame, with sites as rows and species as columns.}
@@ -20,7 +40,7 @@ Zeta.msgdm(data.spec, data.env, xy = NULL, data.spec.pred = NULL,
 
 \item{xy}{Site coordinates, to account for distances between sites.}
 
-\item{data.spec.pred}{Site-by-species presence-absence data frame, with sites as rows and species as columns, for which zeta diversity will be computed and used as a predictor of the zeta diversity of \code{data.spec}.}
+\item{data.spec.pred}{Site-by-species presence-absence data frame or list of data frames, with sites as rows and species as columns, for which zeta diversity will be computed and used as a predictor of the zeta diversity of \code{data.spec}.}
 
 \item{order}{Specific number of assemblages or sites at which zeta diversity is computed.}
 
@@ -79,6 +99,10 @@ Zeta.msgdm(data.spec, data.env, xy = NULL, data.spec.pred = NULL,
 
 \item{rescale.factor}{Factor by which the predictors were divided if \code{rescale.pred = TRUE} and \code{order>1}.}
 
+\item{order.ispline}{The value of the original parameter, to be used in \code{Plot.ispline}.}
+
+\item{kn.ispline}{The value of the original parameter, to be used in \code{Plot.ispline}.}
+
 \item{model}{An object whose class depends on the type of regression (\code{glm}, \code{nnnpls}, \code{gam} or \code{scam}; I-splines return and object of class \code{glm}), corresponding to the regression over distance for the number of assemblages or sites specified in \code{order}.}
 
 \item{confint}{The confidence intervals for the coefficients from generalised linear models with no constraint. \code{confint} is not generated for the other types of regression.}
@@ -134,6 +158,15 @@ graphics::plot(zeta.gam$model)
 zeta.ispline <- Zeta.msgdm(data.spec.marion, data.env.marion, xy.marion, sam = 100,
     order = 3, normalize = "Jaccard", reg.type = "ispline")
 zeta.ispline
+
+zeta.ispline.r <- Return.ispline(zeta.ispline, data.env.marion, distance = TRUE)
+zeta.ispline.r
+
+dev.new()
+Plot.ispline(isplines = zeta.ispline.r, distance = TRUE)
+
+dev.new()
+Plot.ispline(msgdm = zeta.ispline, data.env = data.env.marion, distance = TRUE)
 
 }
 \references{

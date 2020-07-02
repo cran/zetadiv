@@ -1,0 +1,24 @@
+citHeader("To cite reports in publications, please use:")
+
+year <- sub("-.*", "", meta$Date)
+note <- sprintf("R package version %s", meta$Version)
+
+bibentry(bibtype = "Manual",
+         title = "{zetadiv}: Functions to Compute Compositional Turnover Using Zeta Diversity",
+         author = c(person("Guillaume", "Latombe"),
+                    person("Melodie A.", "McGeoch"),
+                    person("David A.", "Nipperess"),
+                    person("Cang", "Hui")),
+         year = year,
+         note = note,
+         url = "https://CRAN.R-project.org/package=zetadiv")
+
+bibentry(bibtype = "Article",
+         title = "zetadiv: an R package for computing compositional change across multiple sites, assemblages or cases",
+         author = c(person("Guillaume", "Latombe"),
+                    person("Melodie A.", "McGeoch"),
+                    person("David A.", "Nipperess"),
+                    person("Cang", "Hui")),
+         volume = {324897},
+		 year = {2018},
+		 journal = {"bioRxiv"})

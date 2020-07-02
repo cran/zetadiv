@@ -4,8 +4,13 @@
 \alias{Zeta.order.ex}
 \title{Expectation of zeta diversity for a specific number of assemblages or sites}
 \usage{
-Zeta.order.ex(data.spec, order = 1, sd.correct = TRUE, rescale = FALSE,
-  empty.row = "empty")
+Zeta.order.ex(
+  data.spec,
+  order = 1,
+  sd.correct = TRUE,
+  rescale = FALSE,
+  empty.row = "empty"
+)
 }
 \arguments{
 \item{data.spec}{Site-by-species presence-absence data frame, with sites as rows and species as columns.}
@@ -22,6 +27,8 @@ Zeta.order.ex(data.spec, order = 1, sd.correct = TRUE, rescale = FALSE,
 \code{zeta.order.ex}  returns a list containing the following components:
 
 \item{zeta.order}{The number of assemblages or sites for which the zeta diversity was computed.}
+
+\item{combinations}{The number of possible combinations of sites for the chosen order.}
 
 \item{zeta.val}{The zeta diversity values.}
 
@@ -44,7 +51,7 @@ zeta.bird <- Zeta.order.ex(data.spec.bird, order = 3)
 zeta.bird
 
 ##########
-
+s
 utils::data(Marion.species)
 data.spec.marion <- Marion.species[,3:33]
 
@@ -54,6 +61,8 @@ zeta.marion
 }
 \references{
 Hui C. & McGeoch M.A. (2014). zeta diversity as a concept and metric that unifies incidence-based biodiversity patterns. \emph{The American Naturalist}, 184, 684-694.
+
+McGeoch M. A., Latombe G., Andrew N. R., Nakagawa S., Nipperess D. A., Roige M., Marzinelli E. M., Campbell A. H., Verges A., Thomas T., Steinberg P. D., Selwood K. E., Henriksen M. V. & Hui C. (2019). Measuring continuous compositional change using decline and decay in zeta diversity. \emph{Ecology}, 100(11), e02832.
 }
 \seealso{
 \code{\link{Zeta.order.mc}}, \code{\link{Zeta.decline.ex}}, \code{\link{Zeta.decline.mc}}

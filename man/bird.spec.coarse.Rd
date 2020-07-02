@@ -4,7 +4,9 @@
 \name{bird.spec.coarse}
 \alias{bird.spec.coarse}
 \title{Australia Bird Atlas Species Occurrence Dataset at Coarse Scale over South-East Australia}
-\format{A data frame with 123 rows (sites) and 193 columns (xy coordinates and species).}
+\format{
+A data frame with 123 rows (sites) and 193 columns (xy coordinates and species).
+}
 \usage{
 data(bird.spec.coarse)
 }

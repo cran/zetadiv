@@ -4,7 +4,9 @@
 \name{bird.spec.fine}
 \alias{bird.spec.fine}
 \title{Australia Bird Atlas Species Occurrence Dataset at Fine Scale over South-East Australia}
-\format{A data frame with 604 rows (sites) and 193 columns (xy coordinates and species).}
+\format{
+A data frame with 604 rows (sites) and 193 columns (xy coordinates and species).
+}
 \usage{
 data(bird.spec.fine)
 }

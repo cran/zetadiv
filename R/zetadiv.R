@@ -1,12 +1,13 @@
 .onAttach <- function(libname, pkgname) {
-  packageStartupMessage("This is zetadiv 1.1.1")
-  packageStartupMessage("Package \"zetadiv\" was built under R.3.4.2")
+  packageStartupMessage("This is zetadiv 1.2.0")
+  packageStartupMessage("Package \"zetadiv\" was built under R.3.5.2")
 }
 
 
 ##################
 ##MAIN FUNCTIONS##
 ##################
+
 
 #' Zeta diversity decline using Monte Carlo sampling
 #'
@@ -33,6 +34,7 @@
 #' @details \code{Zeta.decline.mc} enables accomodating richness heterogeneity by setting \code{normalize = "Jaccard"}, \code{normalize = "Sorensen"} or \code{normalize = "Simpson"}. This cannot be performed by \cr \code{\link{Zeta.decline.ex}}.
 #' @return \code{Zeta.decline.mc} returns a list containing the following components:
 #' @return \item{zeta.order}{The number of assemblages or sites for which the zeta diversity was computed.}
+#' @return \item{combinations}{The number of possible combinations of sites for the chosen orders.}
 #' @return \item{zeta.val}{The zeta diversity values.}
 #' @return \item{zeta.val.sd}{The zeta diversity standard deviation values.}
 #' @return \item{zeta.ratio}{The ratio of zeta diversity values by the zeta diversity values at the lower order \eqn{\zeta_i / \zeta_{i-1}}.}
@@ -343,32 +345,32 @@ Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.
           toto <- (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
           if(toto==0){
             if(empty.row == 0){
-              u[z] <- 0
+              zeta.val[j] <- 0
             }else if(empty.row == 1){
-              u[z] <- 1
+              zeta.val[j] <- 1
             }
           }else
-            u[z] <- u[z] / toto
+            zeta.val[j] <- zeta.val[j] / toto
         }else if (normalize == "Sorensen"){
           toto <- (mean(apply(data.spec[samp, ], 1, sum)))
           if(toto==0){
             if(empty.row == 0){
-              u[z] <- 0
+              zeta.val[j] <- 0
             }else if(empty.row == 1){
-              u[z] <- 1
+              zeta.val[j] <- 1
             }
           }else
-            u[z] <- u[z] / toto
+            zeta.val[j] <- zeta.val[j] / toto
         }else if (normalize == "Simpson"){
           toto <- (min(apply(data.spec[samp, ], 1, sum)))
           if(toto==0){
             if(empty.row == 0){
-              u[z] <- 0
+              zeta.val[j] <- 0
             }else if(empty.row == 1){
-              u[z] <- 1
+              zeta.val[j] <- 1
             }
           }else
-            u[z] <- u[z] / toto
+            zeta.val[j] <- zeta.val[j] / toto
         }
         zeta.val.sd[j] <- 0
       }
@@ -524,6 +526,7 @@ Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.
   ##create a single list for output
   zeta <- list()
   zeta$zeta.order <- orders
+  zeta$combinations <- choose(x, orders)
   zeta$zeta.val <- zeta.val
   zeta$zeta.val.sd <- zeta.val.sd
   zeta$ratio <- zeta.val[2:length(zeta.val)]/zeta.val[1:(length(zeta.val)-1)]
@@ -556,6 +559,7 @@ Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.
 
 
 
+
 #' Zeta diversity for a specific number of assemblages or sites using Monte Carlo sampling
 #'
 #' Computes zeta diversity, the number of species shared by multiple assemblages, for a specific order (number of assemblages or sites).
@@ -577,6 +581,7 @@ Zeta.decline.mc <- function(data.spec, xy = NULL, orders = 1:10, sam = 1000, sd.
 #' @details \code{Zeta.order.mc} enables accomodating richness heterogeneity by setting \code{normalize = "Jaccard"}, \code{normalize = "Sorensen"} or \code{normalize = "Simpson"}. This cannot be performed by \cr \code{\link{Zeta.order.ex}}.
 #' @return \code{Zeta.order.mc}  returns a list containing the following components:
 #' @return \item{zeta.order}{The number of assemblages or sites for which the zeta diversity was computed.}
+#' @return \item{combinations}{The number of possible combinations of sites for the chosen order.}
 #' @return \item{zeta.val}{The zeta diversity values.}
 #' @return \item{zeta.val.sd}{The standard deviation of zeta diversity.}
 #' @references Hui C. & McGeoch M.A. (2014). Zeta diversity as a concept and metric that unifies incidence-based biodiversity patterns. \emph{The American Naturalist}, 184, 684-694.
@@ -830,39 +835,39 @@ Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct 
     if(DIR == FALSE){
       xy.dist <- (FPO[1]-xy[,1])^2+(FPO[2]-xy[,2])^2
       samp <- order(xy.dist)[1:order]
-      zeta.val <- sum(apply(data.spec[samp, ], 2, prod))
+      u <- sum(apply(data.spec[samp, ], 2, prod))
       if (normalize == "Jaccard"){
         toto <- (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
         if(toto==0){
           if(empty.row == 0){
-            u[z] <- 0
+            u <- 0
           }else if(empty.row == 1){
-            u[z] <- 1
+            u <- 1
           }
         }else
-          u[z] <- u[z] / toto
+          u <- u / toto
       }else if (normalize == "Sorensen"){
         toto <- (mean(apply(data.spec[samp, ], 1, sum)))
         if(toto==0){
           if(empty.row == 0){
-            u[z] <- 0
+            u <- 0
           }else if(empty.row == 1){
-            u[z] <- 1
+            u <- 1
           }
         }else
-          u[z] <- u[z] / toto
+          u <- u / toto
       }else if (normalize == "Simpson"){
         toto <- (min(apply(data.spec[samp, ], 1, sum)))
         if(toto==0){
           if(empty.row == 0){
-            u[z] <- 0
+            u <- 0
           }else if(empty.row == 1){
-            u[z] <- 1
+            u <- 1
           }
         }else
-          u[z] <- u[z] / toto
+          u <- u / toto
       }
-      zeta.val.sd <- 0
+      #zeta.val.sd <- 0
     }else{
       if(order==1){
         zeta.val<-mean(rowSums(data.spec))
@@ -1013,11 +1018,480 @@ Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct 
 
   zeta.order <- list()
   zeta.order$zeta.order <- order
+  zeta.order$combinations <- choose(x, order)
   zeta.order$zeta.val <- zeta.val
   zeta.order$zeta.val.sd <- zeta.val.sd
 
   return(zeta.order)
 
+}
+
+
+
+
+#' Number of species in common between a specific number of assemblages or sites using Monte Carlo sampling, for multiple combinations and several groups of taxa
+#'
+#' Computes the number of species shared by multiple assemblages, for a specific order (number of assemblages or sites), for multiple combinations and several groups of taxa.
+#' @param data.spec  A list of site-by-species presence-absence data frames, with sites as rows and species as columns.
+#' @param xy Site coordinates. This is only used if \code{NON} = TRUE or \code{DIR} = TRUE.
+#' @param order  Specific number of assemblages or sites at which zeta diversity is computed.
+#' @param sam  Number of samples for which the zeta diversity is computed.
+#' @param sd.correct Boolean value (TRUE or FALSE) indicating if the standard deviation must be computed with an unbiased estimator (using the number of site combinations - 1 as the denominator) or not (using the number of site combinations as the denominator).
+#' @param sd.correct.adapt Boolean value (TRUE or FALSE) indicating if the standard deviation must be computed with an unbiased estimator (using the number of site combinations - 1 as the denominator) if \code{sam} is higher than the number of possible combinations, or not (using the number of site combinations as the denominator) if \code{sam} is lower than the number of possible combinations. If \code{sd.correct.adapt == TRUE}, it takes precedence over \code{sd.correct}.
+#' @param rescale Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by \eqn{\zeta_1}, to get a range of values between 0 and 1.
+#' @param normalize Indicates if the zeta values for each sample should be divided by the total number of species for this specific sample (\code{normalize = "Jaccard"}), by the average number of species per site for this specific sample (\code{normalize = "Sorensen"}), or by the minimum number of species in the sites of this specific sample \cr (\code{normalize = "Simpson"}). Default value is \code{FALSE}, indicating that no normalization is performed.
+#' @param NON Boolean value (TRUE or FALSE) indicating if the number of species in common should only be counted for the nearest neighbours.
+#' @param FPO A vector with the coordinates of the fixed point origin from which the zeta diversity will be computed (overrides NON). In that case, \eqn{\zeta_1} is the number of species in the closest site to the FPO, \eqn{\zeta_2} is the number of species shared by the 2 closest sites, etc.
+#' @param DIR Boolean value (TRUE or FALSE) indicating if zeta diversity must be computed using a directed nearest neighbour scheme in the direction away from the FPO, starting from any site.
+#' @param empty.row Determines how to handle empty rows, i.e. sites with no species. Such sites can cause underestimations of zeta diversity, and computation errors for the normalized version of zeta due to divisions by 0. Options are "\code{empty}" to let the data untreated, "\code{remove}" to remove the empty rows, 0 to set the normalized zeta to 0 when zeta is divided by 0 during normalization (sites share no species, so are completely dissimilar), and 1 to set the normalized zeta to 1 when zeta is divided by 0 during normalization (i.e. sites are perfectly similar).
+#' @param silent  Boolean value (TRUE or FALSE) indicating if messages must be printed.
+#' @details Contrary to \code{Zeta.order.mc}, the number of species shared by the different combinations of assemblages are not averaged, but returned as is. This is useful to then compare local zeta diversity for different groups of taxa.
+#' @details As for \code{Zeta.order.mc}, if the number of combinations of sites is lower than the value of the parameter \code{sam}, all the combinations are used and an exact solution is computed. In that case, using the number of site combinations as the denominator may be appropriate to compute the standard deviation, if all sites were sampled and the zeta values. This can be adjusted with parameters \code{sd.correct} and \code{sd.correct.adapt}.
+#' @return \code{Zeta.order.mc.mult}  returns a list containing the following components:
+#' @return \item{zeta.order}{The number of assemblages or sites for which the zeta diversity was computed.}
+#' #' @return \item{sites}{A matrix in which each row contains the indices of a given combination, i.e. of the specific  \code{sam} assemblages.}
+#' @return \item{zeta.val}{A data frame in which each column is the number of species shared by the assemblages.}
+#' @references Hui C. & McGeoch M.A. (2014). Zeta diversity as a concept and metric that unifies incidence-based biodiversity patterns. \emph{The American Naturalist}, 184, 684-694.
+#' @seealso \code{\link{Zeta.decline.mc}}
+#' @examples
+#'
+#' utils::data(Marion.species)
+#' xy.marion <- Marion.species[1:2]
+#' 
+#' data.spec.marion <- Marion.species[3:33]
+#' 
+#' ##random other communities
+#' data.spec.marion2a <- data.spec.marion
+#' data.spec.marion2a[which(data.spec.marion2a==1,arr.ind=TRUE)] <- 0
+#' for(i in 1:ncol(data.spec.marion2a))
+#'   data.spec.marion2a[sample(nrow(data.spec.marion2a),8),i] <- 1
+
+#' data.spec.marion2b <- data.spec.marion
+#' data.spec.marion2b[which(data.spec.marion2b==1,arr.ind=TRUE)] <- 0
+#' for(i in 1:ncol(data.spec.marion2b))
+#' data.spec.marion2b[sample(nrow(data.spec.marion2b),8),i] <- 1
+#' 
+#' dat.spec.tot <- list(data.spec.marion,data.spec.marion2a,data.spec.marion2b)
+#' zeta.tot <- Zeta.order.mc.mult(data.spec=dat.spec.tot,order=3,sam=200)
+#'
+#' @export
+Zeta.order.mc.mult <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct = TRUE, sd.correct.adapt = FALSE, rescale = FALSE, normalize = FALSE, NON = FALSE, FPO = NULL, DIR = FALSE, empty.row = "empty", silent=TRUE){
+  
+  if(class(data.spec) != "list"){
+    stop("Error: ",paste(deparse(substitute(data.spec)), " is a ", class(data.spec), ". It must be a list of ata frames.", sep = ""))
+  }
+  
+  if((NON == TRUE || !is.null(FPO)) & is.null(xy)){
+    stop("Error: if NON = TRUE or !is.null(FPO), xy must be non null.")
+  }
+  if((NON == TRUE || !is.null(FPO)) && nrow(data.spec[[1]]) != nrow(xy)){
+    stop("Error: data.spec and xy must have the same number of rows.")
+  }
+  
+  x <- dim(data.spec[[1]])[1]
+  
+  zeta.val <- list()
+  u <- list()
+  #sites <- matrix(NA,sam,order)
+  
+  if (is.null(FPO)){
+    if(order==1){
+      for(i in 1:length(data.spec))
+        zeta.val[[i]]<-(rowSums(data.spec[[i]]))
+      sites <- matrix(1:length(data.spec),length(data.spec),1)
+    }else{
+      if(NON == FALSE){
+        if(choose(x, order)>sam){
+          if(silent==FALSE){
+            print(paste("Monte Carlo sampling for order",order))
+          }
+          for(i in 1:length(data.spec)){
+            u[[i]] <- rep(NA, sam)
+          }
+          sites <- matrix(NA,sam,order)
+          for(z in 1:sam){
+            samp <- sample(1:x, order, replace = FALSE)
+            sites[z,] <- samp
+            for(i in 1:length(data.spec)){
+              u[[i]][z] <- sum(apply(data.spec[[i]][samp, ], 2, prod))
+              if (normalize == "Jaccard"){
+                toto <- (ncol(data.spec[[i]])-sum(apply((1-data.spec[[i]][samp, ]), 2, prod)))
+                if(toto==0){
+                  if(empty.row == 0){
+                    u[[i]][z] <- 0
+                  }else if(empty.row == 1){
+                    u[[i]][z] <- 1
+                  }
+                }else
+                  u[[i]][z] <- u[[i]][z] / toto
+              }else if (normalize == "Sorensen"){
+                toto <- (mean(apply(data.spec[[i]][samp, ], 1, sum)))
+                if(toto==0){
+                  if(empty.row == 0){
+                    u[[i]][z] <- 0
+                  }else if(empty.row == 1){
+                    u[[i]][z] <- 1
+                  }
+                }else
+                  u[[i]][z] <- u[[i]][z] / toto
+              }else if (normalize == "Simpson"){
+                toto <- (min(apply(data.spec[[i]][samp, ], 1, sum)))
+                if(toto==0){
+                  if(empty.row == 0){
+                    u[[i]][z] <- 0
+                  }else if(empty.row == 1){
+                    u[[i]][z] <- 1
+                  }
+                }else
+                  u[[i]][z] <- u[[i]][z] / toto
+              }
+            }
+          }
+        }else{
+          if(silent==FALSE){
+            print(paste("Exact solution for order",order))
+          }
+          u <- list()
+          for(i in 1:length(data.spec)){
+            u[[i]] <- rep(NA, choose(x, order))
+          }
+          samp <- utils::combn(1:x, order)
+          sites <- t(samp)
+          for(i in 1:length(data.spec)){
+            for(z in 1:dim(samp)[2]){
+              u[[i]][z] <- sum(apply(data.spec[[i]][samp[, z], ], 2, prod))
+              if (normalize == "Jaccard"){
+                toto <- (ncol(data.spec[[i]])-sum(apply((1-data.spec[[i]][samp[, z], ]), 2, prod)))
+                if(toto==0){
+                  if(empty.row == 0){
+                    u[[i]][z] <- 0
+                  }else if(empty.row == 1){
+                    u[[i]][z] <- 1
+                  }
+                }else
+                  u[[i]][z] <- u[[i]][z] / toto
+              }else if (normalize == "Sorensen"){
+                toto <- (mean(apply(data.spec[[i]][samp[, z], ], 1, sum)))
+                if(toto==0){
+                  if(empty.row == 0){
+                    u[[i]][z] <- 0
+                  }else if(empty.row == 1){
+                    u[[i]][z] <- 1
+                  }
+                }else
+                  u[[i]][z] <- u[[i]][z] / toto
+              }else if (normalize == "Simpson"){
+                toto <- (min(apply(data.spec[[i]][samp[, z], ], 1, sum)))
+                if(toto==0){
+                  if(empty.row == 0){
+                    u[[i]][z] <- 0
+                  }else if(empty.row == 1){
+                    u[[i]][z] <- 1
+                  }
+                }else
+                  u[[i]][z] <- u[[i]][z] / toto
+              }
+            }
+          }
+        }
+      }else{
+        if(x>sam){
+          u <- list()
+          for(i in 1:length(data.spec)){
+            u[[i]] <- rep(NA, sam)
+          }
+          samps <- sample(1:x, sam, replace = FALSE)
+          sites <- matrix(NA,sam,order)
+          for(z in 1:sam){
+            samp <- samps[z]
+            xy.dist <- (xy[,1]-xy[samp,1])^2+(xy[,2]-xy[samp,2])^2
+            samp <- c(samp,order(xy.dist)[2:order])
+            sites[z,] <- samp
+            for(i in 1:length(data.spec)){
+              u[[i]][z] <- sum(apply(data.spec[[i]][samp, ], 2, prod))
+              
+              if (normalize == "Jaccard"){
+                toto <- (ncol(data.spec[[i]])-sum(apply((1-data.spec[[i]][samp, ]), 2, prod)))
+                if(toto==0){
+                  if(empty.row == 0){
+                    u[[i]][z] <- 0
+                  }else if(empty.row == 1){
+                    u[[i]][z] <- 1
+                  }
+                }else
+                  u[[i]][z] <- u[[i]][z] / toto
+              }else if (normalize == "Sorensen"){
+                toto <- (mean(apply(data.spec[[i]][samp, ], 1, sum)))
+                if(toto==0){
+                  if(empty.row == 0){
+                    u[[i]][z] <- 0
+                  }else if(empty.row == 1){
+                    u[[i]][z] <- 1
+                  }
+                }else
+                  u[[i]][z] <- u[[i]][z] / toto
+              }else if (normalize == "Simpson"){
+                toto <- (min(apply(data.spec[[i]][samp, ], 1, sum)))
+                if(toto==0){
+                  if(empty.row == 0){
+                    u[[i]][z] <- 0
+                  }else if(empty.row == 1){
+                    u[[i]][z] <- 1
+                  }
+                }else
+                  u[[i]][z] <- u[[i]][z] / toto
+              }
+            }
+          }
+        }else{
+          u <- list()
+          for(i in 1:length(data.spec)){
+            u[[i]] <- rep(NA, x)
+          }
+          samps <- 1:x
+          sites <- matrix(NA,x,order)
+          for(z in 1:x){
+            samp <- samps[z]
+            xy.dist <- (xy[,1]-xy[samp,1])^2+(xy[,2]-xy[samp,2])^2
+            samp <- c(samp,order(xy.dist)[2:order])
+            sites[z,] <- samp
+            for(i in 1:length(data.spec)){
+              u[[i]][z] <- sum(apply(data.spec[[i]][samp, ], 2, prod))
+              if (normalize == "Jaccard"){
+                toto <- (ncol(data.spec[[i]])-sum(apply((1-data.spec[[i]][samp, ]), 2, prod)))
+                if(toto==0){
+                  if(empty.row == 0){
+                    u[[i]][z] <- 0
+                  }else if(empty.row == 1){
+                    u[[i]][z] <- 1
+                  }
+                }else
+                  u[[i]][z] <- u[[i]][z] / toto
+              }else if (normalize == "Sorensen"){
+                toto <- (mean(apply(data.spec[[i]][samp, ], 1, sum)))
+                if(toto==0){
+                  if(empty.row == 0){
+                    u[[i]][z] <- 0
+                  }else if(empty.row == 1){
+                    u[[i]][z] <- 1
+                  }
+                }else
+                  u[[i]][z] <- u[[i]][z] / toto
+              }else if (normalize == "Simpson"){
+                toto <- (min(apply(data.spec[[i]][samp, ], 1, sum)))
+                if(toto==0){
+                  if(empty.row == 0){
+                    u[[i]][z] <- 0
+                  }else if(empty.row == 1){
+                    u[[i]][z] <- 1
+                  }
+                }else
+                  u[[i]][z] <- u[[i]][z] / toto
+              }
+            }
+          }
+        }
+      }
+      
+      if(rescale == TRUE & normalize == FALSE){
+        for(i in 1:length(data.spec)){
+          u[[i]] <- u[[i]] / ncol(data.spec[[i]][[1]])
+        }
+      }
+      
+      zeta.val <- u
+      
+    }
+  }else{
+    if(DIR == FALSE){
+      xy.dist <- (FPO[1]-xy[,1])^2+(FPO[2]-xy[,2])^2
+      samp <- order(xy.dist)[1:order]
+      sites=samp
+      for(i in 1:length(data.spec)){
+        zeta.val[[i]] <- sum(apply(data.spec[[i]][samp, ], 2, prod))
+        if (normalize == "Jaccard"){
+          toto <- (ncol(data.spec[[i]])-sum(apply((1-data.spec[[i]][samp, ]), 2, prod)))
+          if(toto==0){
+            if(empty.row == 0){
+              zeta.val[[i]] <- 0
+            }else if(empty.row == 1){
+              zeta.val[[i]] <- 1
+            }
+          }else
+            zeta.val[[i]] <- zeta.val[[i]] / toto
+        }else if (normalize == "Sorensen"){
+          toto <- (mean(apply(data.spec[[i]][samp, ], 1, sum)))
+          if(toto==0){
+            if(empty.row == 0){
+              zeta.val[[i]] <- 0
+            }else if(empty.row == 1){
+              zeta.val[[i]] <- 1
+            }
+          }else
+            zeta.val[[i]] <- zeta.val[[i]] / toto
+        }else if (normalize == "Simpson"){
+          toto <- (min(apply(data.spec[[i]][samp, ], 1, sum)))
+          if(toto==0){
+            if(empty.row == 0){
+              zeta.val[[i]] <- 0
+            }else if(empty.row == 1){
+              zeta.val[[i]] <- 1
+            }
+          }else
+            zeta.val[[i]] <- zeta.val[[i]] / toto
+        }
+      }
+    }else{
+      if(order==1){
+        for(i in 1:length(data.spec)){
+          zeta.val[[i]]<-rowSums(data.spec[[i]])
+        }
+      }else{
+        xy.FPO <- as.matrix(xy-FPO)
+        if(x>sam){
+          for(i in 1:length(data.spec)){
+            u[[i]] <- rep(NA, sam)
+          }
+          samps <- sample(1:x, sam, replace = FALSE)
+          sites <- matrix(NA,sam,order)
+          for(z in 1:sam){
+            samp <- samps[z]
+            xy0 <- xy.FPO[samp,]
+            no <- sqrt(sum(xy0^2))
+            R <- matrix(c(xy0[2]/no,xy0[1]/no,-xy0[1]/no,xy0[2]/no),2,2)
+            xy.FPO.tr <- apply(xy.FPO,1,function(xy.FPO,R,xy0,no){R %*% matrix(xy.FPO,2,1) - c(0,no)},R,xy0,no)
+            xy.FPO.tr <- as.data.frame(t(xy.FPO.tr))
+            xy.FPO.tr[samp,] <- c(0,0)
+            xy.FPO.tr[which(xy.FPO.tr[,2]<=0),] <- NA
+            
+            xy.dist <- xy.FPO.tr[,1]^2+xy.FPO.tr[,2]^2
+            
+            if(length(which(!is.na(xy.dist)))>=(order-1)){
+              samp <- c(samp,order(xy.dist)[1:(order-1)])
+              sites[z,] <- samp
+              for(i in 1:length(data.spec)){
+                u[[i]][z] <- sum(apply(data.spec[[i]][samp, ], 2, prod))
+                if (normalize == "Jaccard"){
+                  toto <- (ncol(data.spec[[i]])-sum(apply((1-data.spec[[i]][samp, ]), 2, prod)))
+                  if(toto==0){
+                    if(empty.row == 0){
+                      u[[i]][z] <- 0
+                    }else if(empty.row == 1){
+                      u[[i]][z] <- 1
+                    }
+                  }else
+                    u[[i]][z] <- u[[i]][z] / toto
+                }else if (normalize == "Sorensen"){
+                  toto <- (mean(apply(data.spec[[i]][samp, ], 1, sum)))
+                  if(toto==0){
+                    if(empty.row == 0){
+                      u[[i]][z] <- 0
+                    }else if(empty.row == 1){
+                      u[[i]][z] <- 1
+                    }
+                  }else
+                    u[[i]][z] <- u[[i]][z] / toto
+                }else if (normalize == "Simpson"){
+                  toto <- (min(apply(data.spec[[i]][samp, ], 1, sum)))
+                  if(toto==0){
+                    if(empty.row == 0){
+                      u[[i]][z] <- 0
+                    }else if(empty.row == 1){
+                      u[[i]][z] <- 1
+                    }
+                  }else
+                    u[[i]][z] <- u[[i]][z] / toto
+                }
+              }
+            }else{
+              if(silent==FALSE){
+                print(paste("warning: number of sites away from the FPO too low to compute zeta for order",order))
+              }
+              for(i in 1:length(data.spec)){
+                u[[i]][z] <- NA
+              }
+            }
+          }
+        }else{
+          for(i in 1:length(data.spec)){
+            u[[i]] <- rep(NA, x)
+          }
+          samps <- 1:x
+          sites <- matrix(NA,x,order)
+          for(z in 1:(x-order+1)){
+            samp <- samps[z]
+            
+            xy0 <- xy.FPO[samp,]
+            no <- sqrt(sum(xy0^2))
+            R <- matrix(c(xy0[2]/no,xy0[1]/no,-xy0[1]/no,xy0[2]/no),2,2)
+            xy.FPO.tr <- apply(xy.FPO,1,function(xy.FPO,R,xy0,no){R %*% matrix(xy.FPO,2,1) - c(0,no)},R,xy0,no)
+            xy.FPO.tr <- as.data.frame(t(xy.FPO.tr))
+            xy.FPO.tr[samp,] <- c(0,0)
+            xy.FPO.tr[which(xy.FPO.tr[,2]<=0),] <- NA
+            
+            xy.dist <- xy.FPO.tr[,1]^2+xy.FPO.tr[,2]^2
+            
+            if(length(which(!is.na(xy.dist)))>=(order-1)){
+              samp <- c(samp,order(xy.dist)[1:(order-1)])
+              sites[z,] <- samp
+              for(i in 1:length(data.spec)){
+                u[[i]][z] <- sum(apply(data.spec[[i]][samp, ], 2, prod))
+                if (normalize == "Jaccard"){
+                  toto <- (ncol(data.spec[[i]])-sum(apply((1-data.spec[[i]][samp, ]), 2, prod)))
+                  if(toto==0){
+                    if(empty.row == 0){
+                      u[[i]][z] <- 0
+                    }else if(empty.row == 1){
+                      u[[i]][z] <- 1
+                    }
+                  }else
+                    u[[i]][z] <- u[[i]][z] / toto
+                }else if (normalize == "Sorensen"){
+                  toto <- (mean(apply(data.spec[[i]][samp, ], 1, sum)))
+                  if(toto==0){
+                    if(empty.row == 0){
+                      u[[i]][z] <- 0
+                    }else if(empty.row == 1){
+                      u[[i]][z] <- 1
+                    }
+                  }else
+                    u[[i]][z] <- u[[i]][z] / toto
+                }else if (normalize == "Simpson"){
+                  toto <- (min(apply(data.spec[[i]][samp, ], 1, sum)))
+                  if(toto==0){
+                    if(empty.row == 0){
+                      u[[i]][z] <- 0
+                    }else if(empty.row == 1){
+                      u[[i]][z] <- 1
+                    }
+                  }else
+                    u[[i]][z] <- u[[i]][z] / toto
+                }
+              }
+            }else{
+              if(silent==FALSE){
+                print(paste("warning: number of sites away from the FPO too low to compute zeta for order",order))
+              }
+              for(i in 1:length(data.spec)){
+                u[[i]][z] <- NA
+              }
+            }
+          }
+        }
+      }
+      zeta.val <- u
+    }
+    
+    
+    
+  }
+  
+  zeta.order.mult <- list()
+  zeta.order.mult$zeta.order <- order
+  zeta.order.mult$sites <- sites
+  zeta.order.mult$zeta.val <- data.frame(t(matrix(unlist(zeta.val), nrow=length(zeta.val), byrow=T)))
+  
+  return(zeta.order.mult)
 }
 
 
@@ -1040,6 +1514,7 @@ Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct 
 #' @details The exponential and the power law fit are performed using linear regressions on log-transformed data (only the zeta values are log-transformed for the exponential fit, and both the orders and the zeta values are log-transformed for the power law fit).
 #' @return \code{Zeta.decline.ex} returns a list containing the following components:
 #' @return \item{zeta.order}{The number of assemblages or sites for which the zeta diversity was computed.}
+#' @return \item{combinations}{The number of possible combinations of sites for the chosen orders.}
 #' @return \item{zeta.val}{The zeta diversity values.}
 #' @return \item{zeta.val.sd}{The zeta diversity standard deviation values.}
 #' @return \item{zeta.ratio}{The ratio of zeta diversity values by the zeta diversity values at the lower order \eqn{\zeta_i / \zeta_{i-1}}.}
@@ -1049,6 +1524,7 @@ Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct 
 #' @return \item{zeta.pl.confint}{The confidence intervals of the coefficients of the power law regression.}
 #' @return \item{aic}{AIC values for \code{zeta.exp} and \code{zeta.pl}.}
 #' @references Hui C. & McGeoch M.A. (2014). Zeta diversity as a concept and metric that unifies incidence-based biodiversity patterns. \emph{The American Naturalist}, 184, 684-694.
+#' @references McGeoch M. A., Latombe G., Andrew N. R., Nakagawa S., Nipperess D. A., Roige M., Marzinelli E. M., Campbell A. H., Verges A., Thomas T., Steinberg P. D., Selwood K. E., Henriksen M. V. & Hui C. (2019). Measuring continuous compositional change using decline and decay in zeta diversity. \emph{Ecology}, 100(11), e02832.
 #' @seealso \code{\link{Zeta.decline.mc}}, \code{\link{Zeta.order.mc}}, \code{\link{Zeta.order.ex}}, \code{\link{Plot.zeta.decline}}
 #' @examples
 #' utils::data(bird.spec.coarse)
@@ -1113,6 +1589,7 @@ Zeta.decline.ex <- function(data.spec, orders = 1:10, sd.correct = TRUE, confint
   ##create a single list for output
   zeta <- list()
   zeta$zeta.order <- orders
+  zeta$combinations <- choose(x <- dim(data.spec)[1], orders)
   zeta$zeta.val <- zeta.val
   zeta$zeta.val.sd <- zeta.val.sd
   zeta$ratio <- zeta.val[2:length(zeta.val)]/zeta.val[1:(length(zeta.val)-1)]
@@ -1144,6 +1621,7 @@ Zeta.decline.ex <- function(data.spec, orders = 1:10, sd.correct = TRUE, confint
 
 
 
+
 #' Expectation of zeta diversity for a specific number of assemblages or sites
 #'
 #' Computes the expectation of zeta diversity, the number of species shared by multiple assemblages, for a specific order (number of assemblages or sites) using a formula based on the occupancy of the species.
@@ -1156,9 +1634,11 @@ Zeta.decline.ex <- function(data.spec, orders = 1:10, sd.correct = TRUE, confint
 #' @details \code{sd.correct} should be set to \code{TRUE} if the assemblages represent a subsample of the whole system. It can be set to \code{FALSE} if the sampling is exhaustive, for example in case of a continuous regular grid covering the whole study area.
 #' @return \code{zeta.order.ex}  returns a list containing the following components:
 #' @return \item{zeta.order}{The number of assemblages or sites for which the zeta diversity was computed.}
+#' @return \item{combinations}{The number of possible combinations of sites for the chosen order.}
 #' @return \item{zeta.val}{The zeta diversity values.}
 #' @return \item{zeta.val.sd}{The standard deviation of zeta diversity.}
 #' @references Hui C. & McGeoch M.A. (2014). zeta diversity as a concept and metric that unifies incidence-based biodiversity patterns. \emph{The American Naturalist}, 184, 684-694.
+#' @references McGeoch M. A., Latombe G., Andrew N. R., Nakagawa S., Nipperess D. A., Roige M., Marzinelli E. M., Campbell A. H., Verges A., Thomas T., Steinberg P. D., Selwood K. E., Henriksen M. V. & Hui C. (2019). Measuring continuous compositional change using decline and decay in zeta diversity. \emph{Ecology}, 100(11), e02832.
 #' @seealso \code{\link{Zeta.order.mc}}, \code{\link{Zeta.decline.ex}}, \code{\link{Zeta.decline.mc}}
 #' @examples
 #'
@@ -1169,7 +1649,7 @@ Zeta.decline.ex <- function(data.spec, orders = 1:10, sd.correct = TRUE, confint
 #' zeta.bird
 #'
 #' ##########
-#'
+#'s
 #' utils::data(Marion.species)
 #' data.spec.marion <- Marion.species[,3:33]
 #'
@@ -1207,12 +1687,14 @@ Zeta.order.ex <- function(data.spec, order = 1, sd.correct = TRUE, rescale = FAL
 
   zeta.order <- list()
   zeta.order$zeta.order <- order
+  zeta.order$combinations <- choose(x <- dim(data.spec)[1], order)
   zeta.order$zeta.val <- zeta.val
   zeta.order$zeta.val.sd <- zeta.val.sd
 
   return(zeta.order)
 
 }
+
 
 
 
@@ -1272,6 +1754,7 @@ Plot.zeta.decline <- function(zeta, sd.plot = TRUE, arrange.plots = TRUE){
 
 
 
+
 #' Sensitivity analysis for the sample size of zeta
 #'
 #' Computes zeta diversity for a given order (number of assemblages or sites) for a range of sample sizes, to assess the sensitivity to this parameter.
@@ -1316,7 +1799,7 @@ Plot.zeta.decline <- function(zeta, sd.plot = TRUE, arrange.plots = TRUE){
 #'
 #' dev.new()
 #' zeta.sens.marion <- Zeta.sam.sensitivity(data.spec.marion, order = 3,
-#'     sam.seq = seq(250,1000,250), reps = 20, plot = TRUE, notch = TRUE)
+#'     sam.seq = seq(50,250,50), reps = 20, plot = TRUE, notch = TRUE)
 #' zeta.sens.marion
 #' }
 #'
@@ -1363,13 +1846,14 @@ Zeta.sam.sensitivity <- function(data.spec, xy = NULL, order = 1, sam.seq, reps 
 
 
 
+
 #' Multi-site generalised dissimilarity modelling for a set of environmental variables and distances
 #'
 #' Computes a regression model of zeta diversity for a given order (number of assemblages or sites) against a set of environmental variables and distances between sites. The different regression models available are generalised linear models, generalised linear models with negative constraints, generalised additive models, shape constrained additive models, and I-splines.
 #' @param data.spec  Site-by-species presence-absence data frame, with sites as rows and species as columns.
 #' @param data.env  Site-by-variable data frame, with sites as rows and environmental variables as columns.
 #' @param xy Site coordinates, to account for distances between sites.
-#' @param data.spec.pred Site-by-species presence-absence data frame, with sites as rows and species as columns, for which zeta diversity will be computed and used as a predictor of the zeta diversity of \code{data.spec}.
+#' @param data.spec.pred Site-by-species presence-absence data frame or list of data frames, with sites as rows and species as columns, for which zeta diversity will be computed and used as a predictor of the zeta diversity of \code{data.spec}.
 #' @param order  Specific number of assemblages or sites at which zeta diversity is computed.
 #' @param sam  Number of samples for which the zeta diversity is computed.
 #' @param reg.type Type of regression used in the multi-site generalised dissimilarity modelling. Options are "\code{glm}" for generalised linear models, "\code{ngls}" for negative linear models, "\code{gam}" for generalised additive models, "\code{scam}" for shape constrained additive models (with monotonic decreasing by default), and "\code{ispline}" for I-spline models (forcing monotonic decline), as recommended in generalised dissimilarity modelling by Ferrier \emph{et al}. (2007).
@@ -1398,6 +1882,8 @@ Zeta.sam.sensitivity <- function(data.spec, xy = NULL, order = 1, sam.seq, reps 
 #' @return \item{range.min}{Vector containing the minimum values of the numeric variables, used for rescaling the variables between 0 and 1 for I-splines (see Details).}
 #' @return \item{range.max}{Vector containing the maximum values of the numeric variables, used for rescaling the variables between 0 and 1 for I-splines (see Details).}
 #' @return \item{rescale.factor}{Factor by which the predictors were divided if \code{rescale.pred = TRUE} and \code{order>1}.}
+#' @return \item{order.ispline}{The value of the original parameter, to be used in \code{Plot.ispline}.}
+#' @return \item{kn.ispline}{The value of the original parameter, to be used in \code{Plot.ispline}.}
 #' @return \item{model}{An object whose class depends on the type of regression (\code{glm}, \code{nnnpls}, \code{gam} or \code{scam}; I-splines return and object of class \code{glm}), corresponding to the regression over distance for the number of assemblages or sites specified in \code{order}.}
 #' @return \item{confint}{The confidence intervals for the coefficients from generalised linear models with no constraint. \code{confint} is not generated for the other types of regression.}
 #' @return \item{vif}{The variance inflation factors for all the variables for the generalised linear regression. \code{vif} is not generated for the other types of regression.}
@@ -1445,22 +1931,31 @@ Zeta.sam.sensitivity <- function(data.spec, xy = NULL, order = 1, sam.seq, reps 
 #' zeta.ispline <- Zeta.msgdm(data.spec.marion, data.env.marion, xy.marion, sam = 100,
 #'     order = 3, normalize = "Jaccard", reg.type = "ispline")
 #' zeta.ispline
+#' 
+#' zeta.ispline.r <- Return.ispline(zeta.ispline, data.env.marion, distance = TRUE)
+#' zeta.ispline.r
+#' 
+#' dev.new()
+#' Plot.ispline(isplines = zeta.ispline.r, distance = TRUE)
+#' 
+#' dev.new()
+#' Plot.ispline(msgdm = zeta.ispline, data.env = data.env.marion, distance = TRUE)
 #'
 #' @export
 Zeta.msgdm <- function(data.spec, data.env, xy = NULL, data.spec.pred = NULL, order = 1, sam = 1000, reg.type = "glm", family = stats::gaussian(), method.glm = "glm.fit.cons", cons = -1, cons.inter = 1, confint.level = 0.95,  bs = "mpd", kn = -1, order.ispline = 2, kn.ispline=1, distance.type = "Euclidean", dist.custom = NULL, rescale = FALSE, rescale.pred = TRUE, method = "mean", normalize = FALSE, silent = FALSE, empty.row = 0, control = list(), glm.init = FALSE){
-
-
-
+  
+  
+  
   if(nrow(data.spec) != nrow(data.env)){
     stop("Error: data.spec and data.env must have the same number of rows.")
   }
-
+  
   if(!is.null(xy)){
     if(nrow(data.spec) != nrow(xy) || nrow(data.env) != nrow(xy)){
       stop("Error: data.spec, data.env and xy must have the same number of rows.")
     }
   }
-
+  
   if(class(data.spec) != "data.frame"){
     stop(paste("Error: ",deparse(substitute(data.spec)), " is a ", class(data.spec), ". It must be a data frame.", sep = ""))
   }
@@ -1470,7 +1965,7 @@ Zeta.msgdm <- function(data.spec, data.env, xy = NULL, data.spec.pred = NULL, or
   if(order>dim(data.spec)[1]){
     stop("Error: wrong value for \"order\": it must be equal or lower than the number of sites.")
   }
-
+  
   if (length(setdiff(sapply(data.env, class), c("factor", "numeric")))>0){
     stop("Error: variables must be numeric or factor")
   }
@@ -1485,19 +1980,24 @@ Zeta.msgdm <- function(data.spec, data.env, xy = NULL, data.spec.pred = NULL, or
       warning("Distance matrix is not symmetrical")
     }
   }
-
+  
   if(empty.row == "remove"){
     if(length(which(rowSums(data.spec)==0))>0){
       data.env <- data.env[-which(rowSums(data.spec)==0),]
       if(!is.null(xy))
         xy <- xy[-which(rowSums(data.spec)==0),]
       if(!is.null(data.spec.pred))
-        data.spec.pred <- data.spec.pred[-which(rowSums(data.spec)==0),]
+        if(class(data.spec.pred)=="data.frame")
+          data.spec.pred <- data.spec.pred[-which(rowSums(data.spec)==0),]
+        if(class(data.spec.pred)=="list"){
+          for(p in 1:length(data.spec.pred))
+            data.spec.pred[[p]] <- data.spec.pred[[p]][-which(rowSums(data.spec)==0),]
+        }
       data.spec <- data.spec[-which(rowSums(data.spec)==0),]
     }
   }
-
-
+  
+  
   if(reg.type == "ispline"){
     num <- which(sapply(data.env, class) == "numeric")
     if(length(num)>1){
@@ -1508,18 +2008,18 @@ Zeta.msgdm <- function(data.spec, data.env, xy = NULL, data.spec.pred = NULL, or
       range.max <- max(data.env[, num])
     }
   }
-
+  
   if(reg.type == "ispline"){
-
+    
     data.env.num <- as.data.frame(data.env[,(which(sapply(data.env, class) == "numeric"))])
     names(data.env.num) <- names(data.env)[(which(sapply(data.env, class) == "numeric"))]
-
+    
     ts <- matrix(NA,ncol(data.env.num),2*order.ispline+kn.ispline)
     for(i in 1:ncol(data.env.num)){
       data.env.num[,i] <- (data.env.num[,i]-min(data.env.num[,i]))/(max(data.env.num[,i])-min(data.env.num[,i]))
       ts[i,] <- c(rep(0,order.ispline),stats::quantile(data.env.num[,i],probs=seq(1/(kn.ispline+1),1-1/(kn.ispline+1),1/(kn.ispline+1))),rep(1,order.ispline))
     }
-
+    
     IE <- matrix(NA,nrow(data.env.num),(ncol(data.env.num)*(order.ispline+kn.ispline)))
     k=order.ispline
     for(j in 1:ncol(data.env.num)){
@@ -1545,11 +2045,11 @@ Zeta.msgdm <- function(data.spec, data.env, xy = NULL, data.spec.pred = NULL, or
     names(Fa) <- names(data.env)[which(sapply(data.env, class) == "factor")]
     data.env <- cbind(data.frame(IE), Fa)
   }
-
+  
   x.dim <- dim(data.spec)[1]
   zeta.val <- numeric()
   zeta.val.sd <- numeric()
-
+  
   if(order==1){
     if(nrow(data.spec)<sam){
       zeta.val <- rowSums(data.spec)
@@ -1565,17 +2065,30 @@ Zeta.msgdm <- function(data.spec, data.env, xy = NULL, data.spec.pred = NULL, or
   }else{
     if(choose(x.dim, order)>sam){
       u <- rep(NA, sam)
-      if(!is.null(data.spec.pred))
-        u2 <- rep(NA, sam)
+      if(!is.null(data.spec.pred)){
+        if(class(data.spec.pred)=="data.frame")
+          u2 <- rep(NA, sam)
+        if(class(data.spec.pred)=="list"){
+          u2 <- list()
+          for(p in 1:length(data.spec.pred))
+            u2[[p]] <- rep(NA, sam)
+        }
+      }
       data.var <- as.data.frame(matrix(NA, sam, dim(data.env)[2]))
       distance <- rep(NA, sam)
-
+      
       for(z in 1:sam){
         samp <- sample(1:x.dim, order, replace = FALSE)
         u[z] <- sum(apply(data.spec[samp, ], 2, prod))
-        if(!is.null(data.spec.pred))
-          u2[z] <- sum(apply(data.spec.pred[samp, ], 2, prod))
-
+        if(!is.null(data.spec.pred)){
+          if(class(data.spec.pred)=="data.frame")
+            u2[z] <- sum(apply(data.spec.pred[samp, ], 2, prod))
+          if(class(data.spec.pred)=="list"){
+            for(p in 1:length(data.spec.pred))
+              u2[[p]][z] <- sum(apply(data.spec.pred[[p]][samp, ], 2, prod))
+          }
+        }
+        
         if (normalize == "Jaccard"){
           toto <- (ncol(data.spec)-sum(apply((1-data.spec[samp, ]), 2, prod)))
           if(toto==0){
@@ -1587,17 +2100,31 @@ Zeta.msgdm <- function(data.spec, data.env, xy = NULL, data.spec.pred = NULL, or
           }else
             u[z] <- u[z] / toto
           if(!is.null(data.spec.pred)){
-            tata <- (ncol(data.spec.pred)-sum(apply((1-data.spec.pred[samp, ]), 2, prod)))
-            if(tata==0){
-              if(empty.row == 0){
-                u2[z] <- 0
-              }else if(empty.row == 1){
-                u2[z] <- 1
+            if(class(data.spec.pred)=="data.frame"){
+              tata <- (ncol(data.spec.pred)-sum(apply((1-data.spec.pred[samp, ]), 2, prod)))
+              if(tata==0){
+                if(empty.row == 0){
+                  u2[z] <- 0
+                }else if(empty.row == 1){
+                  u2[z] <- 1
+                }
+              }else
+                u2[z] <- u2[z] / tata
+            }
+            if(class(data.spec.pred)=="list"){
+              for(p in 1:length(data.spec.pred)){
+                tata <- (ncol(data.spec.pred[[p]])-sum(apply((1-data.spec.pred[[p]][samp, ]), 2, prod)))
+                if(tata==0){
+                  if(empty.row == 0){
+                    u2[[p]][z] <- 0
+                  }else if(empty.row == 1){
+                    u2[[p]][z] <- 1
+                  }
+                }else
+                  u2[[p]][z] <- u2[[p]][z] / tata
               }
-            }else
-              u2[z] <- u2[z] / tata
+            }
           }
-
         }else if (normalize == "Sorensen"){
           toto <- (mean(apply(data.spec[samp, ], 1, sum)))
           if(toto==0){
@@ -1609,15 +2136,30 @@ Zeta.msgdm <- function(data.spec, data.env, xy = NULL, data.spec.pred = NULL, or
           }else
             u[z] <- u[z] / toto
           if(!is.null(data.spec.pred)){
-            tata <- (mean(apply(data.spec.pred[samp, ], 1, sum)))
-            if(tata==0){
-              if(empty.row == 0){
-                u2[z] <- 0
-              }else if(empty.row == 1){
-                u2[z] <- 1
+            if(class(data.spec.pred)=="data.frame"){
+              tata <- (mean(apply(data.spec.pred[samp, ], 1, sum)))
+              if(tata==0){
+                if(empty.row == 0){
+                  u2[z] <- 0
+                }else if(empty.row == 1){
+                  u2[z] <- 1
+                }
+              }else
+                u2[z] <- u2[z] / tata
+            }
+            if(class(data.spec.pred)=="list"){
+              for(p in 1:length(data.spec.pred)){
+                tata <- (mean(apply(data.spec.pred[[p]][samp, ], 1, sum)))
+                if(tata==0){
+                  if(empty.row == 0){
+                    u2[[p]][z] <- 0
+                  }else if(empty.row == 1){
+                    u2[[p]][z] <- 1
+                  }
+                }else
+                  u2[[p]][z] <- u2[[p]][z] / tata
               }
-            }else
-              u2[z] <- u2[z] / tata
+            }
           }
         }else if (normalize == "Simpson"){
           toto <- (min(apply(data.spec[samp, ], 1, sum)))
@@ -1630,21 +2172,36 @@ Zeta.msgdm <- function(data.spec, data.env, xy = NULL, data.spec.pred = NULL, or
           }else
             u[z] <- u[z] / toto
           if(!is.null(data.spec.pred)){
-            tata <- (min(apply(data.spec.pred[samp, ], 1, sum)))
-            if(tata==0){
-              if(empty.row == 0){
-                u2[z] <- 0
-              }else if(empty.row == 1){
-                u2[z] <- 1
+            if(class(data.spec.pred)=="data.frame"){
+              tata <- (min(apply(data.spec.pred[samp, ], 1, sum)))
+              if(tata==0){
+                if(empty.row == 0){
+                  u2[z] <- 0
+                }else if(empty.row == 1){
+                  u2[z] <- 1
+                }
+              }else
+                u2[z] <- u2[z] / tata
+            }
+            if(class(data.spec.pred)=="list"){
+              for(p in 1:length(data.spec.pred)){
+                tata <- (min(apply(data.spec.pred[[p]][samp, ], 1, sum)))
+                if(tata==0){
+                  if(empty.row == 0){
+                    u2[[p]][z] <- 0
+                  }else if(empty.row == 1){
+                    u2[[p]][z] <- 1
+                  }
+                }else
+                  u2[[p]][z] <- u2[[p]][z] / tata
               }
-            }else
-              u2[z] <- u2[z] / tata
+            }
           }
         }
-
+        
         fac <- which(sapply(data.env, class) == "factor")
         num <- which(sapply(data.env, class) == "numeric")
-
+        
         if(order>2){
           if(length(num)>1){
             data.var[z, num] <- apply(apply(data.env[samp, num], 2, stats::dist), 2, get(method))
@@ -1663,7 +2220,7 @@ Zeta.msgdm <- function(data.spec, data.env, xy = NULL, data.spec.pred = NULL, or
         }else if (length(fac)>0){
           data.var[z, fac] <- length(unique(data.env[samp, fac])) - 1
         }
-
+        
         if (!is.null(xy)){
           if(distance.type == "Euclidean"){
             distance[z] <- apply(as.matrix(c(stats::dist(xy[samp, ]))),2,get(method))
@@ -1680,24 +2237,44 @@ Zeta.msgdm <- function(data.spec, data.env, xy = NULL, data.spec.pred = NULL, or
           distance[z] <- apply(as.matrix(dist.custom[t(utils::combn(sort(samp),2))]),2,get(method))
         }
       }
+      
       if(rescale == TRUE & normalize == FALSE){
         u <- u / ncol(data.spec)
-        if(!is.null(data.spec.pred))
-          u2 <- u2 / ncol(data.spec.pred)
+        if(!is.null(data.spec.pred)){
+          if(class(data.spec.pred)=="data.frame")
+            u2 <- u2 / ncol(data.spec.pred)
+          if(class(data.spec.pred)=="list"){
+            for(p in 1:length(data.spec.pred))
+              u2[[p]] <- u2[[p]] / ncol(data.spec.pred[[p]])
+          }
+        }
       }
-
+      
     }else{
       u <- rep(NA, choose(x.dim, order))
-      if(!is.null(data.spec.pred))
-        u2 <- rep(NA, choose(x.dim, order))
+      if(!is.null(data.spec.pred)){
+        if(class(data.spec.pred)=="data.frame")
+          u2 <- rep(NA, choose(x.dim, order))
+        if(class(data.spec.pred)=="list"){
+          u2 <- list()
+          for(p in 1:length(data.spec.pred))
+            u2[[p]] <- rep(NA, choose(x.dim, order))
+        }
+      }
       data.var <- as.data.frame(matrix(NA, choose(x.dim, order), dim(data.env)[2]))
       distance <- rep(NA, choose(x.dim, order))
       samp <- utils::combn(1:x.dim, order)
-
+      
       for(z in 1:dim(samp)[2]){
         u[z] <- sum(apply(data.spec[samp[, z], ], 2, prod))
-        if(!is.null(data.spec.pred))
-          u2[z] <- sum(apply(data.spec.pred[samp[, z], ], 2, prod))
+        if(!is.null(data.spec.pred)){
+          if(class(data.spec.pred)=="data.frame")
+            u2[z] <- sum(apply(data.spec.pred[samp[, z], ], 2, prod))
+          if(class(data.spec.pred)=="list"){
+            for(p in 1:length(data.spec.pred))
+              u2[[p]][z] <- sum(apply(data.spec.pred[[p]][samp[, z], ], 2, prod))
+          }
+        }
         if (normalize == "Jaccard"){
           toto <- (ncol(data.spec)-sum(apply((1-data.spec[samp[, z], ]), 2, prod)))
           if(toto==0){
@@ -1709,15 +2286,30 @@ Zeta.msgdm <- function(data.spec, data.env, xy = NULL, data.spec.pred = NULL, or
           }else
             u[z] <- u[z] / toto
           if(!is.null(data.spec.pred)){
-            tata <- (ncol(data.spec.pred)-sum(apply((1-data.spec.pred[samp[, z], ]), 2, prod)))
-            if(tata==0){
-              if(empty.row == 0){
-                u2[z] <- 0
-              }else if(empty.row == 1){
-                u2[z] <- 1
+            if(class(data.spec.pred)=="data.frame"){
+              tata <- (ncol(data.spec.pred)-sum(apply((1-data.spec.pred[samp[, z], ]), 2, prod)))
+              if(tata==0){
+                if(empty.row == 0){
+                  u2[z] <- 0
+                }else if(empty.row == 1){
+                  u2[z] <- 1
+                }
+              }else
+                u2[z] <- u2[z] / tata
+            }
+            if(class(data.spec.pred)=="list"){
+              for(p in 1:length(data.spec.pred)){
+                tata <- (ncol(data.spec.pred[[p]])-sum(apply((1-data.spec.pred[[p]][samp[, z], ]), 2, prod)))
+                if(tata==0){
+                  if(empty.row == 0){
+                    u2[[p]][z] <- 0
+                  }else if(empty.row == 1){
+                    u2[[p]][z] <- 1
+                  }
+                }else
+                  u2[[p]][z] <- u2[[p]][z] / tata
               }
-            }else
-              u2[z] <- u2[z] / tata
+            }
           }
         }else if (normalize == "Sorensen"){
           toto <- (mean(apply(data.spec[samp[, z], ], 1, sum)))
@@ -1730,15 +2322,30 @@ Zeta.msgdm <- function(data.spec, data.env, xy = NULL, data.spec.pred = NULL, or
           }else
             u[z] <- u[z] / toto
           if(!is.null(data.spec.pred)){
-            tata <- (mean(apply(data.spec.pred[samp[, z], ], 1, sum)))
-            if(tata==0){
-              if(empty.row == 0){
-                u2[z] <- 0
-              }else if(empty.row == 1){
-                u2[z] <- 1
+            if(class(data.spec.pred)=="data.frame"){
+              tata <- (mean(apply(data.spec.pred[samp[, z], ], 1, sum)))
+              if(tata==0){
+                if(empty.row == 0){
+                  u2[z] <- 0
+                }else if(empty.row == 1){
+                  u2[z] <- 1
+                }
+              }else
+                u2[z] <- u2[z] / tata
+            }
+            if(class(data.spec.pred)=="list"){
+              for(p in 1:length(data.spec.pred)){
+                tata <- (mean(apply(data.spec.pred[[p]][samp[, z], ], 1, sum)))
+                if(tata==0){
+                  if(empty.row == 0){
+                    u2[[p]][z] <- 0
+                  }else if(empty.row == 1){
+                    u2[[p]][z] <- 1
+                  }
+                }else
+                  u2[[p]][z] <- u2[[p]][z] / tata
               }
-            }else
-              u2[z] <- u2[z] / tata
+            }
           }
         }else if (normalize == "Simpson"){
           toto <- (min(apply(data.spec[samp[, z], ], 1, sum)))
@@ -1751,21 +2358,36 @@ Zeta.msgdm <- function(data.spec, data.env, xy = NULL, data.spec.pred = NULL, or
           }else
             u[z] <- u[z] / toto
           if(!is.null(data.spec.pred)){
-            tata <- (min(apply(data.spec.pred[samp[, z], ], 1, sum)))
-            if(tata==0){
-              if(empty.row == 0){
-                u2[z] <- 0
-              }else if(empty.row == 1){
-                u2[z] <- 1
+            if(class(data.spec.pred)=="data.frame"){
+              tata <- (min(apply(data.spec.pred[samp[, z], ], 1, sum)))
+              if(tata==0){
+                if(empty.row == 0){
+                  u2[z] <- 0
+                }else if(empty.row == 1){
+                  u2[z] <- 1
+                }
+              }else
+                u2[z] <- u2[z] / tata
+            }
+            if(class(data.spec.pred)=="list"){
+              for(p in 1:length(data.spec.pred)){
+                tata <- (min(apply(data.spec.pred[[p]][samp[, z], ], 1, sum)))
+                if(tata==0){
+                  if(empty.row == 0){
+                    u2[[p]][z] <- 0
+                  }else if(empty.row == 1){
+                    u2[[p]][z] <- 1
+                  }
+                }else
+                  u2[[p]][z] <- u2[[p]][z] / tata
               }
-            }else
-              u2[z] <- u2[z] / tata
+            }
           }
         }
-
+        
         fac <- which(sapply(data.env, class) == "factor")
         num <- which(sapply(data.env, class) == "numeric")
-
+        
         if(order>2){
           if(length(num)>1){
             data.var[z, num] <- apply(apply(data.env[samp[, z], num], 2, stats::dist), 2, get(method))
@@ -1784,7 +2406,7 @@ Zeta.msgdm <- function(data.spec, data.env, xy = NULL, data.spec.pred = NULL, or
         }else if (length(fac)>0){
           data.var[z, fac] <- length(unique(data.env[samp[, z], fac])) - 1
         }
-
+        
         if (!is.null(xy)){
           if(distance.type == "Euclidean"){
             distance[z] <- apply(as.matrix(c(stats::dist(xy[samp[, z], ]))),2,get(method))
@@ -1803,18 +2425,24 @@ Zeta.msgdm <- function(data.spec, data.env, xy = NULL, data.spec.pred = NULL, or
       }
       if(rescale == TRUE & normalize == FALSE){
         u <- u / ncol(data.spec)
-        if(!is.null(data.spec.pred))
-          u2 <- u2 / ncol(data.spec.pred)
+        if(!is.null(data.spec.pred)){
+          if(class(data.spec.pred)=="data.frame")
+            u2 <- u2 / ncol(data.spec.pred)
+          if(class(data.spec.pred)=="list"){
+            for(p in 1:length(data.spec.pred))
+              u2[[p]] <- u2[[p]] / ncol(data.spec.pred[[p]])
+          }
+        }
       }
     }
     zeta.val <- u
   }
-
+  
   if(!is.null(xy) | distance.type == "custom"){
     distance.raw <- distance
     d <- max(distance)
   }
-
+  
   ##rescale the environmental variables or distances between 0 and 1
   if(rescale.pred == TRUE){
     if(order>1){
@@ -1838,16 +2466,16 @@ Zeta.msgdm <- function(data.spec, data.env, xy = NULL, data.spec.pred = NULL, or
       distance <- distance / max(distance)
     }
   }
-
-
+  
+  
   names(data.var) <- names(data.env)
-
+  
   if((!is.null(xy) | distance.type == "custom") & reg.type == "ispline"){
     #ts <- matrix(NA,1,2*order.ispline+ kn.ispline)
     #dist2 <- (distance-min(distance))/(max(distance)-min(distance))
     dist2 <- distance/max(distance)
     ts <- c(rep(0,order.ispline),stats::quantile(dist2,probs=seq(1/(kn.ispline+1),1-1/(kn.ispline+1),1/(kn.ispline+1))),rep(1,order.ispline))
-
+    
     IE <- matrix(NA,length(distance),(order.ispline+kn.ispline))
     k=order.ispline
     for(i in 1:(order.ispline+kn.ispline)){
@@ -1866,31 +2494,94 @@ Zeta.msgdm <- function(data.spec, data.env, xy = NULL, data.spec.pred = NULL, or
       names(distance)[i] <- paste("distance",i,sep="")
     }
   }
-
-  if(!is.null(data.spec.pred)){
-    #ts <- matrix(NA,1,2*order.ispline+ kn.ispline)
-    sp <- 1-u2
-    ts <- c(rep(0,order.ispline),stats::quantile(sp,probs=seq(1/(kn.ispline+1),1-1/(kn.ispline+1),1/(kn.ispline+1))),rep(1,order.ispline))
-
-    IE <- matrix(NA,length(u2),(order.ispline+kn.ispline))
-    k=order.ispline
-    for(i in 1:(order.ispline+kn.ispline)){
-      xx <- 0
-      for(x in sp){
-        xx <- xx+1
-        if(x==1){
-          IE[xx,i] <- 1
-        }else{
-          IE[xx,i] <- .Ii(i,k,x,ts)
+  
+  if(reg.type == "ispline"){
+    if(!is.null(data.spec.pred)){
+      if(class(data.spec.pred)=="data.frame"){
+        #ts <- matrix(NA,1,2*order.ispline+ kn.ispline)
+        sp <- 1-u2
+        spp <- matrix(sp,length(sp),1)
+        ts <- c(rep(0,order.ispline),stats::quantile(sp,probs=seq(1/(kn.ispline+1),1-1/(kn.ispline+1),1/(kn.ispline+1))),rep(1,order.ispline))
+        
+        IE <- matrix(NA,length(u2),(order.ispline+kn.ispline))
+        k=order.ispline
+        for(i in 1:(order.ispline+kn.ispline)){
+          xx <- 0
+          for(x in sp){
+            xx <- xx+1
+            if(x==1){
+              IE[xx,i] <- 1
+            }else{
+              IE[xx,i] <- .Ii(i,k,x,ts)
+            }
+          }
+        }
+        sp.prev <- data.frame(IE)
+        for(i in 1:(order.ispline+kn.ispline)){
+          names(sp.prev)[i] <- paste("Biotic",i,sep="")
+        }
+      }
+      if(class(data.spec.pred)=="list"){
+        for(p in 1:length(data.spec.pred)){
+          #ts <- matrix(NA,1,2*order.ispline+ kn.ispline)
+          sp <- 1-u2[[p]]
+          if(p==1){
+            spp <- matrix(sp,length(sp),1)
+          }else{
+            spp <- cbind(spp,sp)
+          }
+          ts <- c(rep(0,order.ispline),stats::quantile(sp,probs=seq(1/(kn.ispline+1),1-1/(kn.ispline+1),1/(kn.ispline+1))),rep(1,order.ispline))
+          
+          IE <- matrix(NA,length(u2[[p]]),(order.ispline+kn.ispline))
+          k=order.ispline
+          for(i in 1:(order.ispline+kn.ispline)){
+            xx <- 0
+            for(x in sp){
+              xx <- xx+1
+              if(x==1){
+                IE[xx,i] <- 1
+              }else{
+                IE[xx,i] <- .Ii(i,k,x,ts)
+              }
+            }
+          }
+          if(p==1){
+            sp.prev <- data.frame(IE)
+          }else{
+            sp.prev <- cbind(sp.prev,data.frame(IE))
+          }
+        }
+        pp <- 0
+        for(p in 1:length(data.spec.pred)){
+          for(i in 1:(order.ispline+kn.ispline)){
+            pp <- pp+1
+            names(sp.prev)[pp] <- paste("Biotic_",p,"_",i,sep="")
+          }
         }
       }
     }
-    sp.prev <- data.frame(IE)
-    for(i in 1:(order.ispline+kn.ispline)){
-      names(sp.prev)[i] <- paste("Biotic",i,sep="")
+  }else{
+    if(!is.null(data.spec.pred)){
+      if(class(data.spec.pred)=="data.frame"){
+        sp.prev <- data.frame(1-u2)
+        names(sp.prev) <- c("Biotic")
+      }
+      if(class(data.spec.pred)=="list"){
+        for(p in 1:length(data.spec.pred)){
+          if(p==1){
+            sp.prev <- data.frame(1-u2[[p]])
+          }else{
+            sp.prev <- cbind(sp.prev,data.frame(1-u2[[p]]))
+          }
+        }
+        for(p in 1:length(data.spec.pred)){
+          names(sp.prev)[p] <- paste("Biotic",p,sep="")
+        }
+      }
     }
   }
-
+  
+  
   if(is.null(xy) & distance.type!="custom" & is.null(data.spec.pred)){
     data.tot <- data.var
   }else if(is.null(xy) & distance.type!="custom" & !is.null(data.spec.pred)){
@@ -1900,21 +2591,21 @@ Zeta.msgdm <- function(data.spec, data.env, xy = NULL, data.spec.pred = NULL, or
   }else{
     data.tot <- cbind(data.var, sp.prev, distance)
   }
-
+  
   zeta.msgdm <- list()
   zeta.msgdm$val <- zeta.val
   zeta.msgdm$predictors <- data.tot
-
-
+  
+  
   if(reg.type == "ispline"){
     zeta.msgdm$range.min <- range.min
     zeta.msgdm$range.max <- range.max
     if(!is.null(data.spec.pred))
-      zeta.msgdm$biotic <- sp
+      zeta.msgdm$biotic <- spp
     if(!is.null(xy) | distance.type == "custom")
       zeta.msgdm$distance <- distance.raw
   }
-
+  
   if(rescale.pred == TRUE){
     if(order>1){
       if(!is.null(xy) | distance.type == "custom"){
@@ -1932,7 +2623,11 @@ Zeta.msgdm <- function(data.spec, data.env, xy = NULL, data.spec.pred = NULL, or
       }
     }
   }
-
+  
+  zeta.msgdm$my.order <- order
+  zeta.msgdm$order.ispline <- order.ispline
+  zeta.msgdm$kn.ispline <- kn.ispline
+  
   if(reg.type == "glm"){
     if(method.glm == "glm.fit.cons"){
       zeta.msgdm.model <- glm.cons(zeta.val ~ ., data = data.tot, family = family, method = method.glm, cons = cons, cons.inter = cons.inter, control = control)
@@ -1957,10 +2652,10 @@ Zeta.msgdm <- function(data.spec, data.env, xy = NULL, data.spec.pred = NULL, or
   }else if(reg.type == "scam"){
     ##create formula to be used in scam
     xnam <- names(data.tot)
-
+    
     fm <- stats::as.formula(paste("zeta.val ~ s(", paste(xnam, collapse = paste(", k = ",kn,", bs = '", bs,"') + s(",sep=""),sep=""),", k = ",kn, ",bs='", bs, "')",sep=""))
-
-    zeta.msgdm$model <- Scam.zeta(fm, data = data.tot, family = family)
+    
+    zeta.msgdm$model <- scam::scam(fm, data = data.tot, family = family)
   }else if(reg.type == "ispline"){
     if(glm.init == TRUE){
       tutu <- stats::cor(data.tot,zeta.val)
@@ -1972,10 +2667,11 @@ Zeta.msgdm <- function(data.spec, data.env, xy = NULL, data.spec.pred = NULL, or
   }else{
     stop("Error: unknown regression type.")
   }
-
+  
   return(zeta.msgdm)
-
+  
 }
+
 
 
 
@@ -2097,6 +2793,7 @@ glm.cons <- function (formula, family = stats::gaussian(), data, weights, subset
   class(fit) <- c(fit$class, c("glm", "lm"))
   fit
 }
+
 
 
 
@@ -2372,6 +3069,7 @@ glm.fit.cons <- function (x, y, weights = rep(1, nobs), cons = -1, cons.inter = 
 
 
 
+
 #' Transform data using I-splines
 #'
 #' Evaluates the I-splines for all variables of a data frame, as performed in \code{Zeta.msgdm}.
@@ -2421,9 +3119,102 @@ Ispline <- function(dat, order.ispline = 2, kn.ispline = 1, rescale = 0){
       names(IE)[(i-1)*(order.ispline+kn.ispline)+j] <- paste(names(dat)[i],j,sep="")
     }
   }
+  
+  out <- list()
+  out$splines <- IE
+  out$order.ispline = order.ispline
+  out$kn.ispline = kn.ispline
 
-  return(IE)
+  return(out)
 }
+
+
+
+#' Perform an I-spline regression
+#'
+#' Evaluates the I-splines for all variables of a data frame of predictor variables, and perform a generalised linear regression with constraint on the parameters.
+#' @param response A vector of numeric values representing the response variable.
+#' @param predictor A data frame of numeric variables representing the predictors.
+#' @param order.ispline Order of the I-spline.
+#' @param kn.ispline Number of knots in the I-spline.
+#' @param family A description of the error distribution and link function to be used in the \code{glm} model (see \code{\link[stats]{family}} for details of family functions).
+#' @param method.glm Method used in fitting the generalised linear model. The default method \cr "glm.fit.cons" is an adaptation of method \code{glm.fit2} from package \code{glm2} using a constrained least squares regression in the reweighted least squares. Another option is "glm.fit2", which calls \code{glm.fit2}; see help documentation for glm.fit2 in package \code{glm2}.
+#' @param cons type of constraint in the glm if \code{method.glm = "glm.fit.cons"}. Default is 1 for positive coefficients on the predictors. The other option is -1 for negative coefficients on the predictors.
+#' @param cons.inter type of constraint for the intercept. Default is 1 for positive intercept, suitable for Gaussian family. The other option is -1 for negative intercept, suitable for binomial family.
+#' @param Plot Boolean value indicating if the I-splines must be plotted.
+#' @param lty Line types to be used in the plotting. If nothing is provided, \code{lty} is a sequence of integers from 1 to the number of variables used for the computation of \code{msgdm}.
+#' @param lwd Line width.
+#' @param control As for \code{\link{glm}}.
+#' @details \code{Reg.ispline} performs a non-linear regression using a combination of GLM and I-splines. It can, for example, be used to compare regression outputs when using MS-GDM with I-splines on environmental variables and biotic variables as in \code{Zetya.msgdm} to the same regression approach without environmental variables.
+#' @return \code{Reg.ispline} returns a list of the following elements:
+#' @return \item{splines}{A data frame in which each columns contains the value resulting from the transformation of the predictors into individual I-splines. The number of columns of \code{splines} is the number of predictors times the number of splines (determined as the sum of \code{order.ispline} and \code{kn.ispline}).}
+#' @return \item{spline}{A data frame in which each columns contains the value resulting from the combinations of the individual I-splines. This combination is obtained by multiplying the coefficients of \code{model} and the values of the individual I-splines \code{splines}}.
+#' @return \item{model}{A \code{\link{glm}} model using \code{response} as the response variable, and \code{splines} as the predictors}.
+#' @references Ramsay, J. O. (1988). Monotone regression splines in action. \emph{Statistical Science}, 425-441.
+#' @seealso \code{\link{Zeta.msgdm}},\code{\link{Ispline}}
+#' @examples
+#' utils::data(Marion.species)
+#' xy.marion <- Marion.species[1:2]
+#' 
+#' data.spec.marion <- Marion.species[3:33]
+#' 
+#' ##random other communities
+#' data.spec.marion2a <- data.spec.marion
+#' data.spec.marion2a[which(data.spec.marion2a==1,arr.ind=TRUE)] <- 0
+#' for(i in 1:ncol(data.spec.marion2a))
+#'   data.spec.marion2a[sample(nrow(data.spec.marion2a),8),i] <- 1
+
+#' data.spec.marion2b <- data.spec.marion
+#' data.spec.marion2b[which(data.spec.marion2b==1,arr.ind=TRUE)] <- 0
+#' for(i in 1:ncol(data.spec.marion2b))
+#' data.spec.marion2b[sample(nrow(data.spec.marion2b),8),i] <- 1
+#' 
+#' dat.spec.tot <- list(data.spec.marion,data.spec.marion2a,data.spec.marion2b)
+#' zeta.tot <- Zeta.order.mc.mult(data.spec=dat.spec.tot,order=3,sam=200)
+#' zeta.splines <- Ispline(zeta.tot$zeta.val[,2:3])
+#' data.tot <- data.frame(zeta.val=zeta.tot$zeta.val[,1],zeta.splines$splines)
+#' 
+#' dev.new()
+#' Reg.ispline(response = zeta.tot$zeta.val[,1], predictor = zeta.tot$zeta.val[,2:3], lwd=2, cons=1)
+#' @export
+Reg.ispline <- function(response, predictor, order.ispline = 2, kn.ispline = 1, family = stats::gaussian(), method.glm = "glm.fit.cons", cons = 1, cons.inter = 1, control = list(), Plot = TRUE, lty = NULL, lwd = 1){
+  
+  if(is.null(lty)){
+    lty=1:ncol(predictor)
+  }
+  
+  n.splines <- order.ispline+kn.ispline
+  
+  predictor.spline <- Ispline(predictor,order.ispline = order.ispline, kn.ispline = kn.ispline)
+  
+  data.tot <- data.frame(response=response,predictor=predictor.spline)
+  
+  reg.model <- glm.cons(response ~ ., data = predictor.spline$splines, family = family, method = method.glm, cons = cons, cons.inter = cons.inter, control = control)
+  
+  splines <- matrix(NA,nrow(predictor),ncol(predictor))
+  for(i in 1:ncol(predictor)){
+    splines[,i] <- rowSums(matrix(reg.model$coefficients[(2+(i-1)*n.splines):(i*n.splines+1)],nrow(predictor.spline$splines),3,byrow = TRUE)*predictor.spline$splines[,(1+(i-1)*n.splines):(i*n.splines)])
+  }
+  
+  if(Plot==TRUE){
+    graphics::plot(sort(predictor[,1]),splines[order(predictor[,1]),1],type="l",xlim=range(predictor),ylim=range(splines),lwd=lwd,lty=lty[1])
+    if(ncol(predictor)>1){
+      for(i in 2:ncol(predictor)){
+        graphics::lines(sort(predictor[,i]),splines[order(predictor[,i]),2],lwd=lwd,lty=lty[i])
+      }
+    }
+    graphics::legend(x="topleft",legend = names(predictor),lwd=lwd,lty=lty,bty="n")
+  }
+  
+  out.list <- list()
+  out.list$splines <- predictor.spline
+  out.list$spline.tot <- splines
+  out.list$model <- reg.model
+  
+  return(out.list)
+}
+
+
 
 
 #' Predict zeta values for new environmental and distance data
@@ -2494,22 +3285,20 @@ Predict.msgdm <- function(model.msgdm, reg.type, newdata, type = "response"){
 }
 
 
-#' Plotting splines from I-spline-based multi-site generalised dissimilarity modelling
+
+
+
+#' Computing splines coordinates from I-spline-based multi-site generalised dissimilarity modelling
 #'
-#' Plots the I-splines resulting from \code{Zeta.msgdm}.
+#' Stores the coordinates of the I-splines resulting from \code{Zeta.msgdm} for plotting.
 #' @param msgdm  Output of function \code{Zeta.msgdm} computed with \code{reg.type = ispline}.
 #' @param data.env  Site-by-variable data frame used for the computation of \code{msgdm}, with sites as rows and environmental variables as columns.
 #' @param distance Boolean, indicates is distance was used in the computation of \code{msgdm}.
-#' @param my.order Zeta order, necessary to draw the line for categorical variables.
-#' @param biotic Boolean, indicates is zeta diversity from another community was used in the computation of \code{msgdm}.
-#' @param order.ispline Order of the I-spline.
-#' @param kn.ispline Number of knots in the I-spline.
-#' @param pch Shapes of the points to be used in the plotting. If nothing is provided, \code{pch} is a sequence of integers from 1 to the number of variables used for the computation of \code{msgdm}.
-#' @param lty Line types to be used in the plotting. If nothing is provided, \code{pch} is a sequence of integers from 1 to the number of variables used for the computation of \code{msgdm}.
-#' @param legend  Boolean, indicates if the legend must be drawn.
-#' @param lwd Line width.
-#' @param cex Point size.
-#' @return A plot of the I-splines computed by \code{Zeta.msgdm} with \code{reg.type = ispline}. All splines are drawned on the same plot, and their ranges are rescaled between 0 and 1 for comparison.
+#' @param biotic Integer, indicates the number of other groups of taxa for which zeta diversity was computed and used in the computation of \code{msgdm}.
+#' @details \code{Return.ispline} allows to store the same number of coordinates for all I-splines, to average replicates and obtain confidence intervals.
+#' @return \code{Return.ispline} returns a list containing the following components used to plot the I-splines:
+#' @return \item{env}{A data frame containing the rescaled environmental (numeric and factor), distance and biotic x-values.}
+#' @return \item{Ispline}{A data frame containing the I-spline values corresponding to the rescaled environmental (numeric and factor), distance and biotic x-values.}
 #' @seealso \code{\link{Zeta.msgdm}}, \code{\link{Ispline}}
 #' @examples
 #'
@@ -2523,78 +3312,103 @@ Predict.msgdm <- function(model.msgdm, reg.type, newdata, type = "response"){
 #' zeta.ispline <- Zeta.msgdm(data.spec.marion, data.env.marion, xy.marion, sam = 100,
 #'     order = 3, normalize = "Jaccard", reg.type = "ispline")
 #' zeta.ispline
+#' zeta.ispline.r <- Return.ispline(zeta.ispline, data.env.marion, distance = TRUE)
+#' zeta.ispline.r
+#' 
 #' dev.new()
-#' Plot.ispline(zeta.ispline, data.env.marion, distance = TRUE)
+#' Plot.ispline(isplines = zeta.ispline.r, distance = TRUE)
+#' 
+#' dev.new()
+#' Plot.ispline(msgdm = zeta.ispline, data.env = data.env.marion, distance = TRUE)
 #'
 #' @export
-Plot.ispline <- function (msgdm, data.env, distance = FALSE, my.order = NULL, biotic = FALSE, order.ispline = 2, kn.ispline = 1, pch = NULL, lty = NULL, legend = TRUE, lwd = 1, cex = 1){
-
+#' 
+Return.ispline <- function (msgdm, data.env, distance = FALSE, biotic = 0){
+  
+  
+  ##for retro-compatibility
+  if(biotic==FALSE)
+    biotic <- 0
+  if(biotic==TRUE)
+    biotic <- 1
+  ##
+  
+  my.order <- msgdm$my.order
+  order.ispline = msgdm$order.ispline
+  kn.ispline = msgdm$kn.ispline
+  
   num.splines <- order.ispline+kn.ispline
-
+  
   data.env.num <- as.data.frame(data.env[,(which(sapply(data.env, class) == "numeric"))])
   names(data.env.num) <- names(data.env)[(which(sapply(data.env, class) == "numeric"))]
-
+  
   Fa <- as.data.frame(data.env[,which(sapply(data.env, class) == "factor")])
   names(Fa) <- names(data.env)[which(sapply(data.env, class) == "factor")]
-
-  if(distance == FALSE & biotic == FALSE){
+  
+  if(distance == FALSE & biotic == 0){
     XX <- as.data.frame(matrix(rep(seq(0,1,0.01),ncol(data.env)),101,ncol(data.env)))
     names(XX) <- names(data.env)
-  }else if(distance == TRUE & biotic == FALSE){
+  }else if(distance == TRUE & biotic == 0){
     XX <- as.data.frame(matrix(rep(seq(0,1,0.01),ncol(data.env)+1),101,ncol(data.env)+1))
     names(XX) <- c(names(data.env),"Distance")
-  }else if(distance == FALSE & biotic == TRUE){
-    XX <- as.data.frame(matrix(rep(seq(0,1,0.01),ncol(data.env)+1),101,ncol(data.env)+1))
-    names(XX) <- c(names(data.env),"Biotic")
+  }else if(distance == FALSE & biotic > 0){
+    XX <- as.data.frame(matrix(rep(seq(0,1,0.01),ncol(data.env)+biotic),101,ncol(data.env)+biotic))
+    names(XX) <- c(names(data.env),paste("Biotic",1:biotic,sep=""))
   }else{
-    XX <- as.data.frame(matrix(rep(seq(0,1,0.01),ncol(data.env)+2),101,ncol(data.env)+2))
-    names(XX) <- c(names(data.env),"Biotic","Distance")
+    XX <- as.data.frame(matrix(rep(seq(0,1,0.01),ncol(data.env)+biotic+1),101,ncol(data.env)+biotic+1))
+    names(XX) <- c(names(data.env),paste("Biotic",1:biotic,sep=""),"Distance")
   }
-
-
-  env.ispline <- Ispline(data.env.num,rescale=1, order.ispline = order.ispline, kn.ispline = kn.ispline)
+  
+  
+  env.ispline <- Ispline(data.env.num,rescale=1, order.ispline = order.ispline, kn.ispline = kn.ispline)$splines
+  subsamp <- 0
   if(length(msgdm$val) < nrow(data.env)){
     ind.sel <- sample(nrow(data.env),length(msgdm$val))
     env.ispline <- env.ispline[ind.sel,]
+    data.env <- data.env[ind.sel,]
+    subsamp <- 1
   }
-
-  if(is.null(pch)){
-    pch <- 1:ncol(XX)
-  }
-  if(is.null(lty)){
-    lty <- 1:ncol(XX)
-  }
-
+  
+  
   if(distance == TRUE){
     d.ind <- c(sample(1:length(msgdm$val),min(nrow(data.env)-2,length(msgdm$val)-2)),which.max(msgdm$distance),which.min(msgdm$distance))
     d <- msgdm$distance[d.ind]
     d.spline <- msgdm$predictors[d.ind,(ncol(msgdm$predictors)-(num.splines-1)):ncol(msgdm$predictors)]
-
-    if(biotic == TRUE){
-      bio.ind <- c(sample(1:length(msgdm$val),min(nrow(data.env)-2,length(msgdm$val)-2)),which.max(msgdm$biotic),which.min(msgdm$biotic))
-      bio <- msgdm$biotic[bio.ind]
-      bio.spline <- msgdm$predictors[bio.ind,(ncol(msgdm$predictors)-(2*num.splines-1)):(ncol(msgdm$predictors)-num.splines)]
-
-
+    
+    if(biotic >0){
+      for(b in 1:biotic){
+        bio.ind <- c(sample(1:length(msgdm$val),min(nrow(data.env)-2,length(msgdm$val)-2)),which.max(msgdm$biotic[,b]),which.min(msgdm$biotic[,b]))
+        if(b==1){
+          bio <- msgdm$biotic[bio.ind,b]
+          bio <- matrix(bio,length(bio),1)
+          bio.spline <- msgdm$predictors[bio.ind,(ncol(msgdm$predictors)-((biotic-(b-2))*3-1)):(ncol(msgdm$predictors)-((biotic-(b-1))*3))]
+        }else{
+          bio <- cbind(bio,msgdm$biotic[bio.ind,b])
+          bio.spline <- cbind(bio.spline,msgdm$predictors[bio.ind,(ncol(msgdm$predictors)-((biotic-(b-2))*3-1)):(ncol(msgdm$predictors)-((biotic-(b-1))*3))])
+        }
+      }
+      
       if(length(which(sapply(data.env, class) == "factor"))==0){
         X.ispline <- cbind(env.ispline,bio.spline,d.spline)
-        Isplines.pred <- matrix(NA,ncol(data.env)+2,nrow(data.env))
-        for(i in 1:(ncol(data.env)+2)){
+        Isplines.pred <- matrix(NA,ncol(data.env)+biotic+1,nrow(data.env))
+        for(i in 1:(ncol(data.env)+biotic+1)){
           Isplines.pred[i,] <- rowSums(matrix(-stats::coef(msgdm$model)[(2+(i-1)*num.splines):(i*num.splines+1)],nrow(data.env),num.splines,byrow=TRUE)* X.ispline[,(1+(i-1)*num.splines):(i*num.splines)])
         }
       }else{
         X.ispline <- cbind(env.ispline,matrix(rep(1,ncol(Fa)*nrow(env.ispline)),nrow(env.ispline),ncol(Fa)),bio.spline,d.spline)
-        Isplines.pred <- matrix(NA,ncol(data.env)+2,nrow(data.env))
+        Isplines.pred <- matrix(NA,ncol(data.env)+biotic+1,nrow(data.env))
         for(i in 1:ncol(data.env.num)){
           Isplines.pred[i,] <- rowSums(matrix(-stats::coef(msgdm$model)[(2+(i-1)*num.splines):(i*num.splines+1)],nrow(data.env),num.splines,byrow=TRUE)* X.ispline[,(1+(i-1)*num.splines):(i*num.splines)])
         }
         ii <- 0
         for(i in (ncol(data.env.num)+1):(ncol(data.env.num)+ncol(Fa))){
-          ii < ii+1
-          Isplines.pred[i,] <- -stats::coef(msgdm$model)[(1+(i-2)*num.splines)+ii]* X.ispline[,(i-2)*num.splines+ii]
+          ii <- ii+1
+          Isplines.pred[i,] <- -stats::coef(msgdm$model)[(1+ncol(data.env.num)*num.splines)+ii]* X.ispline[,ncol(data.env.num)*num.splines+ii]
         }
-        Isplines.pred[ncol(data.env)+1,] <- rowSums(matrix(-stats::coef(msgdm$model)[(2+(ncol(data.env.num))*num.splines+ncol(Fa)):((ncol(data.env.num)+1)*num.splines+ncol(Fa)+1)],nrow(data.env),num.splines,byrow=TRUE)* X.ispline[,(1+ncol(data.env.num)*num.splines+ncol(Fa)):((ncol(data.env.num)+1)*num.splines+ncol(Fa))])
-        Isplines.pred[ncol(data.env)+2,] <- rowSums(matrix(-stats::coef(msgdm$model)[(2+(ncol(data.env.num))*num.splines+ncol(Fa)+num.splines):((ncol(data.env.num)+1)*num.splines+ncol(Fa)+1+num.splines)],nrow(data.env),num.splines,byrow=TRUE)* X.ispline[,(1+ncol(data.env.num)*num.splines+ncol(Fa)+num.splines):((ncol(data.env.num)+1)*num.splines+ncol(Fa)+num.splines)])
+        for(b in 1:biotic){
+          Isplines.pred[ncol(data.env)+b,] <- rowSums(matrix(-stats::coef(msgdm$model)[(2+(ncol(data.env.num)+b-1)*num.splines+ncol(Fa)):((ncol(data.env.num)+b)*num.splines+ncol(Fa)+1)],nrow(data.env),num.splines,byrow=TRUE)* X.ispline[,(1+(ncol(data.env.num)+b-1)*num.splines+ncol(Fa)):((ncol(data.env.num)+b)*num.splines+ncol(Fa))])
+        }
+        Isplines.pred[ncol(data.env)+biotic+1,] <- rowSums(matrix(-stats::coef(msgdm$model)[(2+(ncol(data.env.num)+biotic-1)*num.splines+ncol(Fa)+num.splines):((ncol(data.env.num)+biotic)*num.splines+ncol(Fa)+1+num.splines)],nrow(data.env),num.splines,byrow=TRUE)* X.ispline[,(1+(ncol(data.env.num)+biotic-1)*num.splines+ncol(Fa)+num.splines):((ncol(data.env.num)+biotic)*num.splines+ncol(Fa)+num.splines)])
       }
     }else{
       if(length(which(sapply(data.env, class) == "factor"))==0){
@@ -2611,36 +3425,46 @@ Plot.ispline <- function (msgdm, data.env, distance = FALSE, my.order = NULL, bi
         }
         ii <- 0
         for(i in (ncol(data.env.num)+1):(ncol(data.env.num)+ncol(Fa))){
-          ii < ii+1
-          Isplines.pred[i,] <- -stats::coef(msgdm$model)[(1+(i-2)*num.splines)+ii]* X.ispline[,(i-2)*num.splines+ii]
+          ii <- ii+1
+          Isplines.pred[i,] <- -stats::coef(msgdm$model)[(1+ncol(data.env.num)*num.splines)+ii]* X.ispline[,ncol(data.env.num)*num.splines+ii]
         }
         Isplines.pred[ncol(data.env)+1,] <- rowSums(matrix(-stats::coef(msgdm$model)[(2+(ncol(data.env.num))*num.splines+ncol(Fa)):((ncol(data.env.num)+1)*num.splines+ncol(Fa)+1)],nrow(data.env),num.splines,byrow=TRUE)* X.ispline[,(1+ncol(data.env.num)*num.splines+ncol(Fa)):((ncol(data.env.num)+1)*num.splines+ncol(Fa))])
       }
     }
   }else{
-    if(biotic == TRUE){
-      bio.ind <- c(sample(1:length(msgdm$val),,min(nrow(data.env)-2,length(msgdm$val)-2)),which.max(msgdm$biotic),which.min(msgdm$biotic))
-      bio <- msgdm$biotic[bio.ind]
-      bio.spline <- msgdm$predictors[bio.ind,(ncol(msgdm$predictors)-(2*num.splines-1)):(ncol(msgdm$predictors)-num.splines)]
-
+    if(biotic > 0){
+      for(b in 1:biotic){
+        bio.ind <- c(sample(1:length(msgdm$val),min(nrow(data.env)-2,length(msgdm$val)-2)),which.max(msgdm$biotic[,b]),which.min(msgdm$biotic[,b]))
+        if(b==1){
+          bio <- msgdm$biotic[bio.ind,b]
+          bio <- matrix(bio,length(bio),1)
+          bio.spline <- msgdm$predictors[bio.ind,(ncol(msgdm$predictors)-((biotic-(b-1))*3-1)):(ncol(msgdm$predictors)-((biotic-(b))*3))]
+        }else{
+          bio <- cbind(bio,msgdm$biotic[bio.ind,b])
+          bio.spline <- cbind(bio.spline,msgdm$predictors[bio.ind,(ncol(msgdm$predictors)-((biotic-(b-1))*3-1)):(ncol(msgdm$predictors)-((biotic-(b))*3))])
+        }
+      }
+      
       if(length(which(sapply(data.env, class) == "factor"))==0){
         X.ispline <- cbind(env.ispline,bio.spline)
-        Isplines.pred <- matrix(NA,ncol(data.env)+1,nrow(data.env))
-        for(i in 1:(ncol(data.env)+2)){
+        Isplines.pred <- matrix(NA,ncol(data.env)+biotic,nrow(data.env))
+        for(i in 1:(ncol(data.env)+biotic)){
           Isplines.pred[i,] <- rowSums(matrix(-stats::coef(msgdm$model)[(2+(i-1)*num.splines):(i*num.splines+1)],nrow(data.env),num.splines,byrow=TRUE)* X.ispline[,(1+(i-1)*num.splines):(i*num.splines)])
         }
       }else{
         X.ispline <- cbind(env.ispline,matrix(rep(1,ncol(Fa)*nrow(env.ispline)),nrow(env.ispline),ncol(Fa)),bio.spline)
-        Isplines.pred <- matrix(NA,ncol(data.env)+1,nrow(data.env))
+        Isplines.pred <- matrix(NA,ncol(data.env)+biotic,nrow(data.env))
         for(i in 1:ncol(data.env.num)){
           Isplines.pred[i,] <- rowSums(matrix(-stats::coef(msgdm$model)[(2+(i-1)*num.splines):(i*num.splines+1)],nrow(data.env),num.splines,byrow=TRUE)* X.ispline[,(1+(i-1)*num.splines):(i*num.splines)])
         }
         ii <- 0
         for(i in (ncol(data.env.num)+1):(ncol(data.env.num)+ncol(Fa))){
-          ii < ii+1
-          Isplines.pred[i,] <- -stats::coef(msgdm$model)[(1+(i-2)*num.splines)+ii]* X.ispline[,(i-2)*num.splines+ii]
+          ii <- ii+1
+          Isplines.pred[i,] <- -stats::coef(msgdm$model)[(1+ncol(data.env.num)*num.splines)+ii]* X.ispline[,ncol(data.env.num)*num.splines+ii]
         }
-        Isplines.pred[ncol(data.env)+1,] <- rowSums(matrix(-stats::coef(msgdm$model)[(2+(ncol(data.env.num))*num.splines+ncol(Fa)):((ncol(data.env.num)+1)*num.splines+ncol(Fa)+1)],nrow(data.env),num.splines,byrow=TRUE)* X.ispline[,(1+ncol(data.env.num)*num.splines+ncol(Fa)):((ncol(data.env.num)+1)*num.splines+ncol(Fa))])
+        for(b in 1:biotic){
+          Isplines.pred[ncol(data.env)+b,] <- rowSums(matrix(-stats::coef(msgdm$model)[(2+(ncol(data.env.num)+b-1)*num.splines+ncol(Fa)):((ncol(data.env.num)+b)*num.splines+ncol(Fa)+1)],nrow(data.env),num.splines,byrow=TRUE)* X.ispline[,(1+(ncol(data.env.num)+b-1)*num.splines+ncol(Fa)):((ncol(data.env.num)+b)*num.splines+ncol(Fa))])
+        }
       }
     }else{
       if(length(which(sapply(data.env, class) == "factor"))==0){
@@ -2652,16 +3476,18 @@ Plot.ispline <- function (msgdm, data.env, distance = FALSE, my.order = NULL, bi
       for(i in 1:ncol(data.env.num)){
         Isplines.pred[i,] <- rowSums(matrix(-stats::coef(msgdm$model)[(2+(i-1)*num.splines):(i*num.splines+1)],nrow(data.env),num.splines,byrow=TRUE)* X.ispline[,(1+(i-1)*num.splines):(i*num.splines)])
       }
-      ii <- 0
-      for(i in (ncol(data.env.num)+1):(ncol(data.env.num)+ncol(Fa))){
-        ii < ii+1
-        Isplines.pred[i,] <- -stats::coef(msgdm$model)[(1+(i-2)*num.splines)+ii]* X.ispline[,(i-2)*num.splines+ii]
+      if(length(which(sapply(data.env, class) == "factor"))>0){
+        ii <- 0
+        for(i in (ncol(data.env.num)+1):(ncol(data.env.num)+ncol(Fa))){
+          ii <- ii+1
+          Isplines.pred[i,] <- -stats::coef(msgdm$model)[(1+ncol(data.env.num)*num.splines)+ii]* X.ispline[,ncol(data.env.num)*num.splines+ii]
+        }
       }
     }
   }
-
-
-  if(length(msgdm$val) < nrow(data.env)){
+  
+  
+  if(subsamp == 1){
     env.resc <- data.env.num[ind.sel,]
   }else{
     env.resc <- data.env.num
@@ -2669,66 +3495,220 @@ Plot.ispline <- function (msgdm, data.env, distance = FALSE, my.order = NULL, bi
   for(i in 1:ncol(env.resc)){
     env.resc[,i] <- (env.resc[i]-min(env.resc[i]))/(max(env.resc[i])-min(env.resc[i]))
   }
-
-  graphics::plot(sort(env.resc[,1]),Isplines.pred[1,order(env.resc[,1])], type="l",ylim=c(0,max(Isplines.pred)),main="",xlab="Rescaled range",ylab="I-splines",cex.lab=1.5,cex.main=1.5,cex.axis=1.5,cex=cex,lwd=lwd)
-  ind.points <- numeric()
-  for(i in 1:11){
-    ind.points[i] <- which.min(abs(stats::quantile(env.resc[,1],seq(0,1,0.1))[i]-sort(env.resc[,1])))
+  
+  ##create output list
+  splines.out <- list()
+  env.resc.out <- env.resc
+  Isplines.pred.out <- Isplines.pred
+  for(i in 1:ncol(data.env.num)){
+    env.resc.out[,i] <- sort(env.resc[,i])
+    Isplines.pred.out[i,] <- Isplines.pred[i,order(env.resc[,i])]
   }
-  graphics::points(sort(env.resc[,1])[ind.points],Isplines.pred[1,order(env.resc[,1])][ind.points],pch=pch[1],cex=cex,lwd=lwd)
-  if(ncol(data.env.num) > 1){
-    for(i in 2:ncol(data.env.num)){
-      graphics::lines(sort(env.resc[,i]),Isplines.pred[i,order(env.resc[,i])],lty=lty[i],lwd=lwd)
-      ind.points <- numeric()
-      for(j in 1:11){
-        ind.points[j] <- which.min(abs(stats::quantile(env.resc[,i],seq(0,1,0.1))[j]-sort(env.resc[,i])))
-      }
-      graphics::points(sort(env.resc[,i])[ind.points],Isplines.pred[i,order(env.resc[,i])][ind.points],pch=pch[i],cex=cex,lwd=lwd)
-    }
-  }
-
+  splines.out$env <- data.frame(env.resc.out)
+  
   if(ncol(Fa)>0){
+    Fa.out <- matrix(0,ncol(Fa),ncol(Isplines.pred))
+    ii <- 0
     for(i in (ncol(data.env.num)+1):(ncol(data.env.num)+ncol(Fa))){
-      if(max(Isplines.pred[i,])>0){
-        graphics::lines(seq(0,1,1/ncol(Isplines.pred)),seq(0,max(Isplines.pred[i,]),max(Isplines.pred[i,])/ncol(Isplines.pred)),lty=lty[i],col="red",lwd=lwd)
-        graphics::points (seq(0,1,1/(my.order-1)),seq(0,max(Isplines.pred[i,]),max(Isplines.pred[i,])/(my.order-1)),pch=pch[i],col="red",lwd=lwd,cex=cex)
-      }else{
-        graphics::lines(c(0,1),c(0,0),lty=lty[i],col="red",lwd=lwd)
-        graphics::points (seq(0,1,1/(my.order-1)),rep(0,my.order),pch=pch[i],col="red",lwd=lwd,cex=cex)
-      }
+      ii <- ii+1
+      Fa.out[ii,] <- seq(0,1,1/(ncol(Isplines.pred)-1))
+      Isplines.pred.out[i,] <- seq(0,max(Isplines.pred[i,]),max(Isplines.pred[i,])/(ncol(Isplines.pred)-1))
     }
-
-  }
-
-  i <- ncol(data.env)
-
-  if(biotic == TRUE){
-    i <- i+1
-    graphics::lines(sort(bio),Isplines.pred[i,order(bio)],lty=lty[i],lwd=lwd)
-    ind.points <- numeric()
-    for(j in 1:11){
-      ind.points[j] <- which.min(abs(stats::quantile(bio,seq(0,1,0.1))[j]-sort(bio)))
+    splines.out$env <- cbind(splines.out$env,data.frame(t(Fa.out)))
+    for(i in (ncol(data.env.num)+1):(ncol(data.env.num)+ncol(Fa))){
+      names(splines.out$env)[i] <- paste("Fa",i-ncol(data.env.num),sep="")
     }
-    graphics::points(sort(bio)[ind.points],Isplines.pred[i,order(bio)][ind.points],pch=pch[i],cex=cex,lwd=lwd)
   }
-
+  
+  if(biotic > 0){
+    for(b in 1:biotic){
+      i <- i+1
+      bio.out <- sort(bio[,b])
+      Isplines.pred.out[i,] <- Isplines.pred[i,order(bio[,b])]
+      splines.out$env <- cbind(splines.out$env,bio.out)
+      names(splines.out$env)[i] <- paste("biotic",b,sep="")
+    }
+  }
+  
   if(distance == TRUE){
     i <- i+1
-    graphics::lines(sort(d/max(d)),Isplines.pred[i,order(d)],lty=lty[i],lwd=lwd)
-    ind.points <- numeric()
-    for(j in 1:11){
-      ind.points[j] <- which.min(abs(stats::quantile(d/max(d),seq(0,1,0.1))[j]-sort(d/max(d))))
-    }
-    graphics::points(sort(d/max(d))[ind.points],Isplines.pred[i,order(d)][ind.points],pch=pch[i],cex=cex,lwd=lwd)
+    d.out <- sort(d/max(d))
+    Isplines.pred.out[i,] <- Isplines.pred[i,order(d)]
+    splines.out$env <- cbind(splines.out$env,d.out)
+    names(splines.out$env)[i] <- "distance"
   }
-
-  if(legend == TRUE){
-    legend("topleft",lty=lty,pch=pch,names(XX),lwd=lwd,cex=cex,bty="n")
-  }
+  
+  splines.out$Ispline <- data.frame(t(Isplines.pred.out))
+  names(splines.out$Ispline) <- names(splines.out$env)
+  
+  splines.out$env.num <- data.env.num
+  splines.out$Fa <- Fa
+  splines.out$distance <- distance
+  splines.out$biotic <- biotic
+  splines.out$my.order <- my.order
+  # if(distance == TRUE)
+  
+  return(splines.out)
 }
 
 
 
+
+#' Plots I-splines for Multi-Site Generalised Dissimilarity Modelling
+#'
+#'Plots I-splines computed by \code{Return.ispline}, or calls \code{Return.ispline} if the outputs from \code{Zeta.msgdm} are provided before plotting.
+#' @param isplines Output of function \code{Return.ispline}.
+#' @param msgdm  Output of function \code{Zeta.msgdm} computed with \code{reg.type = ispline}.
+#' @param data.env  Site-by-variable data frame used for the computation of \code{msgdm}, with sites as rows and environmental variables as columns.
+#' @param distance Boolean, indicates is distance was used in the computation of \code{msgdm}.
+#' @param biotic Boolean, indicates is zeta diversity from another community was used in the computation of \code{msgdm}.
+#' @param pch Shapes of the points to be used in the plotting. If nothing is provided, \code{pch} is a sequence of integers from 1 to the number of variables used for the computation of \code{msgdm}.
+#' @param lty Line types to be used in the plotting. If nothing is provided, \code{lty} is a sequence of integers from 1 to the number of variables used for the computation of \code{msgdm}.
+#' @param legend  Boolean, indicates if the legend must be drawn.
+#' @param lwd Line width.
+#' @param cex Point size.
+#' @param num.quantiles Number of points to plot on the I-splines. Default is 11 to plot a point every 10 percents of the range of values.
+#' @return \code{Plot.ispline} returns a data frame with the same number of rows as dat and \code{ncol(dat)} * \code{(order.ispline} + \code{kn.ispline)} columns.
+#' @references Ramsay, J. O. (1988). Monotone regression splines in action. \emph{Statistical Science}, 425-441.
+#' @references Ferrier, S., Manion, G., Elith, J., & Richardson, K. (2007). Using generalized dissimilarity modelling to analyse and predict patterns of beta diversity in regional biodiversity assessment. \emph{Diversity and Distributions}, 13(3), 252-264.
+#' @seealso \code{\link{Zeta.msgdm}}
+#' @examples
+#' utils::data(Marion.species)
+#' xy.marion <- Marion.species[1:2]
+#' data.spec.marion <- Marion.species[3:33]
+#'
+#' utils::data(Marion.env)
+#' data.env.marion <- Marion.env[3]
+#'
+#' zeta.ispline <- Zeta.msgdm(data.spec.marion, data.env.marion, xy.marion, sam = 100,
+#'     order = 3, normalize = "Jaccard", reg.type = "ispline")
+#' zeta.ispline
+#' zeta.ispline.r <- Return.ispline(zeta.ispline, data.env.marion, distance = TRUE)
+#' zeta.ispline.r
+#' 
+#' dev.new()
+#' Plot.ispline(isplines = zeta.ispline.r, distance = TRUE)
+#' 
+#' dev.new()
+#' Plot.ispline(msgdm = zeta.ispline, data.env = data.env.marion, distance = TRUE)
+#' 
+#' 
+#' @export
+#' 
+Plot.ispline <- function (isplines = NULL,msgdm, data.env, distance = FALSE, biotic = 0, pch = NULL, lty = NULL, legend = TRUE, lwd = 1, cex = 1, num.quantiles = 11){
+  
+  if(is.null(isplines)){
+    isplines <- Return.ispline(msgdm=msgdm, data.env=data.env, distance = distance, biotic = biotic)
+  }
+  
+  env.resc <- isplines$env
+  Isplines.pred <- isplines$Ispline
+  data.env.num <- isplines$env.num
+  Fa <- isplines$Fa
+  distance <- isplines$distance
+  biotic <- isplines$biotic
+  my.order <- isplines$my.order
+  
+  if(is.null(pch)){
+    pch <- 1:ncol(env.resc)
+  }
+  if(is.null(lty)){
+    lty <- 1:ncol(env.resc)
+  }
+  
+  graphics::plot(sort(env.resc[,1]),Isplines.pred[order(env.resc[,1]),1], type="l",ylim=c(0,max(Isplines.pred)),main="",xlab="Rescaled range",ylab="I-splines",cex.lab=1.5,cex.main=1.5,cex.axis=1.5,cex=cex,lwd=lwd)
+  ind.points <- numeric()
+  for(i in 1:num.quantiles){
+    ind.points[i] <- which.min(abs(stats::quantile(env.resc[,1],seq(0,1,1/(num.quantiles-1)))[i]-sort(env.resc[,1])))
+  }
+  graphics::points(sort(env.resc[,1])[ind.points],Isplines.pred[order(env.resc[,1]),1][ind.points],pch=pch[1],cex=cex,lwd=lwd)
+  if(ncol(data.env.num) > 1){
+    for(i in 2:ncol(data.env.num)){
+      graphics::lines(sort(env.resc[,i]),Isplines.pred[order(env.resc[,i]),i],lty=lty[i],lwd=lwd)
+      ind.points <- numeric()
+      for(j in 1:num.quantiles){
+        ind.points[j] <- which.min(abs(stats::quantile(env.resc[,i],seq(0,1,1/(num.quantiles-1)))[j]-sort(env.resc[,i])))
+      }
+      graphics::points(sort(env.resc[,i])[ind.points],Isplines.pred[order(env.resc[,i]),i][ind.points],pch=pch[i],cex=cex,lwd=lwd)
+    }
+  }
+  
+  i <- ncol(data.env.num)
+  
+  if(!is.null(Fa)){
+    if(ncol(Fa)>0){
+      for(i in (ncol(data.env.num)+1):(ncol(data.env.num)+ncol(Fa))){
+        if(max(Isplines.pred[,i])>0){
+          graphics::lines(seq(0,1,1/nrow(Isplines.pred)),seq(0,max(Isplines.pred[,i]),max(Isplines.pred[,i])/nrow(Isplines.pred)),lty=lty[i],col="red",lwd=lwd)
+          graphics::points (seq(0,1,1/(my.order-1)),seq(0,max(Isplines.pred[,i]),max(Isplines.pred[,i])/(my.order-1)),pch=pch[i],col="red",lwd=lwd,cex=cex)
+        }else{
+          graphics::lines(c(0,1),c(0,0),lty=lty[i],col="red",lwd=lwd)
+          graphics::points (seq(0,1,1/(my.order-1)),rep(0,my.order),pch=pch[i],col="red",lwd=lwd,cex=cex)
+        }
+      }
+    }
+  }
+  
+  if(biotic >0){
+    for(b in 1:biotic){
+      i <- i+1
+      graphics::lines(env.resc[,i],Isplines.pred[,i],lty=lty[i],lwd=lwd,col="green")
+      ind.points <- numeric()
+      for(j in 1:num.quantiles){
+        ind.points[j] <- which.min(abs(stats::quantile(env.resc[,i],seq(0,1,1/(num.quantiles-1)))[j]-env.resc[,i]))
+      }
+      graphics::points(env.resc[ind.points,i],Isplines.pred[ind.points,i],pch=pch[i],cex=cex,lwd=lwd,col="green")
+    }
+  }
+  
+  if(distance == TRUE){
+    i <- i+1
+    graphics::lines(env.resc$distance,Isplines.pred$distance,lty=lty[i],lwd=lwd,col="blue")
+    ind.points <- numeric()
+    for(j in 1:num.quantiles){
+      ind.points[j] <- which.min(abs(stats::quantile(env.resc$distance,seq(0,1,1/(num.quantiles-1)))[j]-env.resc$distance))
+    }
+    graphics::points(env.resc$distance[ind.points],Isplines.pred$distance[ind.points],pch=pch[i],cex=cex,lwd=lwd,col="blue")
+  }
+  
+  if(is.null(Fa) | length(Fa)==0) {
+    if(distance == FALSE & biotic == 0){
+      legend.text <- c(names(data.env.num))
+      col="black"
+    }else if(distance == TRUE & biotic == 0){
+      legend.text <- c(names(data.env.num),"Distance")
+      col=c(rep("black",ncol(data.env.num)),"blue")
+    }else if(distance == FALSE & biotic > 0){
+      legend.text <- c(names(data.env.num),paste("Biotic",1:biotic))
+      col=c(rep("black",ncol(data.env.num)),rep("green",biotic))
+    }else{
+      legend.text <- c(names(data.env.num),paste("Biotic",1:biotic),"Distance")
+      col=c(rep("black",ncol(data.env.num)),rep("green",biotic),"blue")
+    }
+  }else{
+    if(distance == FALSE & biotic == 0){
+      legend.text <- c(names(data.env.num),names(Fa))
+      col=c(rep("black",ncol(data.env.num)),rep("red",ncol(Fa)))
+    }else if(distance == TRUE & biotic == 0){
+      legend.text <- c(names(data.env.num),names(Fa),"Distance")
+      col=c(rep("black",ncol(data.env.num)),rep("red",ncol(Fa)),"blue")
+    }else if(distance == FALSE & biotic > 0){
+      legend.text <- c(names(data.env.num),names(Fa),paste("Biotic",1:biotic))
+      col=c(rep("black",ncol(data.env.num)),rep("red",ncol(Fa)),rep("green",biotic))
+    }else{
+      legend.text <- c(names(data.env.num),names(Fa),paste("Biotic",1:biotic),"Distance")
+      col=c(rep("black",ncol(data.env.num)),rep("red",ncol(Fa)),rep("green",biotic),"blue")
+    }
+  }
+  if(legend == TRUE){
+    #legend("topleft",lty=lty,pch=pch,names(XX),lwd=lwd,cex=cex,bty="n")
+    legend("topleft",lty=lty,pch=pch,legend=legend.text,lwd=lwd,cex=cex,bty="n",col=col)
+  }
+  
+  ##create output list
+  invisible(isplines)
+  
+}
 
 
 
@@ -2777,6 +3757,11 @@ Plot.ispline <- function (msgdm, data.env, distance = FALSE, my.order = NULL, bi
 #' dev.new()
 #' zeta.ddecay.bird <- Zeta.ddecay(xy.bird, data.spec.bird, sam = 100, order = 3,
 #'     method.glm = "glm.fit2", confint.level = 0.95)
+#'     
+#' dev.new()
+#' zeta.ddecay.bird <- Zeta.ddecay(data.spec=data.spec.bird, distance.type = "custom",
+#'     dist.custom = as.matrix(dist(xy.bird)), cutoff = 800000, sam = 100, order = 3,
+#'     reg.type = "gam", confint.level = 0.95)
 #'
 #' ##########
 #'
@@ -2790,33 +3775,36 @@ Plot.ispline <- function (msgdm, data.env, distance = FALSE, my.order = NULL, bi
 #'
 #' @export
 Zeta.ddecay <- function(xy, data.spec, order = 2, sam = 1000, distance.type = "Euclidean", dist.custom = NULL, method = "mean", reg.type = "glm", family = stats::gaussian(), method.glm = "glm.fit.cons", cons = -1, cons.inter = 1, confint.level = 0.95, kn = -1, bs = "mpd", trsf = "NULL", cutoff = NULL, rescale = FALSE, normalize = FALSE, empty.row = "remove", plot = TRUE){
-
-  if(nrow(data.spec) != nrow(xy)){
-    stop("Error: data.spec and xy must have the same number of rows.")
+  
+  
+  if(distance.type != "custom"){
+    if(nrow(data.spec) != nrow(xy)){
+      stop("Error: data.spec and xy must have the same number of rows.")
+    }
   }
-
+  
   if(class(data.spec) != "data.frame"){
     stop(paste("Error: ",deparse(substitute(data.spec)), " is a ", class(data.spec), ". It must be a data frame.", sep = ""))
   }
   if(order>dim(data.spec)[1]){
     stop("Error: wrong value for \"order\": it must be equal or lower than the number of sites.")
   }
-
-  if(empty.row == "remove"){
+  
+  if(empty.row == "remove" & distance.type != "custom"){
     if(length(which(rowSums(data.spec)==0))>0){
       xy <- xy[-which(rowSums(data.spec)==0),]
       data.spec <- data.spec[-which(rowSums(data.spec)==0),]
     }
   }
-
+  
   x <- dim(data.spec)[1]
   zeta.val <- numeric()
   zeta.val.sd <- numeric()
-
+  
   if(choose(x, order)>sam){
     u <- rep(NA, sam)
     distance <- rep(NA, sam)
-
+    
     for(z in 1:sam){
       samp <- sample(1:x, order, replace = FALSE)
       u[z] <- sum(apply(data.spec[samp, ], 2, prod))
@@ -2869,12 +3857,12 @@ Zeta.ddecay <- function(xy, data.spec, order = 2, sam = 1000, distance.type = "E
         }
       }
     }
-
+    
   }else{
     u <- rep(NA, choose(x, order))
     distance <- rep(NA, choose(x, order))
     samp <- utils::combn(1:x, order)
-
+    
     for(z in 1:dim(samp)[2]){
       u[z] <- sum(apply(data.spec[samp[, z], ], 2, prod))
       if (normalize == "Jaccard"){
@@ -2928,14 +3916,14 @@ Zeta.ddecay <- function(xy, data.spec, order = 2, sam = 1000, distance.type = "E
       }
     }
   }
-
+  
   if(rescale == TRUE & normalize == FALSE){
     #z1 <- mean(rowSums(data.spec))
     #u <- u / z1
     u <- u / ncol(data.spec)
   }
   zeta.val <- u
-
+  
   distance.reg <- distance
   zeta.val.reg <- zeta.val
   if(!is.null(cutoff)){
@@ -2945,8 +3933,8 @@ Zeta.ddecay <- function(xy, data.spec, order = 2, sam = 1000, distance.type = "E
   if(trsf != "NULL"){
     distance.reg <- c(apply(as.matrix(distance.reg),2,get(trsf)))
   }
-
-
+  
+  
   zeta.ddecay <- list()
   zeta.ddecay$order <- order
   zeta.ddecay$reg.type <- reg.type
@@ -2958,7 +3946,7 @@ Zeta.ddecay <- function(xy, data.spec, order = 2, sam = 1000, distance.type = "E
     zeta.ddecay$reg <- zeta.ddecay.reg
     if(method.glm == "glm.fit2")
       zeta.ddecay$confint <- suppressMessages(stats::confint(zeta.ddecay.reg, level = confint.level))
-
+    
     if(plot == TRUE){
       preds <- stats::predict(zeta.ddecay.reg, newdata = data.frame(distance.reg = sort(distance.reg)), type = "link", se.fit = TRUE)
       critval <- 1.96 ## approx 95% CI
@@ -2968,7 +3956,7 @@ Zeta.ddecay <- function(xy, data.spec, order = 2, sam = 1000, distance.type = "E
       fit2 <- zeta.ddecay.reg $family$linkinv(fit)
       upr2 <- zeta.ddecay.reg $family$linkinv(upr)
       lwr2 <- zeta.ddecay.reg $family$linkinv(lwr)
-      graphics::plot(distance.reg, zeta.val, xlab = "Distance", ylab = paste("Zeta ", order, sep = ""), pch = 16)
+      graphics::plot(distance.reg, zeta.val.reg, xlab = "Distance", ylab = paste("Zeta ", order, sep = ""), pch = 16)
       graphics::lines(sort(distance.reg), fit2, col = "red", lwd = 2)
       graphics::lines(sort(distance.reg), upr2, col = "red", lty = 2, lwd = 2)
       graphics::lines(sort(distance.reg), lwr2, col = "red", lty = 2, lwd = 2)
@@ -2983,7 +3971,7 @@ Zeta.ddecay <- function(xy, data.spec, order = 2, sam = 1000, distance.type = "E
       upr <- preds$fit + (critval * preds$se.fit)
       lwr <- preds$fit - (critval * preds$se.fit)
       fit <- preds$fit
-      graphics::plot(distance.reg, zeta.val, xlab = "Distance", ylab = paste("Zeta ", order, sep = ""), pch = 16)
+      graphics::plot(distance.reg, zeta.val.reg, xlab = "Distance", ylab = paste("Zeta ", order, sep = ""), pch = 16)
       graphics::lines(sort(distance.reg), fit, col = "red", lwd = 2)
       graphics::lines(sort(distance.reg), lwr, col = "red", lty = 2, lwd = 2)
       graphics::lines(sort(distance.reg), upr, col = "red", lty = 2, lwd = 2)
@@ -2991,7 +3979,7 @@ Zeta.ddecay <- function(xy, data.spec, order = 2, sam = 1000, distance.type = "E
   }else if(reg.type == "scam"){
     data.reg <- data.frame(zeta.val.reg,distance.reg)
     fm <- stats::as.formula(paste("zeta.val.reg ~ s(distance.reg, k = ", kn ,", bs = '", bs ,"')",sep=""))
-    zeta.ddecay.reg <- Scam.zeta(fm,data=data.reg, family = family)
+    zeta.ddecay.reg <- scam::scam(fm,data=data.reg, family = family)
     zeta.ddecay$reg <- zeta.ddecay.reg
     if(plot == TRUE){
       preds <- scam::predict.scam(zeta.ddecay.reg, newdata = data.frame(distance.reg = sort(distance.reg)), se.fit = TRUE)
@@ -2999,7 +3987,7 @@ Zeta.ddecay <- function(xy, data.spec, order = 2, sam = 1000, distance.type = "E
       upr <- preds$fit + (critval * preds$se.fit)
       lwr <- preds$fit - (critval * preds$se.fit)
       fit <- preds$fit
-      graphics::plot(distance.reg, zeta.val, xlab = "Distance", ylab = paste("Zeta ", order, sep = ""), pch = 16)
+      graphics::plot(distance.reg, zeta.val.reg, xlab = "Distance", ylab = paste("Zeta ", order, sep = ""), pch = 16)
       graphics::lines(sort(distance.reg), fit, col = "red", lwd = 2)
       graphics::lines(sort(distance.reg), lwr, col = "red", lty = 2, lwd = 2)
       graphics::lines(sort(distance.reg), upr, col = "red", lty = 2, lwd = 2)
@@ -3007,14 +3995,15 @@ Zeta.ddecay <- function(xy, data.spec, order = 2, sam = 1000, distance.type = "E
   }else{
     stop("Error: unknown regression type.")
   }
-
-
+  
+  
   zeta.ddecay$zeta.val <- zeta.val.reg
   zeta.ddecay$distance <- distance.reg
-
+  
   return(zeta.ddecay)
-
+  
 }
+
 
 #' Zeta distance-decay plotting
 #'
@@ -3086,6 +4075,7 @@ Plot.zeta.ddecay <- function(zeta.ddecay){
   }
 
 }
+
 
 
 #' Zeta distance decay for a range of numbers of assemblages or sites
@@ -3176,6 +4166,7 @@ Zeta.ddecays <- function(xy, data.spec, orders = 2:10, sam = 1000, family = stat
 }
 
 
+
 #' Zeta distance-decay plotting for multiple orders
 #'
 #' Plots the output of the function \code{Zeta.ddecays}.
@@ -3215,6 +4206,7 @@ Plot.zeta.ddecays <- function(zeta.ddecays){
   graphics::lines(0:(max(zeta.ddecays$orders) + 2), rep(0, max(zeta.ddecays$orders) + 3), lty = 2)
 
 }
+
 
 
 #' Rescaling of data following a hierarchical increase in grain size
@@ -3310,6 +4302,7 @@ rescale.regular <- function(xy, data.spec, data.env=NULL, method = "mean", n){
   return(data2)
 
 }
+
 
 
 #' Rescaling of data based on the minimum distance between sites
@@ -3429,6 +4422,7 @@ rescale.min.dist <- function(xy, data.spec, data.env = NULL, m,distance.type = "
 
 
 
+
 #' Zeta diversity scaling with sample grain using hierarchical increases in grain size
 #'
 #' Computes zeta diversity scaling with sample grain for a specific order (number of assemblages or sites), increasing grain by hierarchically nesting of regularly spaced sites.
@@ -3460,7 +4454,7 @@ rescale.min.dist <- function(xy, data.spec, data.env = NULL, m,distance.type = "
 #' dev.new()
 #' ##sam = 25 is used here for fast execution, but a higher value is advised
 #' zeta.scale.reg <- Zeta.scale.regular(xy.bird, data.spec.bird, n = 1:3, order = 3,
-#'     sam = 25, normalize = "Jaccard")
+#'     sam = 25, normalize = "Jaccard", zeta.type="monte carlo")
 #' @export
 Zeta.scale.regular <- function(xy, data.spec, n, order = 1, sam = 1000, method = "mean", rescale = FALSE, normalize = FALSE, plot = TRUE, zeta.type="exact"){
 
@@ -3578,6 +4572,7 @@ Zeta.scale.regular <- function(xy, data.spec, n, order = 1, sam = 1000, method =
   return(zeta.scale.reg)
 
 }
+
 
 
 #' Zeta diversity scaling with sample grain dependency based on the minimum distance between sites
@@ -3770,6 +4765,7 @@ Zeta.scale.min.dist <- function(xy, data.spec, m, order = 1, reorder = 100, shuf
 
 
 
+
 #' Plotting of zeta diversity scaling with sample grain using hierarchical increases in grain size
 #'
 #' Plots the output of the function \code{Zeta.scale.regular}.
@@ -3808,6 +4804,7 @@ Plot.zeta.scale.regular <- function(zeta.scale.reg, size.init = 1, add = FALSE, 
   graphics::lines((size.init*zeta.scale.reg$n)^2, zeta.scale.reg$values,col = col)
 
 }
+
 
 
 
@@ -3853,6 +4850,7 @@ Plot.zeta.scale.min.dist <- function(zeta.scale.irreg, size.init = 1, add = FALS
     suppressWarnings(graphics::arrows(size.init*zeta.scale.irreg$m[i], apply(zeta.scale.irreg$values, 2, mean)[i], size.init*zeta.scale.irreg$m[i], apply(zeta.scale.irreg$values, 2, mean)[i] - apply(zeta.scale.irreg$values, 2, stats::sd)[i], angle = 90, length = 0.1))
   }
 }
+
 
 
 
@@ -3933,15 +4931,15 @@ Zeta.varpart <- function(msgdm.mod, num.part = 2, reg.type = "glm", family = sta
     }
   }else{
     if(num.part==2){
-      data.var <- data.tot[,1:(ncol(data.tot)-1)]
+      data.var <- data.tot[,1:(ncol(data.tot)-1),drop=FALSE]
       distance <- data.tot[,ncol(data.tot)]
     }else{
-      data.var <- data.tot[,1:(ncol(data.tot)-2)]
-      sp.pred <- data.tot[,ncol(data.tot)-1]
+      data.var <- data.tot[,1:(ncol(data.tot)-2),drop=FALSE]
+      sp.pred <- data.tot[,ncol(data.tot)-1,drop=FALSE]
       distance <- data.tot[,ncol(data.tot)]
-      data.var.sp <- data.tot[,1:(ncol(data.tot)-1)]
-      data.var.dist <- data.tot[,c(1:(ncol(data.tot)-2),ncol(data.tot))]
-      data.sp.dist <- data.tot[,(ncol(data.tot)-1):ncol(data.tot)]
+      data.var.sp <- data.tot[,1:(ncol(data.tot)-1),drop=FALSE]
+      data.var.dist <- data.tot[,c(1:(ncol(data.tot)-2),ncol(data.tot)),drop=FALSE]
+      data.sp.dist <- data.tot[,(ncol(data.tot)-1):ncol(data.tot),drop=FALSE]
     }
   }
 
@@ -3975,11 +4973,11 @@ Zeta.varpart <- function(msgdm.mod, num.part = 2, reg.type = "glm", family = sta
       ##create formula to be used in scam
       xnam <- names(data.tot)
       fm <- stats::as.formula(paste("zeta.val ~ s(", paste(xnam, collapse = paste(", k = ",kn,", bs = '", bs ,"') + s(",sep=""),sep=""),", k = ",kn, ",bs='", bs, "')",sep=""))
-      abc <- max(summary(Scam.zeta(fm, data = data.tot, family = family))$r.sq,0)
-      ab <- max(summary(Scam.zeta(zeta.val ~ s(distance, k=kn, bs=bs), data=as.data.frame(distance), family = family))$r.sq,0)
+      abc <- max(summary(scam::scam(fm, data = data.tot, family = family))$r.sq,0)
+      ab <- max(summary(scam::scam(zeta.val ~ s(distance, k=kn, bs=bs), data=as.data.frame(distance), family = family))$r.sq,0)
       xnam <- names(data.var)
       fm <- stats::as.formula(paste("zeta.val ~ s(", paste(xnam, collapse = paste(", k = ",kn,", bs = '", bs ,"') + s(",sep=""),sep=""),", k = ",kn, ",bs='", bs, "')",sep=""))
-      bc <- max(summary(Scam.zeta(fm, data = data.var, family = family))$r.sq,0)
+      bc <- max(summary(scam::scam(fm, data = data.var, family = family))$r.sq,0)
       b <- max(ab+bc-abc,0)
       a <- max(ab-b,0)
       c <- max(bc-b,0)
@@ -4120,25 +5118,25 @@ Zeta.varpart <- function(msgdm.mod, num.part = 2, reg.type = "glm", family = sta
       ##create formula to be used in scam
       xnam <- names(data.tot)
       fm <- stats::as.formula(paste("zeta.val ~ s(", paste(xnam, collapse = paste(", k = ",kn,", bs = '", bs ,"') + s(",sep=""),sep=""),", k = ",kn, ",bs='", bs, "')",sep=""))
-      ABC <- max(summary(Scam.zeta(fm, data = data.tot, family = family))$r.sq,0)
+      ABC <- max(summary(scam::scam(fm, data = data.tot, family = family))$r.sq,0)
       xnam <- names(data.var.sp)
       fm <- stats::as.formula(paste("zeta.val ~ s(", paste(xnam, collapse = paste(", k = ",kn,", bs = '", bs ,"') + s(",sep=""),sep=""),", k = ",kn, ",bs='", bs, "')",sep=""))
-      AB <- max(summary(Scam.zeta(fm, data = data.var.sp, family = family))$r.sq,0)
+      AB <- max(summary(scam::scam(fm, data = data.var.sp, family = family))$r.sq,0)
       xnam <- names(data.var.dist)
       fm <- stats::as.formula(paste("zeta.val ~ s(", paste(xnam, collapse = paste(", k = ",kn,", bs = '", bs ,"') + s(",sep=""),sep=""),", k = ",kn, ",bs='", bs, "')",sep=""))
-      AC <- max(summary(Scam.zeta(fm, data = data.var.dist, family = family))$r.sq,0)
+      AC <- max(summary(scam::scam(fm, data = data.var.dist, family = family))$r.sq,0)
       xnam <- names(data.sp.dist)
       fm <- stats::as.formula(paste("zeta.val ~ s(", paste(xnam, collapse = paste(", k = ",kn,", bs = '", bs ,"') + s(",sep=""),sep=""),", k = ",kn, ",bs='", bs, "')",sep=""))
-      BC <- max(summary(Scam.zeta(fm, data = data.sp.dist, family = family))$r.sq,0)
+      BC <- max(summary(scam::scam(fm, data = data.sp.dist, family = family))$r.sq,0)
       xnam <- names(data.var)
       fm <- stats::as.formula(paste("zeta.val ~ s(", paste(xnam, collapse = paste(", k = ",kn,", bs = '", bs ,"') + s(",sep=""),sep=""),", k = ",kn, ",bs='", bs, "')",sep=""))
-      A <- max(summary(Scam.zeta(fm, data = data.var, family = family))$r.sq,0)
+      A <- max(summary(scam::scam(fm, data = data.var, family = family))$r.sq,0)
       xnam <- names(sp.pred)
       fm <- stats::as.formula(paste("zeta.val ~ s(", paste(xnam, collapse = paste(", k = ",kn,", bs = '", bs ,"') + s(",sep=""),sep=""),", k = ",kn, ",bs='", bs, "')",sep=""))
-      B <- max(summary(Scam.zeta(fm, data = sp.pred, family = family))$r.sq,0)
+      B <- max(summary(scam::scam(fm, data = sp.pred, family = family))$r.sq,0)
       xnam <- names(distance)
       fm <- stats::as.formula(paste("zeta.val ~ s(", paste(xnam, collapse = paste(", k = ",kn,", bs = '", bs ,"') + s(",sep=""),sep=""),", k = ",kn, ",bs='", bs, "')",sep=""))
-      C <- max(summary(Scam.zeta(fm, data = distance, family = family))$r.sq,0)
+      C <- max(summary(scam::scam(fm, data = distance, family = family))$r.sq,0)
       g <- max(A+B+C-AB-AC-BC+ABC,0)
       d <- max(A+B-AB-g,0)
       e <- max(B+C-BC,0)
@@ -4339,6 +5337,7 @@ Zeta.varpart <- function(msgdm.mod, num.part = 2, reg.type = "glm", family = sta
   return(zeta.varpart)
 
 }
+
 
 
 

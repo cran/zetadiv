@@ -4,9 +4,18 @@
 \alias{Zeta.scale.regular}
 \title{Zeta diversity scaling with sample grain using hierarchical increases in grain size}
 \usage{
-Zeta.scale.regular(xy, data.spec, n, order = 1, sam = 1000,
-  method = "mean", rescale = FALSE, normalize = FALSE, plot = TRUE,
-  zeta.type = "exact")
+Zeta.scale.regular(
+  xy,
+  data.spec,
+  n,
+  order = 1,
+  sam = 1000,
+  method = "mean",
+  rescale = FALSE,
+  normalize = FALSE,
+  plot = TRUE,
+  zeta.type = "exact"
+)
 }
 \arguments{
 \item{xy}{Site-by-coordinate data frame, with sites as rows and coordinates as columns.}
@@ -54,7 +63,7 @@ data.spec.bird <- bird.spec.fine[1:400,3:192]
 dev.new()
 ##sam = 25 is used here for fast execution, but a higher value is advised
 zeta.scale.reg <- Zeta.scale.regular(xy.bird, data.spec.bird, n = 1:3, order = 3,
-    sam = 25, normalize = "Jaccard")
+    sam = 25, normalize = "Jaccard", zeta.type="monte carlo")
 }
 \references{
 Hui C. & McGeoch M.A. (2014). Zeta diversity as a concept and metric that unifies incidence-based biodiversity patterns. \emph{The American Naturalist}, 184, 684-694.

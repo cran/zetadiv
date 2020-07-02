@@ -4,10 +4,23 @@
 \alias{Zeta.scale.min.dist}
 \title{Zeta diversity scaling with sample grain dependency based on the minimum distance between sites}
 \usage{
-Zeta.scale.min.dist(xy, data.spec, m, order = 1, reorder = 100,
-  shuffle = TRUE, sam = 1000, method = "mean", rescale = FALSE,
-  normalize = FALSE, plot = TRUE, sd = TRUE,
-  distance.type = "Euclidean", dist.custom = NULL, zeta.type = "exact")
+Zeta.scale.min.dist(
+  xy,
+  data.spec,
+  m,
+  order = 1,
+  reorder = 100,
+  shuffle = TRUE,
+  sam = 1000,
+  method = "mean",
+  rescale = FALSE,
+  normalize = FALSE,
+  plot = TRUE,
+  sd = TRUE,
+  distance.type = "Euclidean",
+  dist.custom = NULL,
+  zeta.type = "exact"
+)
 }
 \arguments{
 \item{xy}{Site-by-coordinate data frame, with sites as rows and coordinates as columns.}

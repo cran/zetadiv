@@ -4,10 +4,22 @@
 \alias{pie.neg}
 \title{Pie Chart, considering negative values as zeros}
 \usage{
-pie.neg(x, labels = names(x), edges = 200, radius = 0.8,
-  clockwise = FALSE, init.angle = if (clockwise) 90 else 0,
-  density = NULL, angle = 45, col = NULL, border = NULL, lty = NULL,
-  main = NULL, warning = TRUE, ...)
+pie.neg(
+  x,
+  labels = names(x),
+  edges = 200,
+  radius = 0.8,
+  clockwise = FALSE,
+  init.angle = if (clockwise) 90 else 0,
+  density = NULL,
+  angle = 45,
+  col = NULL,
+  border = NULL,
+  lty = NULL,
+  main = NULL,
+  warning = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{A vector of non-negative numerical quantities. The values in x are displayed as the areas of pie slices.}

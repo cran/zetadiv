@@ -4,9 +4,17 @@
 \alias{Zeta.varpart}
 \title{Variation partitioning for zeta diversity}
 \usage{
-Zeta.varpart(msgdm.mod, num.part = 2, reg.type = "glm",
-  family = stats::gaussian(), method.glm = "glm.fit.cons", cons = -1,
-  cons.inter = 1, kn = -1, bs = "mpd")
+Zeta.varpart(
+  msgdm.mod,
+  num.part = 2,
+  reg.type = "glm",
+  family = stats::gaussian(),
+  method.glm = "glm.fit.cons",
+  cons = -1,
+  cons.inter = 1,
+  kn = -1,
+  bs = "mpd"
+)
 }
 \arguments{
 \item{msgdm.mod}{An object return by function \code{\link{Zeta.msgdm}}.}

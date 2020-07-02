@@ -4,13 +4,29 @@
 \alias{Zeta.ddecay}
 \title{Zeta distance decay for a specific number of assemblages or sites}
 \usage{
-Zeta.ddecay(xy, data.spec, order = 2, sam = 1000,
-  distance.type = "Euclidean", dist.custom = NULL, method = "mean",
-  reg.type = "glm", family = stats::gaussian(),
-  method.glm = "glm.fit.cons", cons = -1, cons.inter = 1,
-  confint.level = 0.95, kn = -1, bs = "mpd", trsf = "NULL",
-  cutoff = NULL, rescale = FALSE, normalize = FALSE,
-  empty.row = "remove", plot = TRUE)
+Zeta.ddecay(
+  xy,
+  data.spec,
+  order = 2,
+  sam = 1000,
+  distance.type = "Euclidean",
+  dist.custom = NULL,
+  method = "mean",
+  reg.type = "glm",
+  family = stats::gaussian(),
+  method.glm = "glm.fit.cons",
+  cons = -1,
+  cons.inter = 1,
+  confint.level = 0.95,
+  kn = -1,
+  bs = "mpd",
+  trsf = "NULL",
+  cutoff = NULL,
+  rescale = FALSE,
+  normalize = FALSE,
+  empty.row = "remove",
+  plot = TRUE
+)
 }
 \arguments{
 \item{xy}{Site-by-coordinate data frame, with sites as rows and coordinates as columns.}
@@ -81,6 +97,11 @@ data.spec.bird <- bird.spec.coarse[,3:193]
 dev.new()
 zeta.ddecay.bird <- Zeta.ddecay(xy.bird, data.spec.bird, sam = 100, order = 3,
     method.glm = "glm.fit2", confint.level = 0.95)
+    
+dev.new()
+zeta.ddecay.bird <- Zeta.ddecay(data.spec=data.spec.bird, distance.type = "custom",
+    dist.custom = as.matrix(dist(xy.bird)), cutoff = 800000, sam = 100, order = 3,
+    reg.type = "gam", confint.level = 0.95)
 
 ##########
 

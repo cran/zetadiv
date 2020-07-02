@@ -4,9 +4,20 @@
 \alias{glm.fit.cons}
 \title{Generalized Linear Models fitting method with negative coefficients constraint}
 \usage{
-glm.fit.cons(x, y, weights = rep(1, nobs), cons = -1, cons.inter = 1,
-  start = NULL, etastart = NULL, mustart = NULL, offset = rep(0, nobs),
-  family = stats::gaussian(), control = list(), intercept = TRUE)
+glm.fit.cons(
+  x,
+  y,
+  weights = rep(1, nobs),
+  cons = -1,
+  cons.inter = 1,
+  start = NULL,
+  etastart = NULL,
+  mustart = NULL,
+  offset = rep(0, nobs),
+  family = stats::gaussian(),
+  control = list(),
+  intercept = TRUE
+)
 }
 \arguments{
 \item{x}{as for \code{\link{glm.fit}}}

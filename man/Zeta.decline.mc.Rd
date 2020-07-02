@@ -4,11 +4,24 @@
 \alias{Zeta.decline.mc}
 \title{Zeta diversity decline using Monte Carlo sampling}
 \usage{
-Zeta.decline.mc(data.spec, xy = NULL, orders = 1:10, sam = 1000,
-  sd.correct = TRUE, sd.correct.adapt = FALSE, confint.level = 0.95,
-  sd.plot = TRUE, rescale = FALSE, normalize = FALSE, NON = FALSE,
-  FPO = NULL, DIR = FALSE, empty.row = "empty", plot = TRUE,
-  silent = TRUE)
+Zeta.decline.mc(
+  data.spec,
+  xy = NULL,
+  orders = 1:10,
+  sam = 1000,
+  sd.correct = TRUE,
+  sd.correct.adapt = FALSE,
+  confint.level = 0.95,
+  sd.plot = TRUE,
+  rescale = FALSE,
+  normalize = FALSE,
+  NON = FALSE,
+  FPO = NULL,
+  DIR = FALSE,
+  empty.row = "empty",
+  plot = TRUE,
+  silent = TRUE
+)
 }
 \arguments{
 \item{data.spec}{Site-by-species presence-absence data frame, with sites as rows and species as columns.}
@@ -47,6 +60,8 @@ Zeta.decline.mc(data.spec, xy = NULL, orders = 1:10, sam = 1000,
 \code{Zeta.decline.mc} returns a list containing the following components:
 
 \item{zeta.order}{The number of assemblages or sites for which the zeta diversity was computed.}
+
+\item{combinations}{The number of possible combinations of sites for the chosen orders.}
 
 \item{zeta.val}{The zeta diversity values.}
 

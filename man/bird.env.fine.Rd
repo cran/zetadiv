@@ -4,7 +4,9 @@
 \name{bird.env.fine}
 \alias{bird.env.fine}
 \title{South-East Australia Environmental Dataset at Fine Scale}
-\format{A data frame with 604 rows (sites) and 9 columns (xy coordinates and environmental variables).}
+\format{
+A data frame with 604 rows (sites) and 9 columns (xy coordinates and environmental variables).
+}
 \usage{
 data(bird.env.fine)
 }

@@ -4,11 +4,22 @@
 \alias{Zeta.ddecays}
 \title{Zeta distance decay for a range of numbers of assemblages or sites}
 \usage{
-Zeta.ddecays(xy, data.spec, orders = 2:10, sam = 1000,
-  family = stats::gaussian(), distance.type = "Euclidean",
-  dist.custom = NULL, method = "mean", confint.level = 0.95,
-  trsf = "NULL", cutoff = NULL, rescale = FALSE, normalize = FALSE,
-  plot = TRUE)
+Zeta.ddecays(
+  xy,
+  data.spec,
+  orders = 2:10,
+  sam = 1000,
+  family = stats::gaussian(),
+  distance.type = "Euclidean",
+  dist.custom = NULL,
+  method = "mean",
+  confint.level = 0.95,
+  trsf = "NULL",
+  cutoff = NULL,
+  rescale = FALSE,
+  normalize = FALSE,
+  plot = TRUE
+)
 }
 \arguments{
 \item{xy}{Site-by-coordinate data frame, with sites as rows and coordinates as columns.}
