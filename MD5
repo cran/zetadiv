@@ -1,6 +1,6 @@
-34f4ebb938f7b99700a9449397d69e91 *DESCRIPTION
+1fed7b21416b581d92c89c0b1e19940f *DESCRIPTION
 73f4b602ceb96f635dc135654d293157 *NAMESPACE
-02ac2ad0c76b301c09b7eaf2c115c766 *R/zetadiv.R
+a10325a48528e2102e06b9a7f54028b6 *R/zetadiv.R
 f9ba9326a2b75ec4f07a56d060196aa2 *data/Marion.env.RData
 da429a9edab5bd7f7c03e2d413ba6022 *data/Marion.species.RData
 75f5b00258637d5e6fab7ba5c743b85c *data/bird.env.coarse.RData
@@ -20,16 +20,16 @@ c8de8397156f80b3d2f3b439b65980b2 *man/Plot.zeta.ddecays.Rd
 8182bb8c6c833aab792451ec523fcc09 *man/Predict.msgdm.Rd
 080511a4dcff00ae5e0732adf9b740c2 *man/Reg.ispline.Rd
 b4af48d43376bf1b32fbec3f362729eb *man/Return.ispline.Rd
-a1fa501492a014cdff1f2af2011e6164 *man/Zeta.ddecay.Rd
-79d662c6081f61f3ccff1bd5f234c017 *man/Zeta.ddecays.Rd
+6c601862719d114008f7d06af35ae477 *man/Zeta.ddecay.Rd
+103c5a37e52ce81cff413a5a94a6682a *man/Zeta.ddecays.Rd
 dbd99e98db9929326a2083e86daf4a4b *man/Zeta.decline.ex.Rd
 8eb3a6c03bc25bb94f4f8dd5233bf681 *man/Zeta.decline.mc.Rd
-f9fbf84919c8a9c83e09b9b945d40b96 *man/Zeta.msgdm.Rd
+4b03d56d527a685652d5dd4cc18ae665 *man/Zeta.msgdm.Rd
 454a07699ab1d3057ab0aedcd3dd8deb *man/Zeta.order.ex.Rd
 c53c22dc3e3672c70f4be876493ac5e7 *man/Zeta.order.mc.Rd
 27802d29a38d49c4b7f73956e2f8839f *man/Zeta.order.mc.mult.Rd
 704040c9cf7661693c1f4ff9b4ea02ea *man/Zeta.sam.sensitivity.Rd
-0eb7bb6a3691938785d054395be6ad88 *man/Zeta.scale.min.dist.Rd
+b0bdc2a5b5e01700050cb46eee2ea3bb *man/Zeta.scale.min.dist.Rd
 eb9f2e5a32c093b8e6741cb7c2367c0f *man/Zeta.scale.regular.Rd
 e1ee8c95a2f2f421a5cd7a59a37ccb2a *man/Zeta.varpart.Rd
 0d663d350023d11de8ec11624d5fb514 *man/bird.env.coarse.Rd
@@ -39,5 +39,5 @@ a8d8897806d2eac0572408024d93d782 *man/bird.spec.fine.Rd
 77bfa2bd995c4b829edc4dc1f6c6e128 *man/glm.cons.Rd
 cc580129d425614acf9b5d2557ea57ee *man/glm.fit.cons.Rd
 f2d59ad1596575d3d159c4a644261a27 *man/pie.neg.Rd
-50b50e8ef7fa88d6d20cac39c887a27a *man/rescale.min.dist.Rd
+c49c874d8773c758e876a5e8be46db89 *man/rescale.min.dist.Rd
 d96e8142b4bcf6202d07702404a75b4c *man/rescale.regular.Rd

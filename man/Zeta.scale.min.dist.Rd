@@ -47,7 +47,7 @@ Zeta.scale.min.dist(
 
 \item{sd}{Boolean value (TRUE or FALSE) indicating if the standard deviation must be plotted for each grain.}
 
-\item{distance.type}{Method to compute distance. Default is "\code{Euclidean}", for Euclidean distance. The other options are (i) "\code{ortho}" for orthodromic distance, if xy correspond to longitudes and latitudes (orthodromic distance is computed using the \code{gdist} function from package \code{Imap}); and (ii) "\code{custom}", in which case the user must provide a distance matrix for \code{dist.custom}.}
+\item{distance.type}{Method to compute distance. Default is "\code{Euclidean}", for Euclidean distance. The other options are (i) "\code{ortho}" for orthodromic distance, if xy correspond to longitudes and latitudes (orthodromic distance is computed using the \code{geodist} function from package \code{geodist}); and (ii) "\code{custom}", in which case the user must provide a distance matrix for \code{dist.custom}.}
 
 \item{dist.custom}{Distance matrix provided by the user when \code{distance.type} = \code{"custom"}.}
 
