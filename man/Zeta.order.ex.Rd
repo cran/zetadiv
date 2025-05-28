@@ -51,7 +51,7 @@ zeta.bird <- Zeta.order.ex(data.spec.bird, order = 3)
 zeta.bird
 
 ##########
-s
+
 utils::data(Marion.species)
 data.spec.marion <- Marion.species[,3:33]
 

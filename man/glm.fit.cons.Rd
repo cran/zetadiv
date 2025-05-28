@@ -20,32 +20,32 @@ glm.fit.cons(
 )
 }
 \arguments{
-\item{x}{as for \code{\link{glm.fit}}}
+\item{x}{as for \code{\link[stats]{glm.fit}}}
 
-\item{y}{as for \code{\link{glm.fit}}}
+\item{y}{as for \code{\link[stats]{glm.fit}}}
 
-\item{weights}{as for \code{\link{glm.fit}}}
+\item{weights}{as for \code{\link[stats]{glm.fit}}}
 
 \item{cons}{type of constraint. Default is -1 for negative coefficients on the predictors. The other option is 1 for positive coefficients on the predictors.}
 
 \item{cons.inter}{type of constraint for the intercept. Default is 1 for positive intercept, suitable for Gaussian family. The other option is -1 for negative intercept, suitable for binomial family.}
 
-\item{start}{as for \code{\link{glm.fit}}}
+\item{start}{as for \code{\link[stats]{glm.fit}}}
 
-\item{etastart}{as for \code{\link{glm.fit}}}
+\item{etastart}{as for \code{\link[stats]{glm.fit}}}
 
-\item{mustart}{as for \code{\link{glm.fit}}}
+\item{mustart}{as for \code{\link[stats]{glm.fit}}}
 
-\item{offset}{as for \code{\link{glm.fit}}}
+\item{offset}{as for \code{\link[stats]{glm.fit}}}
 
-\item{family}{as for \code{\link{glm.fit}}}
+\item{family}{as for \code{\link[stats]{glm.fit}}}
 
-\item{control}{as for \code{\link{glm.fit}}}
+\item{control}{as for \code{\link[stats]{glm.fit}}}
 
-\item{intercept}{as for \code{\link{glm.fit}}}
+\item{intercept}{as for \code{\link[stats]{glm.fit}}}
 }
 \value{
-The value returned by \code{glm.fit.cons} has exactly the same structure as the value returned by \code{glm.fit} and \code{glm.fit2}.
+The value returned by \code{glm.fit.cons} has exactly the same structure as the value returned by \code{\link[stats]{glm.fit}} and \code{\link[glm2]{glm.fit2}}.
 }
 \description{
 \code{glm.fit.cons} is an adaptation of function \code{glm.fit2} from package \{glm2\} in which the least squares estimation is replaced by a non-positive regression using function \code{nnnpls} from package \{nnls\}.
@@ -66,5 +66,5 @@ summary(glm.D93.ngl)
 Marschner, I.C. (2011) glm2: Fitting generalized linear models with convergence problems. \emph{The R Journal}, 3(2), 12-15.
 }
 \seealso{
-\code{\link{glm.fit}}, \code{\link{glm.fit2}}
+\code{\link[stats]{glm.fit}}, \code{\link[glm2]{glm.fit2}}
 }

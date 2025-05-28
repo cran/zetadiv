@@ -42,10 +42,10 @@ Plot.ispline(
 \item{num.quantiles}{Number of points to plot on the I-splines. Default is 11 to plot a point every 10 percents of the range of values.}
 }
 \value{
-\code{Plot.ispline} returns a data frame with the same number of rows as dat and \code{ncol(dat)} * \code{(order.ispline} + \code{kn.ispline)} columns.
+\code{Plot.ispline} returns a data frame with the same number of rows as dat and \code{ncol(dat)} * \cr\code{(order.ispline} + \code{kn.ispline)} columns.
 }
 \description{
-Plots I-splines computed by \code{Return.ispline}, or calls \code{Return.ispline} if the outputs from \code{Zeta.msgdm} are provided before plotting.
+Plots I-splines computed by \code{Return.ispline}, or calls \code{Return.ispline} if the outputs from \cr\code{Zeta.msgdm} are provided before plotting.
 }
 \examples{
 utils::data(Marion.species)

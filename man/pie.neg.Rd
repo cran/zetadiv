@@ -24,7 +24,7 @@ pie.neg(
 \arguments{
 \item{x}{A vector of non-negative numerical quantities. The values in x are displayed as the areas of pie slices.}
 
-\item{labels}{One or more expressions or character strings giving names for the slices. Other objects are coerced by \code{\link[grDevices]{as.graphicsAnnot}}. For empty or NA (after coercion to character) labels, no label nor pointing line is drawn.}
+\item{labels}{One or more expressions or character strings giving names for the slices. Other objects are coerced by \code{\link[grDevices]{as.graphicsAnnot}} frompackage \code{grDevices}. For empty or NA (after coercion to character) labels, no label nor pointing line is drawn.}
 
 \item{edges}{The circular outline of the pie is approximated by a polygon with this many edges.}
 
@@ -52,7 +52,7 @@ pie.neg(
 Plots a pie chart, considering negative values as zeros, for the purpose of illustrating variation partitioning.
 }
 \details{
-This function is identical to the function \code{\link[graphics]{pie}} in \{graphics\}, except that it considers all negative values as zeros, to allow for plotting variation partitioning outputs. The original \code{\link[graphics]{pie}} function returns an error when negative values are present. However, variation partitioning can return negative values, which can then be treated as zeros (Legendre & Legendre, 2008). This function allows direct use of the results from \code{\link{Zeta.varpart}} without editing the data.
+This function is identical to the function \code{\link[graphics]{pie}} from package \code{graphics}, except that it considers all negative values as zeros, to allow for plotting variation partitioning outputs. The original \code{\link[graphics]{pie}} function from package \code{graphics} returns an error when negative values are present. However, variation partitioning can return negative values, which can then be treated as zeros (Legendre & Legendre, 2008). This function allows direct use of the results from \code{\link{Zeta.varpart}} without editing the data.
 }
 \examples{
 pie.neg(rep(1, 24), col = rainbow(24), radius = 0.9)

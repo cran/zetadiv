@@ -45,7 +45,7 @@ Zeta.ddecay(
 
 \item{reg.type}{Type of regression. Options are "\code{glm}" for generalised linear models "\code{gam}" for generalised additive models and "\code{scam}" for shape constrained additive models (with monotonic decreasing by default).}
 
-\item{family}{A description of the error distribution and link function to be used in the \code{glm}, \code{gam} and \code{scam} models (see \code{\link[stats]{family}} for details of family functions).}
+\item{family}{A description of the error distribution and link function to be used in the \code{glm}, \code{gam} and \code{scam} models (see \code{\link[stats]{family}} in package \code{stats} for details of family functions).}
 
 \item{method.glm}{Method used in fitting the generalised linear model. The default method \cr "glm.fit.cons" is an adaptation of method \code{glm.fit2} from package \code{glm2} using a negative least squares regression in the reweighted least squares. Another option is "glm.fit2", which calls \code{glm.fit2}.; see help documentation for \code{glm.fit2} in package \code{glm}.}
 
@@ -57,7 +57,7 @@ Zeta.ddecay(
 
 \item{kn}{Number of knots in the GAM and SCAM. Default is -1 for determining kn automatically using Generalized Cross-validation.}
 
-\item{bs}{A two-letter character string indicating the (penalized) smoothing basis to use in the scam model. Default is "\code{mpd}" for monotonic decreasing splines. see \code{\link[mgcv]{smooth.terms}} for an overview of what is available.}
+\item{bs}{A two-letter character string indicating the (penalized) smoothing basis to use in the scam model. Default is "\code{mpd}" for monotonic decreasing splines. see \code{\link[mgcv]{smooth.terms}} in package \code{mgcv} for an overview of what is available.}
 
 \item{trsf}{Name of a function (as a string) indicating how to transform distance.}
 

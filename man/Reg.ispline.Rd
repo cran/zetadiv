@@ -28,7 +28,7 @@ Reg.ispline(
 
 \item{kn.ispline}{Number of knots in the I-spline.}
 
-\item{family}{A description of the error distribution and link function to be used in the \code{glm} model (see \code{\link[stats]{family}} for details of family functions).}
+\item{family}{A description of the error distribution and link function to be used in the \code{glm} model (see \code{\link[stats]{family}} in package \code{stats} for details of family functions).}
 
 \item{method.glm}{Method used in fitting the generalised linear model. The default method \cr "glm.fit.cons" is an adaptation of method \code{glm.fit2} from package \code{glm2} using a constrained least squares regression in the reweighted least squares. Another option is "glm.fit2", which calls \code{glm.fit2}; see help documentation for glm.fit2 in package \code{glm2}.}
 
@@ -36,7 +36,7 @@ Reg.ispline(
 
 \item{cons.inter}{type of constraint for the intercept. Default is 1 for positive intercept, suitable for Gaussian family. The other option is -1 for negative intercept, suitable for binomial family.}
 
-\item{control}{As for \code{\link{glm}}.}
+\item{control}{As for \code{\link[stats]{glm}}.}
 
 \item{Plot}{Boolean value indicating if the I-splines must be plotted.}
 
@@ -51,7 +51,7 @@ Reg.ispline(
 
 \item{spline}{A data frame in which each columns contains the value resulting from the combinations of the individual I-splines. This combination is obtained by multiplying the coefficients of \code{model} and the values of the individual I-splines \code{splines}}.
 
-\item{model}{A \code{\link{glm}} model using \code{response} as the response variable, and \code{splines} as the predictors}.
+\item{model}{A \code{\link[stats]{glm}} model using \code{response} as the response variable, and \code{splines} as the predictors}.
 }
 \description{
 Evaluates the I-splines for all variables of a data frame of predictor variables, and perform a generalised linear regression with constraint on the parameters.
@@ -81,7 +81,8 @@ zeta.splines <- Ispline(zeta.tot$zeta.val[,2:3])
 data.tot <- data.frame(zeta.val=zeta.tot$zeta.val[,1],zeta.splines$splines)
 
 dev.new()
-Reg.ispline(response = zeta.tot$zeta.val[,1], predictor = zeta.tot$zeta.val[,2:3], lwd=2, cons=1)
+Reg.ispline(response = zeta.tot$zeta.val[,1], predictor = zeta.tot$zeta.val[,2:3], 
+                         lwd=2, cons=1)
 }
 \references{
 Ramsay, J. O. (1988). Monotone regression splines in action. \emph{Statistical Science}, 425-441.

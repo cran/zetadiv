@@ -1,6 +1,6 @@
 .onAttach <- function(libname, pkgname) {
-  packageStartupMessage("This is zetadiv 1.2.1")
-  packageStartupMessage("Package \"zetadiv\" was built under R.4.1.3")
+  packageStartupMessage("This is zetadiv 1.3.0")
+  packageStartupMessage("Package \"zetadiv\" was built under R.4.5.0")
 }
 
 
@@ -31,7 +31,7 @@
 #' @details If the number of combinations of sites is lower than the value of the parameter \code{sam}, all the combinations are used and an exact solution is computed. In that case, using the number of site combinations as the denominator may be appropriate to compute the standard deviation, if all sites were sampled and the zeta values. This can be adjusted with parameters \code{sd.correct} and \code{sd.correct.adapt}.
 #' @details \code{Zeta.decline.mc} is faster than \code{\link{Zeta.decline.ex}} to compute the exact value of zeta diversity when the number of species is higher than \eqn{C^N_{i}}, where \emph{N} is the total number of sites and \emph{i} is the order of zeta.
 #' @details The exponential and the power law fit are performed using linear regressions on log-transformed data (only the zeta values are log-transformed for the exponential fit, and both the orders and the zeta values are log-transformed for the power law fit).
-#' @details \code{Zeta.decline.mc} enables accomodating richness heterogeneity by setting \code{normalize = "Jaccard"}, \code{normalize = "Sorensen"} or \code{normalize = "Simpson"}. This cannot be performed by \cr \code{\link{Zeta.decline.ex}}.
+#' @details \code{Zeta.decline.mc} enables accomodating richness heterogeneity by setting \code{normalize =} \cr\code{"Jaccard"}, \code{normalize = "Sorensen"} or \code{normalize = "Simpson"}. This cannot be performed by \cr \code{\link{Zeta.decline.ex}}.
 #' @return \code{Zeta.decline.mc} returns a list containing the following components:
 #' @return \item{zeta.order}{The number of assemblages or sites for which the zeta diversity was computed.}
 #' @return \item{combinations}{The number of possible combinations of sites for the chosen orders.}
@@ -1049,7 +1049,7 @@ Zeta.order.mc <- function(data.spec, xy=NULL, order = 1, sam = 1000, sd.correct 
 #' @details As for \code{Zeta.order.mc}, if the number of combinations of sites is lower than the value of the parameter \code{sam}, all the combinations are used and an exact solution is computed. In that case, using the number of site combinations as the denominator may be appropriate to compute the standard deviation, if all sites were sampled and the zeta values. This can be adjusted with parameters \code{sd.correct} and \code{sd.correct.adapt}.
 #' @return \code{Zeta.order.mc.mult}  returns a list containing the following components:
 #' @return \item{zeta.order}{The number of assemblages or sites for which the zeta diversity was computed.}
-#' #' @return \item{sites}{A matrix in which each row contains the indices of a given combination, i.e. of the specific  \code{sam} assemblages.}
+#' @return \item{sites}{A matrix in which each row contains the indices of a given combination, i.e. of the specific  \code{sam} assemblages.}
 #' @return \item{zeta.val}{A data frame in which each column is the number of species shared by the assemblages.}
 #' @references Hui C. & McGeoch M.A. (2014). Zeta diversity as a concept and metric that unifies incidence-based biodiversity patterns. \emph{The American Naturalist}, 184, 684-694.
 #' @seealso \code{\link{Zeta.decline.mc}}
@@ -1649,7 +1649,7 @@ Zeta.decline.ex <- function(data.spec, orders = 1:10, sd.correct = TRUE, confint
 #' zeta.bird
 #'
 #' ##########
-#'s
+#'
 #' utils::data(Marion.species)
 #' data.spec.marion <- Marion.species[,3:33]
 #'
@@ -1801,7 +1801,7 @@ Plot.zeta.decline <- function(zeta, sd.plot = TRUE, arrange.plots = TRUE){
 #' zeta.sens.marion <- Zeta.sam.sensitivity(data.spec.marion, order = 3,
 #'     sam.seq = seq(50,250,50), reps = 20, plot = TRUE, notch = TRUE)
 #' zeta.sens.marion
-#' }
+#' 
 #'
 #' @export
 Zeta.sam.sensitivity <- function(data.spec, xy = NULL, order = 1, sam.seq, reps = 20, sd.correct = TRUE, sd.correct.adapt = FALSE, rescale = FALSE, normalize = FALSE, NON = FALSE, FPO = NULL, DIR = FALSE, display = TRUE, plot = TRUE, notch = TRUE){
@@ -1856,13 +1856,13 @@ Zeta.sam.sensitivity <- function(data.spec, xy = NULL, order = 1, sam.seq, reps 
 #' @param data.spec.pred Site-by-species presence-absence data frame or list of data frames, with sites as rows and species as columns, for which zeta diversity will be computed and used as a predictor of the zeta diversity of \code{data.spec}.
 #' @param order  Specific number of assemblages or sites at which zeta diversity is computed.
 #' @param sam  Number of samples for which the zeta diversity is computed.
-#' @param reg.type Type of regression used in the multi-site generalised dissimilarity modelling. Options are "\code{glm}" for generalised linear models, "\code{ngls}" for negative linear models, "\code{gam}" for generalised additive models, "\code{scam}" for shape constrained additive models (with monotonic decreasing by default), and "\code{ispline}" for I-spline models (forcing monotonic decline), as recommended in generalised dissimilarity modelling by Ferrier \emph{et al}. (2007).
-#' @param family A description of the error distribution and link function to be used in the \code{glm}, \code{gam} and \code{scam} models (see \code{\link[stats]{family}} for details of family functions).
+#' @param reg.type Type of regression used in the multi-site generalised dissimilarity modelling. Default is "\code{ispline}" for I-spline models (forcing monotonic decline), as recommended in generalised dissimilarity modelling by Ferrier \emph{et al}. (2007). Other options are "\code{glm}" for generalised linear models, "\code{ngls}" for negative linear models, "\code{gam}" for generalised additive models, "\code{scam}" for shape constrained additive models (with monotonic decreasing by default), and .
+#' @param family A description of the error distribution and link function to be used in the \code{glm}, \code{gam} and \code{scam} models used in the different types of regression (see \code{\link[stats]{family}} in package \code{stats} for details of family functions). Default is \code{binomial("log")} if Jaccard, Sorensen or Simpson similarity indices are used (see parameter \code{normalize}), or \code{gaussian} for raw zeta values.
 #' @param method.glm Method used in fitting the generalised linear model. The default method \cr "glm.fit.cons" is an adaptation of method \code{glm.fit2} from package \code{glm2} using a constrained least squares regression (default is negative coefficients) in the reweighted least squares. Another option is "glm.fit2", which calls \code{glm.fit2}; see help documentation for glm.fit2 in package \code{glm2}.
 #' @param cons type of constraint in the glm if \code{method.glm = "glm.fit.cons"}. Default is -1 for negative coefficients on the predictors. The other option is 1 for positive coefficients on the predictors.
-#' @param cons.inter type of constraint for the intercept. Default is 1 for positive intercept, suitable for Gaussian family. The other option is -1 for negative intercept, suitable for binomial family.
+#' @param cons.inter type of constraint for the intercept. If no value is specified, \code{cons.inter} is set to -1 (for negative intercept) for binomial family, or to 1 (for positive intercept) for Gaussian family
 #' @param confint.level  Percentage for the confidence intervals of the coefficients from the generalised linear models.
-#' @param bs A two-letter character string indicating the (penalized) smoothing basis to use in the scam model. Default is "\code{mpd}" for monotonic decreasing splines. see \code{\link[mgcv]{smooth.terms}} for an overview of what is available.
+#' @param bs A two-letter character string indicating the (penalized) smoothing basis to use in the scam model. Default is "\code{mpd}" for monotonic decreasing splines. see \code{\link[mgcv]{smooth.terms}} in package \code{mgcv} for an overview of what is available.
 #' @param kn Number of knots in the GAM and SCAM. Default is -1 for determining kn automatically using Generalized Cross-validation.
 #' @param order.ispline Order of the I-spline.
 #' @param kn.ispline Number of knots in the I-spline.
@@ -1870,18 +1870,18 @@ Zeta.sam.sensitivity <- function(data.spec, xy = NULL, order = 1, sam.seq, reps 
 #' @param dist.custom Distance matrix provided by the user when \code{distance.type} = \code{"custom"}.
 #' @param rescale Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by the total number of species in the dataset, to get a range of values between 0 and 1. Has no effect if \code{normalize} != \code{FALSE}.
 #' @param rescale.pred  Boolean value (TRUE or FALSE) indicating if the spatial distances and differences in environmental variables should be rescaled between 0 and 1.
-#' @param normalize Indicates if the zeta values for each sample should be divided by the total number of species for this specific sample (\code{normalize = "Jaccard"}), by the average number of species per site for this specific sample (\code{normalize = "Sorensen"}), or by the minimum number of species in the sites of this specific sample \cr (\code{normalize = "Simpson"}). Default value is \code{FALSE}, indicating that no normalization is performed.
+#' @param normalize Indicates if the zeta values for each sample should be divided by the minimum number of species in the sites of this specific sample \cr (\code{normalize = "Simpson"}) (default), by the total number of species for this specific sample (\code{normalize = "Jaccard"}), or by the average number of species per site for this specific sample (\code{normalize = "Sorensen"}). Value must be set to \code{FALSE} to indicate that no normalization must be performed and raw zeta values should be used.
 #' @param method  Name of a function (as a string) indicating how to combine the pairwise differences and distances for more than 3 sites. It can be a basic R-function such as "\code{mean}" or "\code{max}", but also a custom function.
 #' @param silent  Boolean value (TRUE or FALSE) indicating if warnings must be printed.
 #' @param empty.row Determines how to handle empty rows, i.e. sites with no species. Such sites can cause underestimations of zeta diversity, and computation errors for the normalized version of zeta due to divisions by 0. Options are "\code{empty}" to let the data untreated, "\code{remove}" to remove the empty rows, 0 to set the normalized zeta to 0 when zeta is divided by 0 during normalization (sites share no species, so are completely dissimilar), and 1 to set the normalized zeta to 1 when zeta is divided by 0 during normalization (i.e. sites are perfectly similar).
-#' @param control As for \code{\link{glm}}.
+#' @param control As for \code{\link[stats]{glm}}.
 #' @param glm.init Boolean value, indicating if the initial parameters for fitting the glm with constraint on the coefficients signs for \code{reg.type == "ispline"} should be initialised based on the correlation coefficients betwen the zeta values and the environmental difference or distance. \code{glm.init = TRUE} helps preventing the error message: \code{error: cannot find valid starting values:} \cr \code{please specify some}.
 #' @return \code{Zeta.msgdm} returns a list whose component vary depending on the regression technique. The list can contain the following components:
 #' @return \item{val}{Vector of zeta values used in the MS-GDM.}
 #' @return \item{predictors}{Data frame of the predictors used in the MS-GDM.}
 #' @return \item{range.min}{Vector containing the minimum values of the numeric variables, used for rescaling the variables between 0 and 1 for I-splines (see Details).}
 #' @return \item{range.max}{Vector containing the maximum values of the numeric variables, used for rescaling the variables between 0 and 1 for I-splines (see Details).}
-#' @return \item{rescale.factor}{Factor by which the predictors were divided if \code{rescale.pred = TRUE} and \code{order>1}.}
+#' @return \item{rescale.factor}{Factor by which the predictors were divided if \code{rescale.pred = TRUE} and \cr\code{order>1}.}
 #' @return \item{order.ispline}{The value of the original parameter, to be used in \code{Plot.ispline}.}
 #' @return \item{kn.ispline}{The value of the original parameter, to be used in \code{Plot.ispline}.}
 #' @return \item{model}{An object whose class depends on the type of regression (\code{glm}, \code{nnnpls}, \code{gam} or \code{scam}; I-splines return and object of class \code{glm}), corresponding to the regression over distance for the number of assemblages or sites specified in \code{order}.}
@@ -1905,7 +1905,8 @@ Zeta.sam.sensitivity <- function(data.spec, xy = NULL, order = 1, sam.seq, reps 
 #' utils::data(bird.env.coarse)
 #' data.env.bird <- bird.env.coarse[,3:9]
 #'
-#' zeta.glm <- Zeta.msgdm(data.spec.bird, data.env.bird, sam = 100, order = 3)
+#' zeta.glm <- Zeta.msgdm(data.spec.bird, data.env.bird, sam = 100, order = 3,
+#'                                reg.type = "glm")
 #' zeta.glm
 #' dev.new()
 #' graphics::plot(zeta.glm$model)
@@ -1942,7 +1943,7 @@ Zeta.sam.sensitivity <- function(data.spec, xy = NULL, order = 1, sam.seq, reps 
 #' Plot.ispline(msgdm = zeta.ispline, data.env = data.env.marion, distance = TRUE)
 #'
 #' @export
-Zeta.msgdm <- function (data.spec, data.env, xy = NULL, data.spec.pred = NULL, order = 1, sam = 1000, reg.type = "glm", family = stats::gaussian(), method.glm = "glm.fit.cons", cons = -1, cons.inter = 1, confint.level = 0.95, bs = "mpd", kn = -1, order.ispline = 2, kn.ispline = 1, distance.type = "Euclidean", dist.custom = NULL, rescale = FALSE, rescale.pred = TRUE, method = "mean", normalize = FALSE, silent = FALSE, empty.row = 0, control = list(), glm.init = FALSE) {
+Zeta.msgdm <- function (data.spec, data.env, xy = NULL, data.spec.pred = NULL, order = 1, sam = 1000, reg.type = "ispline", family = NULL, method.glm = "glm.fit.cons", cons = -1, cons.inter = NULL, confint.level = 0.95, bs = "mpd", kn = -1, order.ispline = 2, kn.ispline = 1, distance.type = "Euclidean", dist.custom = NULL, rescale = FALSE, rescale.pred = TRUE, method = "mean", normalize = "Simpson", silent = FALSE, empty.row = 0, control = list(), glm.init = FALSE) {
   
   
   if (nrow(data.spec) != nrow(data.env)) {
@@ -1977,6 +1978,26 @@ Zeta.msgdm <- function (data.spec, data.env, xy = NULL, data.spec.pred = NULL, o
       warning("Distance matrix is not symmetrical")
     }
   }
+  
+  ##Set default parameters for the different techniques if not specified by user
+  if(is.null(family)){
+    if(normalize != FALSE){
+      family <- stats::binomial("log")
+    }else{
+      family <- stats::gaussian()
+    }
+  }
+  if(is.null(cons.inter)){
+    if(family$family == "binomial"){
+      cons.inter <- -1
+    }else if(family$family == "gaussian"){
+      cons.inter <- 1
+    }else{
+      stop("Error: family must be binomial or gaussian")
+    }
+  }
+  
+  
   if (empty.row == "remove") {
     if (length(which(rowSums(data.spec) == 0)) > 0) {
       data.env <- data.env[-which(rowSums(data.spec) == 0), ]
@@ -2585,7 +2606,7 @@ Zeta.msgdm <- function (data.spec, data.env, xy = NULL, data.spec.pred = NULL, o
     data.tot <- data.var
   }else if (is.null(xy) & distance.type != "custom" & !is.null(data.spec.pred)) {
     data.tot <- cbind(data.var, sp.prev)
-  }else if (!is.null(xy) & distance.type != "custom" & is.null(data.spec.pred)) {
+  }else if ((!is.null(xy) | distance.type == "custom") & is.null(data.spec.pred)) {
     data.tot <- cbind(data.var, distance)
   }else {
     data.tot <- cbind(data.var, sp.prev, distance)
@@ -2670,28 +2691,28 @@ Zeta.msgdm <- function (data.spec, data.env, xy = NULL, data.spec.pred = NULL, o
 #' Fitting Generalized Linear Models with constraint on the coefficients signs
 #'
 #' \code{glm.cons} is an adaptation of function \code{glm2} from package \{glm2\} in which the least squares estimation is replaced by a regression with signs constraint on the coefficients using function \code{nnnpls} from package \{nnls\}.
-#' @param formula as for \code{\link{glm}}
-#' @param family as for \code{\link{glm}}
-#' @param data as for \code{\link{glm}}
-#' @param weights as for \code{\link{glm}}
-#' @param subset as for \code{\link{glm}}
-#' @param na.action as for \code{\link{glm}}
-#' @param start as for \code{\link{glm}}
-#' @param etastart as for \code{\link{glm}}
-#' @param mustart as for \code{\link{glm}}
-#' @param offset as for \code{\link{glm}}
-#' @param control as for \code{\link{glm}}
-#' @param model as for \code{\link{glm}}
-#' @param method the method used in fitting the model. The default method "\code{glm.fit.cons}" uses function {nnnpls} from package nnls instead of \code{lm.fit} to impose the sign of the coefficients. As in \code{glm}, the alternative method "\code{model.frame}" returns the model frame and does no fitting.
+#' @param formula as for \code{\link[stats]{glm}}
+#' @param family as for \code{\link[stats]{glm}}
+#' @param data as for \code{\link[stats]{glm}}
+#' @param weights as for \code{\link[stats]{glm}}
+#' @param subset as for \code{\link[stats]{glm}}
+#' @param na.action as for \code{\link[stats]{glm}}
+#' @param start as for \code{\link[stats]{glm}}
+#' @param etastart as for \code{\link[stats]{glm}}
+#' @param mustart as for \code{\link[stats]{glm}}
+#' @param offset as for \code{\link[stats]{glm}}
+#' @param control as for \code{\link[stats]{glm}}
+#' @param model as for \code{\link[stats]{glm}}
+#' @param method the method used in fitting the model. The default method "\code{glm.fit.cons}" uses function \code{\link[nnls]{nnnpls}} from package nnls instead of \code{\link[stats]{lm.fit}} to impose the sign of the coefficients. As in \code{glm}, the alternative method "\code{model.frame}" returns the model frame and does no fitting.
 #' @param cons type of constraint. Default is -1 for negative coefficients on the predictors. The other option is 1 for positive coefficients on the predictors.
 #' @param cons.inter type of constraint for the intercept. Default is 1 for positive intercept, suitable for Gaussian family. The other option is -1 for negative intercept, suitable for binomial family.
-#' @param x as for \code{\link{glm}}
-#' @param y as for \code{\link{glm}}
-#' @param contrasts as for \code{\link{glm}}
-#' @param ... as for \code{\link{glm}}
+#' @param x as for \code{\link[stats]{glm}}
+#' @param y as for \code{\link[stats]{glm}}
+#' @param contrasts as for \code{\link[stats]{glm}}
+#' @param ... as for \code{\link[stats]{glm}}
 #' @return The value returned by \code{glm.cons} has exactly the same structure as the value returned by \code{glm} and \code{glm.2}.
 #' @references Marschner, I.C. (2011) glm2: Fitting generalized linear models with convergence problems. \emph{The R Journal}, 3(2), 12-15.
-#' @seealso \code{\link{glm}}, \code{\link{glm2}}
+#' @seealso \code{\link[stats]{glm}}, \code{\link[glm2]{glm2}}
 #' @examples
 #' ## Dobson (1990) Page 93: Randomized Controlled Trial :
 #' counts <- c(18,17,15,20,10,20,25,13,12)
@@ -2792,21 +2813,21 @@ glm.cons <- function (formula, family = stats::gaussian(), data, weights, subset
 #' Generalized Linear Models fitting method with negative coefficients constraint
 #'
 #' \code{glm.fit.cons} is an adaptation of function \code{glm.fit2} from package \{glm2\} in which the least squares estimation is replaced by a non-positive regression using function \code{nnnpls} from package \{nnls\}.
-#' @param x as for \code{\link{glm.fit}}
-#' @param y as for \code{\link{glm.fit}}
-#' @param weights as for \code{\link{glm.fit}}
+#' @param x as for \code{\link[stats]{glm.fit}}
+#' @param y as for \code{\link[stats]{glm.fit}}
+#' @param weights as for \code{\link[stats]{glm.fit}}
 #' @param cons type of constraint. Default is -1 for negative coefficients on the predictors. The other option is 1 for positive coefficients on the predictors.
 #' @param cons.inter type of constraint for the intercept. Default is 1 for positive intercept, suitable for Gaussian family. The other option is -1 for negative intercept, suitable for binomial family.
-#' @param start as for \code{\link{glm.fit}}
-#' @param etastart as for \code{\link{glm.fit}}
-#' @param mustart as for \code{\link{glm.fit}}
-#' @param offset as for \code{\link{glm.fit}}
-#' @param family as for \code{\link{glm.fit}}
-#' @param control as for \code{\link{glm.fit}}
-#' @param intercept as for \code{\link{glm.fit}}
-#' @return The value returned by \code{glm.fit.cons} has exactly the same structure as the value returned by \code{glm.fit} and \code{glm.fit2}.
+#' @param start as for \code{\link[stats]{glm.fit}}
+#' @param etastart as for \code{\link[stats]{glm.fit}}
+#' @param mustart as for \code{\link[stats]{glm.fit}}
+#' @param offset as for \code{\link[stats]{glm.fit}}
+#' @param family as for \code{\link[stats]{glm.fit}}
+#' @param control as for \code{\link[stats]{glm.fit}}
+#' @param intercept as for \code{\link[stats]{glm.fit}}
+#' @return The value returned by \code{glm.fit.cons} has exactly the same structure as the value returned by \code{\link[stats]{glm.fit}} and \code{\link[glm2]{glm.fit2}}.
 #' @references Marschner, I.C. (2011) glm2: Fitting generalized linear models with convergence problems. \emph{The R Journal}, 3(2), 12-15.
-#' @seealso \code{\link{glm.fit}}, \code{\link{glm.fit2}}
+#' @seealso \code{\link[stats]{glm.fit}}, \code{\link[glm2]{glm.fit2}}
 #' @examples
 #' ## Dobson (1990) Page 93: Randomized Controlled Trial :
 #' counts <- c(18,17,15,20,10,20,25,13,12)
@@ -3122,19 +3143,19 @@ Ispline <- function(dat, order.ispline = 2, kn.ispline = 1, rescale = 0){
 #' @param predictor A data frame of numeric variables representing the predictors.
 #' @param order.ispline Order of the I-spline.
 #' @param kn.ispline Number of knots in the I-spline.
-#' @param family A description of the error distribution and link function to be used in the \code{glm} model (see \code{\link[stats]{family}} for details of family functions).
+#' @param family A description of the error distribution and link function to be used in the \code{glm} model (see \code{\link[stats]{family}} in package \code{stats} for details of family functions).
 #' @param method.glm Method used in fitting the generalised linear model. The default method \cr "glm.fit.cons" is an adaptation of method \code{glm.fit2} from package \code{glm2} using a constrained least squares regression in the reweighted least squares. Another option is "glm.fit2", which calls \code{glm.fit2}; see help documentation for glm.fit2 in package \code{glm2}.
 #' @param cons type of constraint in the glm if \code{method.glm = "glm.fit.cons"}. Default is 1 for positive coefficients on the predictors. The other option is -1 for negative coefficients on the predictors.
 #' @param cons.inter type of constraint for the intercept. Default is 1 for positive intercept, suitable for Gaussian family. The other option is -1 for negative intercept, suitable for binomial family.
 #' @param Plot Boolean value indicating if the I-splines must be plotted.
 #' @param lty Line types to be used in the plotting. If nothing is provided, \code{lty} is a sequence of integers from 1 to the number of variables used for the computation of \code{msgdm}.
 #' @param lwd Line width.
-#' @param control As for \code{\link{glm}}.
+#' @param control As for \code{\link[stats]{glm}}.
 #' @details \code{Reg.ispline} performs a non-linear regression using a combination of GLM and I-splines. It can, for example, be used to compare regression outputs when using MS-GDM with I-splines on environmental variables and biotic variables as in \code{Zetya.msgdm} to the same regression approach without environmental variables.
 #' @return \code{Reg.ispline} returns a list of the following elements:
 #' @return \item{splines}{A data frame in which each columns contains the value resulting from the transformation of the predictors into individual I-splines. The number of columns of \code{splines} is the number of predictors times the number of splines (determined as the sum of \code{order.ispline} and \code{kn.ispline}).}
 #' @return \item{spline}{A data frame in which each columns contains the value resulting from the combinations of the individual I-splines. This combination is obtained by multiplying the coefficients of \code{model} and the values of the individual I-splines \code{splines}}.
-#' @return \item{model}{A \code{\link{glm}} model using \code{response} as the response variable, and \code{splines} as the predictors}.
+#' @return \item{model}{A \code{\link[stats]{glm}} model using \code{response} as the response variable, and \code{splines} as the predictors}.
 #' @references Ramsay, J. O. (1988). Monotone regression splines in action. \emph{Statistical Science}, 425-441.
 #' @seealso \code{\link{Zeta.msgdm}},\code{\link{Ispline}}
 #' @examples
@@ -3160,7 +3181,8 @@ Ispline <- function(dat, order.ispline = 2, kn.ispline = 1, rescale = 0){
 #' data.tot <- data.frame(zeta.val=zeta.tot$zeta.val[,1],zeta.splines$splines)
 #' 
 #' dev.new()
-#' Reg.ispline(response = zeta.tot$zeta.val[,1], predictor = zeta.tot$zeta.val[,2:3], lwd=2, cons=1)
+#' Reg.ispline(response = zeta.tot$zeta.val[,1], predictor = zeta.tot$zeta.val[,2:3], 
+#'                          lwd=2, cons=1)
 #' @export
 Reg.ispline <- function(response, predictor, order.ispline = 2, kn.ispline = 1, family = stats::gaussian(), method.glm = "glm.fit.cons", cons = 1, cons.inter = 1, control = list(), Plot = TRUE, lty = NULL, lwd = 1){
   
@@ -3219,38 +3241,43 @@ Reg.ispline <- function(response, predictor, order.ispline = 2, kn.ispline = 1, 
 #' xy.bird <- bird.spec.fine[1:500,1:2]
 #' data.spec.bird <- bird.spec.fine[1:500,3:192]
 #' utils::data(bird.env.fine)
-#' data.env.bird <- bird.env.fine[1:500,3:9]
-#'
-#' zeta.glm <- Zeta.msgdm(data.spec.bird, data.env.bird, sam = 100, order = 3)
-#' newdata <- data.frame(matrix(NA,100,ncol(data.env.bird)))
-#' names(newdata) <- names(data.env.bird)
+#' data.env.bird1 <- bird.env.fine[1:500,3:9] ##training data
+#' data.env.bird2 <- bird.env.fine[501:604,3:9] ##data to predict on
+#' 
+#' ##glm
+#' zeta.glm <- Zeta.msgdm(data.spec.bird, data.env.bird1, sam = 100, order = 3, 
+#'                          reg.type = "glm")
+#' newdata <- data.frame(matrix(NA,100,ncol(data.env.bird1)))
+#' names(newdata) <- names(data.env.bird1)
 #' for(z in 1:100){
 #'   samp <- sample(1:104, 3, replace = FALSE)
-#'   newdata[z,] <- apply(apply(bird.env.fine[501:604,3:9][samp,], 2,
-#'      stats::dist), 2, mean)
+#'   newdata[z,] <- apply(apply(data.env.bird2[samp,], 2,
+#'                              stats::dist), 2, mean)
 #' }
 #' ##rescale the data like during MS-GDM
 #' newdata <- newdata/matrix(rep(zeta.glm$rescale.factor,100),
-#'    100,length(zeta.glm$rescale.factor),byrow=TRUE)
+#'                           100,length(zeta.glm$rescale.factor),byrow=TRUE)
 #' new.zeta.glm <- Predict.msgdm(model.msgdm = zeta.glm$model, reg.type = "glm",
-#'    newdata = newdata)
-#'
-#'
-#'
-#' zeta.ngls <- Zeta.msgdm(data.spec.bird, data.env.bird, sam = 100, order = 3,
-#'    reg.type = "ngls", normalize = "Jaccard")
-#' newdata <- data.frame(matrix(NA,100,ncol(data.env.bird)))
-#' names(newdata) <- names(data.env.bird)
+#'                               newdata = newdata)
+#' 
+#' ##I-splines
+#' zeta.ispline <- Zeta.msgdm(data.spec.bird, data.env.bird1, sam = 100, order = 3,
+#'                            reg.type = "ispline", normalize = "Jaccard")
+#' data.env.bird.splines <- Ispline(data.env.bird2)
+#' newdata <- data.frame(matrix(NA,100,ncol(data.env.bird.splines$splines)))
+#' names(newdata) <- names(data.env.bird.splines$splines)
 #' for(z in 1:100){
 #'   samp <- sample(1:104, 3, replace = FALSE)
-#'   newdata[z,] <- apply(apply(bird.env.fine[501:604,3:9][samp,], 2, stats::dist),
-#'      2, mean)
+#'   newdata[z,] <- apply(apply(data.env.bird.splines$splines[samp,], 2, stats::dist),
+#'                        2, mean)
 #' }
+#' 
 #' ##rescale the data like during MS-GDM
-#' newdata <- newdata/matrix(rep(zeta.ngls$rescale.factor,100),
-#'    100,length(zeta.ngls$rescale.factor),byrow=TRUE)
-#' new.zeta.ngls <- Predict.msgdm(model.msgdm = zeta.ngls$model, reg.type = "ngls",
-#'    newdata = newdata)
+#' newdata <- newdata/matrix(rep(zeta.ispline$rescale.factor,100),
+#'                           100,length(zeta.ispline$rescale.factor),byrow=TRUE)
+#' new.zeta.ispline <- Predict.msgdm(model.msgdm = zeta.ispline$model, reg.type = "ispline",
+#'                                   newdata = newdata)
+#' 
 #' @export
 Predict.msgdm <- function(model.msgdm, reg.type, newdata, type = "response"){
   if(reg.type=="glm" || reg.type=="ispline"){
@@ -3541,7 +3568,7 @@ Return.ispline <- function (msgdm, data.env, distance = FALSE, biotic = 0){
 
 #' Plots I-splines for Multi-Site Generalised Dissimilarity Modelling
 #'
-#'Plots I-splines computed by \code{Return.ispline}, or calls \code{Return.ispline} if the outputs from \code{Zeta.msgdm} are provided before plotting.
+#'Plots I-splines computed by \code{Return.ispline}, or calls \code{Return.ispline} if the outputs from \cr\code{Zeta.msgdm} are provided before plotting.
 #' @param isplines Output of function \code{Return.ispline}.
 #' @param msgdm  Output of function \code{Zeta.msgdm} computed with \code{reg.type = ispline}.
 #' @param data.env  Site-by-variable data frame used for the computation of \code{msgdm}, with sites as rows and environmental variables as columns.
@@ -3553,7 +3580,7 @@ Return.ispline <- function (msgdm, data.env, distance = FALSE, biotic = 0){
 #' @param lwd Line width.
 #' @param cex Point size.
 #' @param num.quantiles Number of points to plot on the I-splines. Default is 11 to plot a point every 10 percents of the range of values.
-#' @return \code{Plot.ispline} returns a data frame with the same number of rows as dat and \code{ncol(dat)} * \code{(order.ispline} + \code{kn.ispline)} columns.
+#' @return \code{Plot.ispline} returns a data frame with the same number of rows as dat and \code{ncol(dat)} * \cr\code{(order.ispline} + \code{kn.ispline)} columns.
 #' @references Ramsay, J. O. (1988). Monotone regression splines in action. \emph{Statistical Science}, 425-441.
 #' @references Ferrier, S., Manion, G., Elith, J., & Richardson, K. (2007). Using generalized dissimilarity modelling to analyse and predict patterns of beta diversity in regional biodiversity assessment. \emph{Diversity and Distributions}, 13(3), 252-264.
 #' @seealso \code{\link{Zeta.msgdm}}
@@ -3713,10 +3740,10 @@ Plot.ispline <- function (isplines = NULL,msgdm, data.env, distance = FALSE, bio
 #' @param cons type of constraint in the glm if \code{method.glm = "glm.fit.cons"}. Default is -1 for negative coefficients on the predictors. The other option is 1 for positive coefficients on the predictors.
 #' @param cons.inter type of constraint for the intercept. Default is 1 for positive intercept, suitable for Gaussian family. The other option is -1 for negative intercept, suitable for binomial family.
 #' @param reg.type Type of regression. Options are "\code{glm}" for generalised linear models "\code{gam}" for generalised additive models and "\code{scam}" for shape constrained additive models (with monotonic decreasing by default).
-#' @param family A description of the error distribution and link function to be used in the \code{glm}, \code{gam} and \code{scam} models (see \code{\link[stats]{family}} for details of family functions).
+#' @param family A description of the error distribution and link function to be used in the \code{glm}, \code{gam} and \code{scam} models (see \code{\link[stats]{family}} in package \code{stats} for details of family functions).
 #' @param confint.level  Percentage for the confidence intervals of the coefficients from the generalised linear models.
 #' @param kn Number of knots in the GAM and SCAM. Default is -1 for determining kn automatically using Generalized Cross-validation.
-#' @param bs A two-letter character string indicating the (penalized) smoothing basis to use in the scam model. Default is "\code{mpd}" for monotonic decreasing splines. see \code{\link[mgcv]{smooth.terms}} for an overview of what is available.
+#' @param bs A two-letter character string indicating the (penalized) smoothing basis to use in the scam model. Default is "\code{mpd}" for monotonic decreasing splines. see \code{\link[mgcv]{smooth.terms}} in package \code{mgcv} for an overview of what is available.
 #' @param trsf Name of a function (as a string) indicating how to transform distance.
 #' @param cutoff If specified, maximum distance value for which the linear regression must be performed.
 #' @param rescale Boolean value (TRUE or FALSE) indicating if the zeta values should be divided by \eqn{\zeta_1}, to get a range of values between 0 and 1. Has no effect if \code{normalize} != \code{FALSE}.
@@ -4070,7 +4097,7 @@ Plot.zeta.ddecay <- function(zeta.ddecay){
 #' @param data.spec  Site-by-species presence-absence data frame, with sites as rows and species as columns.
 #' @param orders  Range of number of assemblages or sites at which zeta diversity is computed. All the orders must be striclty greater than 1.
 #' @param sam  Number of samples for which the zeta diversity is computed.
-#' @param family A description of the error distribution and link function to be used in the generalised linear models (see \code{\link[stats]{family}} for details of family functions).
+#' @param family A description of the error distribution and link function to be used in the generalised linear models (see \code{\link[stats]{family}} in package \code{stats} for details of family functions).
 #' @param confint.level  Percentage for the confidence intervals of the coefficients from the linear regression.
 #' @param distance.type Method to compute distance. Default is "\code{Euclidean}", for Euclidean distance. The other options are (i) "\code{ortho}" for orthodromic distance, if xy correspond to longitudes and latitudes (orthodromic distance is computed using the \code{geodist} function from package \code{geodist}); and (ii) "\code{custom}", in which case the user must provide a distance matrix for \code{dist.custom}.
 #' @param dist.custom Distance matrix provided by the user when \code{distance.type} = \code{"custom"}.
@@ -4209,7 +4236,7 @@ Plot.zeta.ddecays <- function(zeta.ddecays){
 #' @seealso \code{\link{Zeta.decline.mc}}, \code{\link{Zeta.order.mc}}, \code{\link{Zeta.decline.ex}}, \code{\link{Zeta.order.ex}}, \code{\link{Zeta.scale.regular}}, \code{\link{Zeta.scale.min.dist}}, \code{\link{rescale.min.dist}}
 #' @examples
 #'
-#' utils::data(bird.spec.fine)
+
 #' xy.bird <- bird.spec.fine[1:2]
 #' data.spec.bird <- bird.spec.fine[3:192]
 #'
@@ -4846,12 +4873,12 @@ Plot.zeta.scale.min.dist <- function(zeta.scale.irreg, size.init = 1, add = FALS
 #' @param msgdm.mod An object return by function \code{\link{Zeta.msgdm}}.
 #' @param num.part Number of partitions of zeta diversity. Can be 2 or 3.
 #' @param reg.type Type of regression for the multi-site generalised dissimilarity modelling. Options are "glm" for generalised linear models, "ngls" for negative linear models, "gam" for generalised additive models, "scam" for shape constrained additive models, and "ispline" for I-spline models, as recommended in generalised dissimilarity modelling by Ferrier \emph{et al}. (2007).
-#' @param family A description of the error distribution and link function to be used in the \code{glm}, \code{gam} and \code{scam} models (see \code{\link[stats]{family}} for details of family functions).
+#' @param family A description of the error distribution and link function to be used in the \code{glm}, \code{gam} and \code{scam} models (see \code{\link[stats]{family}} in package \code{stats} for details of family functions).
 #' @param method.glm Method used in fitting the generalised linear model. The default method \cr "glm.fit.cons" is an adaptation of method \code{glm.fit2} from package \code{glm2} using a negative least squares regression in the reweighted least squares. Another option is "glm.fit2", which corresponds to method \code{glm.fit2}; see help documentation for \code{glm.fit2} in package \code{glm}.
 #' @param cons type of constraint in the glm if \code{method.glm = "glm.fit.cons"}. Default is -1 for negative coefficients on the predictors. The other option is 1 for positive coefficients on the predictors.
 #' @param cons.inter type of constraint for the intercept. Default is 1 for positive intercept, suitable for Gaussian family. The other option is -1 for negative intercept, suitable for binomial family.
 #' @param kn Number of knots in the GAM and SCAM. Default is -1 for determining kn automatically using Generalized Cross-validation.
-#' @param bs A two-letter character string indicating the (penalized) smoothing basis to use in the scam model. Default is "\code{mpd}" for monotonic decreasing splines. see \code{\link[mgcv]{smooth.terms}} for an overview of what is available.
+#' @param bs A two-letter character string indicating the (penalized) smoothing basis to use in the scam model. Default is "\code{mpd}" for monotonic decreasing splines. see \code{\link[mgcv]{smooth.terms}} in package \code{mgcv} for an overview of what is available.
 #' @return \code{Zeta.varpart} returns a data frame with one column containing the variation explained by each component \code{a} (the variation explained by distance alone), \code{b} (the variation explained by either distance or the environment), \code{c} (the variation explained by the environment alone) and \code{d} (the unexplained variation).
 #' @details Note that, for a given regression, the variation explained is computed as 1-(RSS/TSS)*(v-1)/(v-p-1), where RSS is the residual sum of squares and TSS is the total sum of squares, v is the number of variables used in the regression (which is greater than the original number of variables for I-splines) and p is the number of samples. 1-(RSS/TSS) corresponds to the classical R-squared for linear regression only, and results for non-linear regressions should be interpreted with caution.
 #' @details The environmental variables can be numeric or factorial, and \code{order} must be greater than 1.
@@ -5330,7 +5357,7 @@ Zeta.varpart <- function(msgdm.mod, num.part = 2, reg.type = "glm", family = sta
 #'
 #' Plots a pie chart, considering negative values as zeros, for the purpose of illustrating variation partitioning.
 #' @param x  A vector of non-negative numerical quantities. The values in x are displayed as the areas of pie slices.
-#' @param labels One or more expressions or character strings giving names for the slices. Other objects are coerced by \code{\link[grDevices]{as.graphicsAnnot}}. For empty or NA (after coercion to character) labels, no label nor pointing line is drawn.
+#' @param labels One or more expressions or character strings giving names for the slices. Other objects are coerced by \code{\link[grDevices]{as.graphicsAnnot}} frompackage \code{grDevices}. For empty or NA (after coercion to character) labels, no label nor pointing line is drawn.
 #' @param edges  The circular outline of the pie is approximated by a polygon with this many edges.
 #' @param radius  The pie is drawn centered in a square box whose sides range from -1 to 1. If the character strings labeling the slices are long it may be necessary to use a smaller radius.
 #' @param clockwise  Logical indicating if slices are drawn clockwise or counter clockwise (i.e., mathematically positive direction, used by default).
@@ -5342,7 +5369,7 @@ Zeta.varpart <- function(msgdm.mod, num.part = 2, reg.type = "glm", family = sta
 #' @param main  An overall title for the plot.
 #' @param warning Boolean value. Set to FALSE to avoid displaying a warning if some values are negative and set to 0.
 #' @param ...  Graphical parameters can be given as arguments to pie. They will affect the main title and labels only.
-#' @details This function is identical to the function \code{\link[graphics]{pie}} in \{graphics\}, except that it considers all negative values as zeros, to allow for plotting variation partitioning outputs. The original \code{\link[graphics]{pie}} function returns an error when negative values are present. However, variation partitioning can return negative values, which can then be treated as zeros (Legendre & Legendre, 2008). This function allows direct use of the results from \code{\link{Zeta.varpart}} without editing the data.
+#' @details This function is identical to the function \code{\link[graphics]{pie}} from package \code{graphics}, except that it considers all negative values as zeros, to allow for plotting variation partitioning outputs. The original \code{\link[graphics]{pie}} function from package \code{graphics} returns an error when negative values are present. However, variation partitioning can return negative values, which can then be treated as zeros (Legendre & Legendre, 2008). This function allows direct use of the results from \code{\link{Zeta.varpart}} without editing the data.
 #' @seealso \code{\link[graphics]{pie}}, \code{\link{Zeta.varpart}}
 #' @references  Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988). \emph{The new S language}. Wadsworth & Brooks/Cole.
 #' @references  Cleveland, W. S. (1985). \emph{The elements of graphing data}. Wadsworth: Monterey, CA, USA.

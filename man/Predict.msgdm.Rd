@@ -26,38 +26,43 @@ utils::data(bird.spec.fine)
 xy.bird <- bird.spec.fine[1:500,1:2]
 data.spec.bird <- bird.spec.fine[1:500,3:192]
 utils::data(bird.env.fine)
-data.env.bird <- bird.env.fine[1:500,3:9]
+data.env.bird1 <- bird.env.fine[1:500,3:9] ##training data
+data.env.bird2 <- bird.env.fine[501:604,3:9] ##data to predict on
 
-zeta.glm <- Zeta.msgdm(data.spec.bird, data.env.bird, sam = 100, order = 3)
-newdata <- data.frame(matrix(NA,100,ncol(data.env.bird)))
-names(newdata) <- names(data.env.bird)
+##glm
+zeta.glm <- Zeta.msgdm(data.spec.bird, data.env.bird1, sam = 100, order = 3, 
+                         reg.type = "glm")
+newdata <- data.frame(matrix(NA,100,ncol(data.env.bird1)))
+names(newdata) <- names(data.env.bird1)
 for(z in 1:100){
   samp <- sample(1:104, 3, replace = FALSE)
-  newdata[z,] <- apply(apply(bird.env.fine[501:604,3:9][samp,], 2,
-     stats::dist), 2, mean)
+  newdata[z,] <- apply(apply(data.env.bird2[samp,], 2,
+                             stats::dist), 2, mean)
 }
 ##rescale the data like during MS-GDM
 newdata <- newdata/matrix(rep(zeta.glm$rescale.factor,100),
-   100,length(zeta.glm$rescale.factor),byrow=TRUE)
+                          100,length(zeta.glm$rescale.factor),byrow=TRUE)
 new.zeta.glm <- Predict.msgdm(model.msgdm = zeta.glm$model, reg.type = "glm",
-   newdata = newdata)
+                              newdata = newdata)
 
-
-
-zeta.ngls <- Zeta.msgdm(data.spec.bird, data.env.bird, sam = 100, order = 3,
-   reg.type = "ngls", normalize = "Jaccard")
-newdata <- data.frame(matrix(NA,100,ncol(data.env.bird)))
-names(newdata) <- names(data.env.bird)
+##I-splines
+zeta.ispline <- Zeta.msgdm(data.spec.bird, data.env.bird1, sam = 100, order = 3,
+                           reg.type = "ispline", normalize = "Jaccard")
+data.env.bird.splines <- Ispline(data.env.bird2)
+newdata <- data.frame(matrix(NA,100,ncol(data.env.bird.splines$splines)))
+names(newdata) <- names(data.env.bird.splines$splines)
 for(z in 1:100){
   samp <- sample(1:104, 3, replace = FALSE)
-  newdata[z,] <- apply(apply(bird.env.fine[501:604,3:9][samp,], 2, stats::dist),
-     2, mean)
+  newdata[z,] <- apply(apply(data.env.bird.splines$splines[samp,], 2, stats::dist),
+                       2, mean)
 }
+
 ##rescale the data like during MS-GDM
-newdata <- newdata/matrix(rep(zeta.ngls$rescale.factor,100),
-   100,length(zeta.ngls$rescale.factor),byrow=TRUE)
-new.zeta.ngls <- Predict.msgdm(model.msgdm = zeta.ngls$model, reg.type = "ngls",
-   newdata = newdata)
+newdata <- newdata/matrix(rep(zeta.ispline$rescale.factor,100),
+                          100,length(zeta.ispline$rescale.factor),byrow=TRUE)
+new.zeta.ispline <- Predict.msgdm(model.msgdm = zeta.ispline$model, reg.type = "ispline",
+                                  newdata = newdata)
+
 }
 \references{
 Ramsay, J. O. (1988). Monotone regression splines in action. \emph{Statistical Science}, 425-441.

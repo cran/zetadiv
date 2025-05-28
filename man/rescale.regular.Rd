@@ -28,7 +28,6 @@ The sites (plots or quadrates) are aggregated as nearest neighbouring groups of 
 }
 \examples{
 
-utils::data(bird.spec.fine)
 xy.bird <- bird.spec.fine[1:2]
 data.spec.bird <- bird.spec.fine[3:192]
 

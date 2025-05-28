@@ -89,7 +89,7 @@ If the number of combinations of sites is lower than the value of the parameter 
 
 The exponential and the power law fit are performed using linear regressions on log-transformed data (only the zeta values are log-transformed for the exponential fit, and both the orders and the zeta values are log-transformed for the power law fit).
 
-\code{Zeta.decline.mc} enables accomodating richness heterogeneity by setting \code{normalize = "Jaccard"}, \code{normalize = "Sorensen"} or \code{normalize = "Simpson"}. This cannot be performed by \cr \code{\link{Zeta.decline.ex}}.
+\code{Zeta.decline.mc} enables accomodating richness heterogeneity by setting \code{normalize =} \cr\code{"Jaccard"}, \code{normalize = "Sorensen"} or \code{normalize = "Simpson"}. This cannot be performed by \cr \code{\link{Zeta.decline.ex}}.
 }
 \examples{
 utils::data(bird.spec.coarse)

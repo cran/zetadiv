@@ -27,43 +27,43 @@ glm.cons(
 )
 }
 \arguments{
-\item{formula}{as for \code{\link{glm}}}
+\item{formula}{as for \code{\link[stats]{glm}}}
 
-\item{family}{as for \code{\link{glm}}}
+\item{family}{as for \code{\link[stats]{glm}}}
 
-\item{data}{as for \code{\link{glm}}}
+\item{data}{as for \code{\link[stats]{glm}}}
 
-\item{weights}{as for \code{\link{glm}}}
+\item{weights}{as for \code{\link[stats]{glm}}}
 
-\item{subset}{as for \code{\link{glm}}}
+\item{subset}{as for \code{\link[stats]{glm}}}
 
-\item{na.action}{as for \code{\link{glm}}}
+\item{na.action}{as for \code{\link[stats]{glm}}}
 
-\item{start}{as for \code{\link{glm}}}
+\item{start}{as for \code{\link[stats]{glm}}}
 
-\item{etastart}{as for \code{\link{glm}}}
+\item{etastart}{as for \code{\link[stats]{glm}}}
 
-\item{mustart}{as for \code{\link{glm}}}
+\item{mustart}{as for \code{\link[stats]{glm}}}
 
-\item{offset}{as for \code{\link{glm}}}
+\item{offset}{as for \code{\link[stats]{glm}}}
 
-\item{control}{as for \code{\link{glm}}}
+\item{control}{as for \code{\link[stats]{glm}}}
 
-\item{model}{as for \code{\link{glm}}}
+\item{model}{as for \code{\link[stats]{glm}}}
 
-\item{method}{the method used in fitting the model. The default method "\code{glm.fit.cons}" uses function {nnnpls} from package nnls instead of \code{lm.fit} to impose the sign of the coefficients. As in \code{glm}, the alternative method "\code{model.frame}" returns the model frame and does no fitting.}
+\item{method}{the method used in fitting the model. The default method "\code{glm.fit.cons}" uses function \code{\link[nnls]{nnnpls}} from package nnls instead of \code{\link[stats]{lm.fit}} to impose the sign of the coefficients. As in \code{glm}, the alternative method "\code{model.frame}" returns the model frame and does no fitting.}
 
 \item{cons}{type of constraint. Default is -1 for negative coefficients on the predictors. The other option is 1 for positive coefficients on the predictors.}
 
 \item{cons.inter}{type of constraint for the intercept. Default is 1 for positive intercept, suitable for Gaussian family. The other option is -1 for negative intercept, suitable for binomial family.}
 
-\item{x}{as for \code{\link{glm}}}
+\item{x}{as for \code{\link[stats]{glm}}}
 
-\item{y}{as for \code{\link{glm}}}
+\item{y}{as for \code{\link[stats]{glm}}}
 
-\item{contrasts}{as for \code{\link{glm}}}
+\item{contrasts}{as for \code{\link[stats]{glm}}}
 
-\item{...}{as for \code{\link{glm}}}
+\item{...}{as for \code{\link[stats]{glm}}}
 }
 \value{
 The value returned by \code{glm.cons} has exactly the same structure as the value returned by \code{glm} and \code{glm.2}.
@@ -87,5 +87,5 @@ summary(glm.D93.ngl)
 Marschner, I.C. (2011) glm2: Fitting generalized linear models with convergence problems. \emph{The R Journal}, 3(2), 12-15.
 }
 \seealso{
-\code{\link{glm}}, \code{\link{glm2}}
+\code{\link[stats]{glm}}, \code{\link[glm2]{glm2}}
 }

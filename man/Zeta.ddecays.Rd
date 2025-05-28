@@ -30,7 +30,7 @@ Zeta.ddecays(
 
 \item{sam}{Number of samples for which the zeta diversity is computed.}
 
-\item{family}{A description of the error distribution and link function to be used in the generalised linear models (see \code{\link[stats]{family}} for details of family functions).}
+\item{family}{A description of the error distribution and link function to be used in the generalised linear models (see \code{\link[stats]{family}} in package \code{stats} for details of family functions).}
 
 \item{distance.type}{Method to compute distance. Default is "\code{Euclidean}", for Euclidean distance. The other options are (i) "\code{ortho}" for orthodromic distance, if xy correspond to longitudes and latitudes (orthodromic distance is computed using the \code{geodist} function from package \code{geodist}); and (ii) "\code{custom}", in which case the user must provide a distance matrix for \code{dist.custom}.}
 

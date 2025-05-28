@@ -11,11 +11,11 @@ Zeta.msgdm(
   data.spec.pred = NULL,
   order = 1,
   sam = 1000,
-  reg.type = "glm",
-  family = stats::gaussian(),
+  reg.type = "ispline",
+  family = NULL,
   method.glm = "glm.fit.cons",
   cons = -1,
-  cons.inter = 1,
+  cons.inter = NULL,
   confint.level = 0.95,
   bs = "mpd",
   kn = -1,
@@ -26,7 +26,7 @@ Zeta.msgdm(
   rescale = FALSE,
   rescale.pred = TRUE,
   method = "mean",
-  normalize = FALSE,
+  normalize = "Simpson",
   silent = FALSE,
   empty.row = 0,
   control = list(),
@@ -46,19 +46,19 @@ Zeta.msgdm(
 
 \item{sam}{Number of samples for which the zeta diversity is computed.}
 
-\item{reg.type}{Type of regression used in the multi-site generalised dissimilarity modelling. Options are "\code{glm}" for generalised linear models, "\code{ngls}" for negative linear models, "\code{gam}" for generalised additive models, "\code{scam}" for shape constrained additive models (with monotonic decreasing by default), and "\code{ispline}" for I-spline models (forcing monotonic decline), as recommended in generalised dissimilarity modelling by Ferrier \emph{et al}. (2007).}
+\item{reg.type}{Type of regression used in the multi-site generalised dissimilarity modelling. Default is "\code{ispline}" for I-spline models (forcing monotonic decline), as recommended in generalised dissimilarity modelling by Ferrier \emph{et al}. (2007). Other options are "\code{glm}" for generalised linear models, "\code{ngls}" for negative linear models, "\code{gam}" for generalised additive models, "\code{scam}" for shape constrained additive models (with monotonic decreasing by default), and .}
 
-\item{family}{A description of the error distribution and link function to be used in the \code{glm}, \code{gam} and \code{scam} models (see \code{\link[stats]{family}} for details of family functions).}
+\item{family}{A description of the error distribution and link function to be used in the \code{glm}, \code{gam} and \code{scam} models used in the different types of regression (see \code{\link[stats]{family}} in package \code{stats} for details of family functions). Default is \code{binomial("log")} if Jaccard, Sorensen or Simpson similarity indices are used (see parameter \code{normalize}), or \code{gaussian} for raw zeta values.}
 
 \item{method.glm}{Method used in fitting the generalised linear model. The default method \cr "glm.fit.cons" is an adaptation of method \code{glm.fit2} from package \code{glm2} using a constrained least squares regression (default is negative coefficients) in the reweighted least squares. Another option is "glm.fit2", which calls \code{glm.fit2}; see help documentation for glm.fit2 in package \code{glm2}.}
 
 \item{cons}{type of constraint in the glm if \code{method.glm = "glm.fit.cons"}. Default is -1 for negative coefficients on the predictors. The other option is 1 for positive coefficients on the predictors.}
 
-\item{cons.inter}{type of constraint for the intercept. Default is 1 for positive intercept, suitable for Gaussian family. The other option is -1 for negative intercept, suitable for binomial family.}
+\item{cons.inter}{type of constraint for the intercept. If no value is specified, \code{cons.inter} is set to -1 (for negative intercept) for binomial family, or to 1 (for positive intercept) for Gaussian family}
 
 \item{confint.level}{Percentage for the confidence intervals of the coefficients from the generalised linear models.}
 
-\item{bs}{A two-letter character string indicating the (penalized) smoothing basis to use in the scam model. Default is "\code{mpd}" for monotonic decreasing splines. see \code{\link[mgcv]{smooth.terms}} for an overview of what is available.}
+\item{bs}{A two-letter character string indicating the (penalized) smoothing basis to use in the scam model. Default is "\code{mpd}" for monotonic decreasing splines. see \code{\link[mgcv]{smooth.terms}} in package \code{mgcv} for an overview of what is available.}
 
 \item{kn}{Number of knots in the GAM and SCAM. Default is -1 for determining kn automatically using Generalized Cross-validation.}
 
@@ -76,13 +76,13 @@ Zeta.msgdm(
 
 \item{method}{Name of a function (as a string) indicating how to combine the pairwise differences and distances for more than 3 sites. It can be a basic R-function such as "\code{mean}" or "\code{max}", but also a custom function.}
 
-\item{normalize}{Indicates if the zeta values for each sample should be divided by the total number of species for this specific sample (\code{normalize = "Jaccard"}), by the average number of species per site for this specific sample (\code{normalize = "Sorensen"}), or by the minimum number of species in the sites of this specific sample \cr (\code{normalize = "Simpson"}). Default value is \code{FALSE}, indicating that no normalization is performed.}
+\item{normalize}{Indicates if the zeta values for each sample should be divided by the minimum number of species in the sites of this specific sample \cr (\code{normalize = "Simpson"}) (default), by the total number of species for this specific sample (\code{normalize = "Jaccard"}), or by the average number of species per site for this specific sample (\code{normalize = "Sorensen"}). Value must be set to \code{FALSE} to indicate that no normalization must be performed and raw zeta values should be used.}
 
 \item{silent}{Boolean value (TRUE or FALSE) indicating if warnings must be printed.}
 
 \item{empty.row}{Determines how to handle empty rows, i.e. sites with no species. Such sites can cause underestimations of zeta diversity, and computation errors for the normalized version of zeta due to divisions by 0. Options are "\code{empty}" to let the data untreated, "\code{remove}" to remove the empty rows, 0 to set the normalized zeta to 0 when zeta is divided by 0 during normalization (sites share no species, so are completely dissimilar), and 1 to set the normalized zeta to 1 when zeta is divided by 0 during normalization (i.e. sites are perfectly similar).}
 
-\item{control}{As for \code{\link{glm}}.}
+\item{control}{As for \code{\link[stats]{glm}}.}
 
 \item{glm.init}{Boolean value, indicating if the initial parameters for fitting the glm with constraint on the coefficients signs for \code{reg.type == "ispline"} should be initialised based on the correlation coefficients betwen the zeta values and the environmental difference or distance. \code{glm.init = TRUE} helps preventing the error message: \code{error: cannot find valid starting values:} \cr \code{please specify some}.}
 }
@@ -97,7 +97,7 @@ Zeta.msgdm(
 
 \item{range.max}{Vector containing the maximum values of the numeric variables, used for rescaling the variables between 0 and 1 for I-splines (see Details).}
 
-\item{rescale.factor}{Factor by which the predictors were divided if \code{rescale.pred = TRUE} and \code{order>1}.}
+\item{rescale.factor}{Factor by which the predictors were divided if \code{rescale.pred = TRUE} and \cr\code{order>1}.}
 
 \item{order.ispline}{The value of the original parameter, to be used in \code{Plot.ispline}.}
 
@@ -132,7 +132,8 @@ data.spec.bird <- bird.spec.coarse[3:193]
 utils::data(bird.env.coarse)
 data.env.bird <- bird.env.coarse[,3:9]
 
-zeta.glm <- Zeta.msgdm(data.spec.bird, data.env.bird, sam = 100, order = 3)
+zeta.glm <- Zeta.msgdm(data.spec.bird, data.env.bird, sam = 100, order = 3,
+                               reg.type = "glm")
 zeta.glm
 dev.new()
 graphics::plot(zeta.glm$model)

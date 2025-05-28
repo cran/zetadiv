@@ -51,7 +51,8 @@ Zeta.order.mc.mult(
 \code{Zeta.order.mc.mult}  returns a list containing the following components:
 
 \item{zeta.order}{The number of assemblages or sites for which the zeta diversity was computed.}
-#' @return \item{sites}{A matrix in which each row contains the indices of a given combination, i.e. of the specific  \code{sam} assemblages.}
+
+\item{sites}{A matrix in which each row contains the indices of a given combination, i.e. of the specific  \code{sam} assemblages.}
 
 \item{zeta.val}{A data frame in which each column is the number of species shared by the assemblages.}
 }
